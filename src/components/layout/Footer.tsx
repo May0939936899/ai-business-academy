@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Facebook, Youtube, MessageCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -56,18 +57,35 @@ export default function Footer() {
         <div className="grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <Link href="/" className="mb-4 inline-flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 text-[9px] font-bold leading-tight text-white">
-                  SPU
+            <Link href="/" className="mb-4 inline-flex items-center gap-3 sm:gap-4">
+              <Image
+                src="/images/brand/spu-bus-logo.svg"
+                alt="SPU BUS Logo"
+                width={120}
+                height={40}
+                className="h-9 w-auto sm:h-10"
+              />
+              <div>
+                <div className="flex items-baseline gap-1.5">
+                  <span
+                    className="text-lg font-extrabold tracking-tight sm:text-xl"
+                    style={{
+                      background: 'linear-gradient(135deg, #2196F3 0%, #4FC3F7 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}
+                  >
+                    AI
+                  </span>
+                  <span className="text-lg font-bold tracking-tight text-white sm:text-xl">
+                    Business Academy
+                  </span>
                 </div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 text-[9px] font-bold leading-tight text-white">
-                  AI
-                </div>
+                <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-gray-500">
+                  คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม
+                </p>
               </div>
-              <span className="text-lg font-bold text-white">
-                <span className="gradient-text-blue">AI</span> Business Academy
-              </span>
             </Link>
             <p className="mb-6 max-w-sm text-sm leading-relaxed text-gray-500">
               แพลตฟอร์มเรียนรู้ AI สำหรับธุรกิจ โดยคณะบริหารธุรกิจ

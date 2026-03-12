@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 140">
+  <!-- SPU Text -->
+  <text x="0" y="105" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="110" fill="#1a1a1a" letter-spacing="-4">SPU</text>
+  <!-- Pink underline bar -->
+  <rect x="0" y="115" width="55" height="8" rx="1" fill="#E91E8C"/>
+  <!-- BUS Text - gradient blue -->
+  <text x="195" y="105" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="110" letter-spacing="-4">
+    <tspan fill="#4FC3F7">B</tspan><tspan fill="#2196F3">U</tspan><tspan fill="#42A5F5">S</tspan>
+  </text>
+</svg>

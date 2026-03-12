@@ -26,14 +26,14 @@ export function formatDate(
 
 /**
  * Generate a unique certificate code
- * Format: AIBA-COURSECODE-YYYY-XXXX (e.g., AIBA-AIMKT-2026-0001)
+ * Format: SPUBUS-COURSECODE-YYYY-XXXX (e.g., SPUBUS-AIHR-2026-0001)
  */
 export function generateCertificateCode(
   courseCode: string,
   year: number,
   sequence: number
 ): string {
-  return `AIBA-${courseCode}-${year}-${String(sequence).padStart(4, "0")}`;
+  return `SPUBUS-${courseCode}-${year}-${String(sequence).padStart(4, "0")}`;
 }
 
 /**

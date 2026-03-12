@@ -194,7 +194,7 @@ export async function POST(
       });
 
       if (!existingCertificate) {
-        // Generate certificate code: AIBA-COURSECODE-YYYY-XXXX
+        // Generate certificate code: SPUBUS-COURSECODE-YYYY-XXXX
         const currentYear = new Date().getFullYear();
         const existingCertCount = await db.certificate.count({
           where: {

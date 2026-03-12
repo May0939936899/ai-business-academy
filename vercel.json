@@ -1,39 +1,5 @@
 {
   "buildCommand": "npx prisma generate && next build",
   "installCommand": "npm install",
-  "framework": "nextjs",
-  "env": {
-    "DATABASE_URL": {
-      "description": "PostgreSQL connection string (Neon.tech recommended)",
-      "required": true
-    },
-    "NEXTAUTH_SECRET": {
-      "description": "NextAuth secret key for JWT signing",
-      "required": true
-    },
-    "NEXTAUTH_URL": {
-      "description": "Your Vercel deployment URL (e.g., https://your-app.vercel.app)",
-      "required": true
-    },
-    "GOOGLE_CLIENT_ID": {
-      "description": "Google OAuth Client ID from Google Cloud Console",
-      "required": true
-    },
-    "GOOGLE_CLIENT_SECRET": {
-      "description": "Google OAuth Client Secret from Google Cloud Console",
-      "required": true
-    },
-    "ADMIN_EMAILS": {
-      "description": "Comma-separated admin emails for auto-promotion",
-      "required": false
-    },
-    "NEXT_PUBLIC_APP_URL": {
-      "description": "Public app URL",
-      "required": false
-    },
-    "NEXT_PUBLIC_APP_NAME": {
-      "description": "App display name",
-      "required": false
-    }
-  }
+  "framework": "nextjs"
 }

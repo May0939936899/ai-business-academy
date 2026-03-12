@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -11,6 +11,7 @@ import {
   Award,
   HelpCircle,
   Loader2,
+  Clock,
 } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -62,6 +63,24 @@ export default function QuizClient({ quiz, existingCertificateCode }: QuizClient
   const [passed, setPassed] = useState(false)
   const [certificateCode, setCertificateCode] = useState<string | null>(existingCertificateCode)
   const [error, setError] = useState<string | null>(null)
+  const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const [finalTime, setFinalTime] = useState(0)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
+      setElapsedSeconds((prev) => prev + 1)
+    }, 1000)
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [])
+
+  const formatTime = (totalSecs: number) => {
+    const mins = Math.floor(totalSecs / 60)
+    const secs = totalSecs % 60
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+  }
 
   const totalQuestions = quiz.questions.length
   const currentQuestion = quiz.questions[currentIndex]
@@ -106,6 +125,8 @@ export default function QuizClient({ quiz, existingCertificateCode }: QuizClient
       if (data.certificate?.certificateCode) {
         setCertificateCode(data.certificate.certificateCode)
       }
+      setFinalTime(elapsedSeconds)
+      if (timerRef.current) clearInterval(timerRef.current)
       setSubmitted(true)
     } catch {
       setError('เกิดข้อผิดพลาดในการส่งแบบทดสอบ')
@@ -122,6 +143,11 @@ export default function QuizClient({ quiz, existingCertificateCode }: QuizClient
     setPassed(false)
     setError(null)
     setCurrentIndex(0)
+    setElapsedSeconds(0)
+    setFinalTime(0)
+    timerRef.current = setInterval(() => {
+      setElapsedSeconds((prev) => prev + 1)
+    }, 1000)
   }
 
   const optionLabels: AnswerKey[] = ['A', 'B', 'C', 'D']
@@ -164,6 +190,14 @@ export default function QuizClient({ quiz, existingCertificateCode }: QuizClient
               <div>
                 <p className="text-4xl font-bold text-gray-400">{quiz.passingScore}%</p>
                 <p className="text-sm text-gray-500">เกณฑ์ผ่าน</p>
+              </div>
+              <div className="h-12 w-px bg-white/[0.1]" />
+              <div>
+                <div className="flex items-center justify-center gap-1.5">
+                  <Clock className="h-5 w-5 text-cyan-400" />
+                  <p className="text-4xl font-bold text-cyan-400">{formatTime(finalTime)}</p>
+                </div>
+                <p className="text-sm text-gray-500">เวลาที่ใช้</p>
               </div>
             </div>
 
@@ -236,8 +270,23 @@ export default function QuizClient({ quiz, existingCertificateCode }: QuizClient
             <ArrowLeft className="h-4 w-4" />
             กลับไปหน้าคอร์ส
           </Link>
-          <h1 className="text-2xl font-bold text-white">{quiz.title}</h1>
-          <p className="mt-1 text-sm text-gray-400">{quiz.course.title}</p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-white">{quiz.title}</h1>
+              <p className="mt-1 text-sm text-gray-400">{quiz.course.title}</p>
+            </div>
+            {/* Animated Clock Timer */}
+            <div className="flex items-center gap-2.5 rounded-2xl border border-cyan-500/20 bg-cyan-500/5 px-4 py-2.5 shadow-lg shadow-cyan-500/5">
+              <div className="animate-pulse-bounce">
+                <div className="animate-clock-tick">
+                  <Clock className="h-6 w-6 text-cyan-400 drop-shadow-[0_0_6px_rgba(6,182,212,0.5)]" />
+                </div>
+              </div>
+              <span className="font-mono text-lg font-bold tabular-nums tracking-wider text-cyan-300">
+                {formatTime(elapsedSeconds)}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Progress */}

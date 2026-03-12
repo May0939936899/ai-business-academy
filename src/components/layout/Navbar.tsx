@@ -49,24 +49,44 @@ export default function Navbar() {
       className={cn(
         'sticky top-0 z-50 w-full',
         'bg-[#030712]/80 backdrop-blur-xl',
-        'border-b border-white/[0.06]'
+        'border-b border-transparent'
       )}
+      style={{
+        borderImage: 'linear-gradient(90deg, transparent 0%, #2196F3 25%, #4FC3F7 50%, #E91E8C 75%, transparent 100%) 1',
+      }}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 text-[10px] font-bold leading-tight text-white shadow-md">
-              SPU
+      <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8" style={{ height: '72px' }}>
+        {/* Logo + Brand */}
+        <Link href="/" className="flex items-center gap-3 sm:gap-4">
+          <Image
+            src="/images/brand/spu-bus-logo.svg"
+            alt="SPU BUS Logo"
+            width={140}
+            height={48}
+            className="h-10 w-auto sm:h-12"
+            priority
+          />
+          <div className="hidden sm:block">
+            <div className="flex items-baseline gap-1.5">
+              <span
+                className="text-xl font-extrabold tracking-tight sm:text-2xl"
+                style={{
+                  background: 'linear-gradient(135deg, #2196F3 0%, #4FC3F7 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                AI
+              </span>
+              <span className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+                Business Academy
+              </span>
             </div>
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 text-[10px] font-bold leading-tight text-white shadow-md">
-              AI
-            </div>
+            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-gray-500">
+              School of Business Administration
+            </p>
           </div>
-          <span className="hidden text-lg font-bold tracking-tight text-white sm:inline-block">
-            <span className="gradient-text-blue">AI</span>{' '}
-            <span className="text-gray-100">Business Academy</span>
-          </span>
         </Link>
 
         {/* Desktop Nav Links */}
@@ -76,13 +96,21 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               className={cn(
-                'rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200',
+                'relative rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200',
                 isActive(link.href)
-                  ? 'bg-white/[0.06] text-white'
-                  : 'text-gray-400 hover:bg-white/[0.06] hover:text-white'
+                  ? 'text-white'
+                  : 'text-gray-400 hover:text-white'
               )}
             >
               {link.label}
+              {isActive(link.href) && (
+                <span
+                  className="absolute inset-x-2 -bottom-[1px] h-[2px] rounded-full"
+                  style={{
+                    background: 'linear-gradient(90deg, #2196F3, #4FC3F7)',
+                  }}
+                />
+              )}
             </Link>
           ))}
         </nav>
@@ -93,19 +121,24 @@ export default function Navbar() {
             <div className="relative hidden md:block" ref={userMenuRef}>
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 rounded-lg px-3 py-1.5 transition-colors hover:bg-white/[0.06]"
+                className="flex items-center gap-2.5 rounded-xl px-3 py-2 transition-colors hover:bg-white/[0.06]"
               >
                 {session.user.image ? (
                   <Image
                     src={session.user.image}
                     alt={session.user.name || ''}
-                    width={32}
-                    height={32}
-                    className="rounded-full"
+                    width={34}
+                    height={34}
+                    className="rounded-full ring-2 ring-white/10"
                     unoptimized
                   />
                 ) : (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 text-sm font-bold text-white">
+                  <div
+                    className="flex h-[34px] w-[34px] items-center justify-center rounded-full text-sm font-bold text-white ring-2 ring-white/10"
+                    style={{
+                      background: 'linear-gradient(135deg, #2196F3, #4FC3F7)',
+                    }}
+                  >
                     {(session.user.fullName || session.user.name || 'U')[0]}
                   </div>
                 )}
@@ -117,38 +150,40 @@ export default function Navbar() {
 
               {/* Dropdown Menu */}
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-white/[0.08] bg-[#0a0f1e]/95 py-2 shadow-2xl backdrop-blur-xl">
-                  <Link
-                    href="/dashboard"
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 transition-colors hover:bg-white/[0.06] hover:text-white"
-                  >
-                    <LayoutDashboard className="h-4 w-4" />
-                    แดชบอร์ด
-                  </Link>
-                  <Link
-                    href="/dashboard"
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 transition-colors hover:bg-white/[0.06] hover:text-white"
-                  >
-                    <Award className="h-4 w-4" />
-                    ใบประกาศนียบัตร
-                  </Link>
-                  {session.user.role === 'ADMIN' && (
+                <div className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-white/[0.08] bg-[#0a0f1e]/95 shadow-2xl backdrop-blur-xl">
+                  <div className="py-2">
                     <Link
-                      href="/admin"
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-cyan-400 transition-colors hover:bg-white/[0.06] hover:text-cyan-300"
+                      href="/dashboard"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 transition-colors hover:bg-white/[0.06] hover:text-white"
                     >
                       <LayoutDashboard className="h-4 w-4" />
-                      แอดมิน
+                      แดชบอร์ด
                     </Link>
-                  )}
-                  <div className="my-1 border-t border-white/[0.06]" />
-                  <button
-                    onClick={() => signOut({ callbackUrl: '/' })}
-                    className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-white/[0.06] hover:text-red-300"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    ออกจากระบบ
-                  </button>
+                    <Link
+                      href="/dashboard"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 transition-colors hover:bg-white/[0.06] hover:text-white"
+                    >
+                      <Award className="h-4 w-4" />
+                      ใบประกาศนียบัตร
+                    </Link>
+                    {session.user.role === 'ADMIN' && (
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-cyan-400 transition-colors hover:bg-white/[0.06] hover:text-cyan-300"
+                      >
+                        <LayoutDashboard className="h-4 w-4" />
+                        แอดมิน
+                      </Link>
+                    )}
+                    <div className="my-1 border-t border-white/[0.06]" />
+                    <button
+                      onClick={() => signOut({ callbackUrl: '/' })}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-white/[0.06] hover:text-red-300"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      ออกจากระบบ
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

@@ -221,6 +221,7 @@ model Certificate {
   certificateCode String   @unique
   userId          String
   courseId         String
+  themeId         String   @default("royal-blue")
   issuedAt        DateTime @default(now())
   certificateUrl  String?
 
@@ -238,7 +239,7 @@ model CertificateTemplate {
   courseId            String   @unique
   logoUrl            String?
   signatureUrl       String?
-  signerName         String   @default("ผศ.ดร.ธรรมรัตน์ พลอยเพ็ชร์")
+  signerName         String   @default("ผศ.ดร.รวิภา อัครจินดานนท์")
   signerTitle        String   @default("คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม")
   backgroundTemplate String?
   createdAt          DateTime @default(now())
@@ -246,6 +247,18 @@ model CertificateTemplate {
 
   // Relations
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+model CertificateSettings {
+  id               String   @id @default("global")
+  logoUrl          String?
+  signatureUrl     String?
+  signerName       String   @default("ผศ.ดร.รวิภา อัครจินดานนท์")
+  signerTitle      String   @default("คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม")
+  certificatePrefix String  @default("SPUBUS")
+  defaultThemeId   String   @default("royal-blue")
+  enabledThemes    String[] @default(["royal-blue", "executive-navy", "elegant-gold", "modern-cyan", "academic-crimson", "premium-purple", "minimal-bw"])
+  updatedAt        DateTime @updatedAt
 }
 
 model Resource {

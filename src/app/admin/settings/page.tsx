@@ -243,7 +243,7 @@ export default async function SettingsPage() {
                 รูปแบบรหัส Certificate
               </p>
               <p className="mt-1.5 font-mono text-sm font-medium text-blue-400">
-                AIBA-&#123;COURSECODE&#125;-&#123;YYYY&#125;-&#123;XXXX&#125;
+                SPUBUS-&#123;COURSECODE&#125;-&#123;YYYY&#125;-&#123;XXXX&#125;
               </p>
             </div>
             <div>
