@@ -1,5 +1,6 @@
-import { notFound } from "next/navigation";
-import Link from "next/link";
+import { notFound } from 'next/navigation'
+import Link from 'next/link'
+import type { Metadata } from 'next'
 import {
   Award,
   ShieldCheck,
@@ -9,19 +10,65 @@ import {
   CheckCircle2,
   XCircle,
   Home,
-  QrCode,
-} from "lucide-react";
-import db from "@/lib/db";
-import { formatDate } from "@/lib/utils";
-import QRCode from "qrcode";
+} from 'lucide-react'
+import db from '@/lib/db'
+import { formatDate } from '@/lib/utils'
+import QRCode from 'qrcode'
 
 interface PageProps {
-  params: { certId: string };
+  params: { certId: string }
 }
 
-export default async function VerifyCertificatePage({ params }: PageProps) {
+// ─── Open Graph Metadata ──────────────────────────────────────────────────────
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { certId } = await params
+
   const certificate = await db.certificate.findUnique({
-    where: { certificateCode: params.certId },
+    where: { certificateCode: certId },
+    include: {
+      user: { select: { fullName: true } },
+      course: { select: { title: true } },
+    },
+  })
+
+  if (!certificate) {
+    return {
+      title: 'Certificate Not Found | AI Business Academy',
+      description: 'ไม่พบ Certificate ที่ค้นหา กรุณาตรวจสอบรหัสอีกครั้ง',
+    }
+  }
+
+  const title = `ยืนยัน Certificate - ${certificate.user.fullName} | AI Business Academy`
+  const description = `Certificate ยืนยันว่า ${certificate.user.fullName} ได้สำเร็จหลักสูตร "${certificate.course.title}" จาก AI Business Academy คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม`
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://ai-academy-lime.vercel.app'
+  const verifyUrl = `${baseUrl}/verify/${certificate.certificateCode}`
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: verifyUrl,
+      siteName: 'AI Business Academy',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+  }
+}
+
+// ─── Page Component ───────────────────────────────────────────────────────────
+
+export default async function VerifyCertificatePage({ params }: PageProps) {
+  const { certId } = await params
+
+  const certificate = await db.certificate.findUnique({
+    where: { certificateCode: certId },
     include: {
       user: { select: { fullName: true } },
       course: {
@@ -32,37 +79,48 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
         },
       },
     },
-  });
+  })
 
   // Also fetch global CertificateSettings
   const settings = await db.certificateSettings.findUnique({
-    where: { id: "global" },
-  });
+    where: { id: 'global' },
+  })
 
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://ai-academy-lime.vercel.app";
-  const verifyUrl = `${baseUrl}/verify/${params.certId}`;
+    process.env.NEXT_PUBLIC_BASE_URL || 'https://ai-academy-lime.vercel.app'
+  const verifyUrl = `${baseUrl}/verify/${certId}`
 
-  // ── Not Found ──
+  // ── Not Found ─────────────────────────────────────────────────────────────
+
   if (!certificate) {
     return (
       <div className="min-h-screen bg-[#030712]">
         <div className="mx-auto max-w-xl px-4 py-20 text-center sm:px-6">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-500/10">
+          {/* Red icon */}
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-500/10 ring-1 ring-red-500/20">
             <XCircle className="h-10 w-10 text-red-400" />
           </div>
+
           <h1 className="mb-3 text-2xl font-bold text-white">
             ไม่พบ Certificate
           </h1>
           <p className="mb-2 text-gray-400">
             รหัส Certificate ที่ค้นหาไม่ถูกต้องหรือไม่มีในระบบ
           </p>
-          <p className="mb-8 font-mono text-sm text-gray-500">
-            &ldquo;{params.certId}&rdquo;
+
+          {/* Searched code */}
+          <div className="mx-auto mb-6 inline-block rounded-lg border border-white/[0.06] bg-white/[0.02] px-4 py-2">
+            <p className="font-mono text-sm text-gray-500">
+              &ldquo;{certId}&rdquo;
+            </p>
+          </div>
+
+          <p className="mb-8 text-sm leading-relaxed text-gray-500">
+            กรุณาตรวจสอบรหัสอีกครั้งว่าถูกต้อง
+            หรือติดต่อผู้ดูแลระบบหากคุณเชื่อว่าเกิดข้อผิดพลาด
+            รหัส Certificate จะอยู่บนใบประกาศนียบัตร หรือใน QR Code
           </p>
-          <p className="mb-8 text-sm text-gray-500">
-            กรุณาตรวจสอบรหัสอีกครั้ง หรือติดต่อผู้ดูแลระบบหากคุณเชื่อว่าเกิดข้อผิดพลาด
-          </p>
+
           <Link
             href="/"
             className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition hover:brightness-110"
@@ -72,30 +130,33 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
           </Link>
         </div>
       </div>
-    );
+    )
   }
 
-  // ── Certificate Found ──
-  const template = certificate.course.certificateTemplate;
-  const issuedDate = formatDate(certificate.issuedAt);
+  // ── Certificate Found ─────────────────────────────────────────────────────
+
+  const template = certificate.course.certificateTemplate
+  const completionDate = formatDate(certificate.completionDate)
   const signerName =
-    template?.signerName || settings?.signerName || "ผศ.ดร.รวิภา อัครจินดานนท์";
+    template?.signerName ||
+    settings?.signerName ||
+    'ผศ.ดร.รวิภา อัครจินดานนท์'
   const signerTitle =
     template?.signerTitle ||
     settings?.signerTitle ||
-    "คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม";
+    'คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม'
 
-  // Generate QR Code as data URL
-  let qrDataUrl: string | null = null;
+  // Generate QR Code as data URL (white on transparent)
+  let qrDataUrl: string | null = null
   try {
     qrDataUrl = await QRCode.toDataURL(verifyUrl, {
       width: 160,
       margin: 2,
       color: {
-        dark: "#ffffff",
-        light: "#00000000",
+        dark: '#ffffff',
+        light: '#00000000',
       },
-    });
+    })
   } catch {
     // QR generation failed, will skip display
   }
@@ -103,9 +164,9 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-[#030712]">
       <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-        {/* SPU BUS Logo Area */}
+        {/* AI Business Academy Header */}
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 ring-1 ring-blue-500/10">
             <Award className="h-6 w-6 text-blue-400" />
           </div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-400">
@@ -116,8 +177,8 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
           </p>
         </div>
 
-        {/* Verified Banner */}
-        <div className="mb-8 flex items-center justify-center gap-3 rounded-2xl border border-green-500/20 bg-green-500/5 px-6 py-4">
+        {/* Green Valid Banner */}
+        <div className="mb-8 flex items-center justify-center gap-3 rounded-2xl border border-green-500/20 bg-green-500/5 px-6 py-4 backdrop-blur-sm">
           <CheckCircle2 className="h-6 w-6 shrink-0 text-green-400" />
           <div>
             <p className="font-semibold text-green-400">
@@ -129,9 +190,9 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Certificate Card */}
+        {/* ── Certificate Card ── */}
         <div className="relative overflow-hidden rounded-3xl">
-          {/* Gradient border */}
+          {/* Gradient border effect */}
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500 via-cyan-400 to-purple-500 p-[2px]">
             <div className="h-full w-full rounded-3xl bg-[#0a1628]" />
           </div>
@@ -151,14 +212,17 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
                 </p>
               </div>
 
+              {/* Divider */}
               <div className="mx-auto mb-10 h-px w-48 bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
-              {/* Body */}
+              {/* Student Name */}
               <div className="mb-10 text-center">
                 <p className="mb-2 text-sm text-gray-400">ขอมอบให้แก่</p>
                 <h2 className="mb-6 bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl">
                   {certificate.user.fullName}
                 </h2>
+
+                {/* Course Title */}
                 <p className="mb-2 text-sm text-gray-400">
                   ที่ได้สำเร็จหลักสูตร
                 </p>
@@ -170,9 +234,9 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
                 <div className="mx-auto grid max-w-lg grid-cols-2 gap-4 sm:grid-cols-3">
                   <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
                     <Calendar className="mx-auto mb-2 h-5 w-5 text-gray-500" />
-                    <p className="text-xs text-gray-500">วันที่ออก</p>
+                    <p className="text-xs text-gray-500">วันที่สำเร็จ</p>
                     <p className="mt-1 text-sm font-medium text-gray-200">
-                      {issuedDate}
+                      {completionDate}
                     </p>
                   </div>
                   <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
@@ -192,10 +256,19 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* Signature */}
+              {/* Signature Section */}
               <div className="mb-8 text-center">
                 <div className="mx-auto w-48 border-b border-white/[0.2] pb-2">
-                  <div className="h-12" />
+                  {template?.signatureUrl || settings?.signatureUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={template?.signatureUrl || settings?.signatureUrl || ''}
+                      alt="Signature"
+                      className="mx-auto h-12 object-contain"
+                    />
+                  ) : (
+                    <div className="h-12" />
+                  )}
                 </div>
                 <p className="mt-2 text-sm font-medium text-white">
                   {signerName}
@@ -211,6 +284,7 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
                 </p>
               </div>
 
+              {/* Divider */}
               <div className="mx-auto h-px w-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
 
               {/* QR Code & Verification */}
@@ -233,7 +307,7 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
                     Certificate ถูกต้อง — ยืนยันโดย AI Business Academy
                   </span>
                 </div>
-                <p className="text-center font-mono text-[10px] text-gray-600 break-all">
+                <p className="break-all text-center font-mono text-[10px] text-gray-600">
                   {verifyUrl}
                 </p>
               </div>
@@ -241,7 +315,7 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer — Back to Home */}
         <div className="mt-8 text-center">
           <Link
             href="/"
@@ -253,5 +327,5 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

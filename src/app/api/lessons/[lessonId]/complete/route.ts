@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import db from '@/lib/db'
 import { getCurrentUser } from '@/lib/auth'
+import { generateCertificate } from '@/lib/certificate-utils'
 
 // POST /api/lessons/[lessonId]/complete — Mark a lesson as complete
 export async function POST(
@@ -100,6 +101,18 @@ export async function POST(
       },
     })
 
+    // Auto-generate certificate if all course requirements are met
+    // generateCertificate checks lessons + quiz + hasCertificate internally
+    let certificate = null
+    if (isCompleted && lesson.course.hasCertificate) {
+      try {
+        certificate = await generateCertificate(user.id, lesson.courseId)
+      } catch (certError) {
+        console.error('Auto certificate generation after lesson complete:', certError)
+        // Don't fail lesson completion if certificate generation fails
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: {
@@ -107,6 +120,7 @@ export async function POST(
         totalLessons,
         progressPercent,
         courseCompleted: isCompleted,
+        certificate,
       },
       message: 'บันทึกความก้าวหน้าสำเร็จ',
     })

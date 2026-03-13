@@ -29,15 +29,15 @@ export async function GET() {
         signerName: "ผศ.ดร.รวิภา อัครจินดานนท์",
         signerTitle: "คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",
         certificatePrefix: "SPUBUS",
-        defaultThemeId: "royal-blue",
+        defaultThemeId: "executive-navy",
         enabledThemes: [
-          "royal-blue",
           "executive-navy",
+          "royal-blue-data",
           "elegant-gold",
-          "modern-cyan",
+          "minimal-white",
           "academic-crimson",
-          "premium-purple",
-          "minimal-bw",
+          "ai-circuit",
+          "business-flow",
         ],
       },
     });
@@ -72,7 +72,7 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json();
-    const { signerName, signerTitle, certificatePrefix, defaultThemeId, enabledThemes } = body;
+    const { signerName, signerTitle, certificatePrefix, defaultThemeId, enabledThemes, enableQrCode, verificationBaseUrl } = body;
 
     const settings = await db.certificateSettings.update({
       where: { id: "global" },
@@ -82,6 +82,8 @@ export async function PUT(request: Request) {
         ...(certificatePrefix !== undefined && { certificatePrefix }),
         ...(defaultThemeId !== undefined && { defaultThemeId }),
         ...(enabledThemes !== undefined && { enabledThemes }),
+        ...(enableQrCode !== undefined && { enableQrCode }),
+        ...(verificationBaseUrl !== undefined && { verificationBaseUrl }),
       },
     });
 

@@ -2,7 +2,10 @@
 
 import React, { forwardRef } from 'react'
 import Image from 'next/image'
-import { getCertificateTheme, type CertificateTheme, type BorderPattern } from '@/lib/certificate-themes'
+import { getCertificateTheme, type CertificateTheme, type BorderStyle } from '@/lib/certificate-themes'
+import '@/styles/certificate-fonts.css'
+
+// ─── Props ───────────────────────────────────────────────────────────────────
 
 interface CertificatePreviewProps {
   studentName: string
@@ -17,155 +20,54 @@ interface CertificatePreviewProps {
   verificationUrl?: string
 }
 
-// ─── Border SVG Patterns ──────────────────────────────────────────────────────
+// ─── Border Renderers ────────────────────────────────────────────────────────
 
-function ClassicBorder({ theme }: { theme: CertificateTheme }) {
+function DoubleBorder({ theme }: { theme: CertificateTheme }) {
   return (
     <>
       {/* Outer border */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{
-          border: `4px double ${theme.borderColor}`,
-        }}
+        style={{ border: `3px solid ${theme.borderColor}` }}
       />
-      {/* Inner decorative border */}
+      {/* Inner border with gap */}
       <div
         className="absolute pointer-events-none"
         style={{
-          inset: '12px',
+          inset: '6px',
           border: `1.5px solid ${theme.borderColor}`,
           opacity: 0.5,
         }}
       />
-      {/* Innermost fine line */}
+      {/* Gold accent line */}
       <div
         className="absolute pointer-events-none"
         style={{
-          inset: '16px',
+          inset: '10px',
+          border: `0.5px solid ${theme.accentColor}`,
+          opacity: 0.3,
+        }}
+      />
+    </>
+  )
+}
+
+function SolidBorder({ theme }: { theme: CertificateTheme }) {
+  return (
+    <>
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ border: `2px solid ${theme.borderColor}` }}
+      />
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          inset: '8px',
           border: `0.5px solid ${theme.borderColor}`,
           opacity: 0.25,
         }}
       />
     </>
-  )
-}
-
-function ModernBorder({ theme }: { theme: CertificateTheme }) {
-  return (
-    <>
-      {/* Thick left/top accent */}
-      <div
-        className="absolute top-0 left-0 pointer-events-none"
-        style={{
-          width: '6px',
-          height: '100%',
-          background: `linear-gradient(180deg, ${theme.primaryColor}, ${theme.secondaryColor})`,
-        }}
-      />
-      <div
-        className="absolute top-0 left-0 pointer-events-none"
-        style={{
-          width: '100%',
-          height: '6px',
-          background: `linear-gradient(90deg, ${theme.primaryColor}, ${theme.secondaryColor})`,
-        }}
-      />
-      {/* Bottom thin line */}
-      <div
-        className="absolute bottom-0 left-0 right-0 pointer-events-none"
-        style={{
-          height: '2px',
-          background: theme.borderColor,
-          opacity: 0.3,
-        }}
-      />
-      {/* Accent corner - top right */}
-      <div
-        className="absolute top-0 right-0 pointer-events-none"
-        style={{
-          width: '60px',
-          height: '60px',
-          borderRight: `6px solid ${theme.accentColor}`,
-          borderTop: `6px solid transparent`,
-        }}
-      />
-      {/* Accent corner - bottom left */}
-      <div
-        className="absolute bottom-0 left-0 pointer-events-none"
-        style={{
-          width: '60px',
-          height: '60px',
-          borderLeft: `6px solid transparent`,
-          borderBottom: `6px solid ${theme.accentColor}`,
-        }}
-      />
-    </>
-  )
-}
-
-function ElegantBorder({ theme }: { theme: CertificateTheme }) {
-  return (
-    <>
-      {/* Outer gold-style border */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          border: `3px solid ${theme.borderColor}`,
-        }}
-      />
-      {/* Ornamental inner border */}
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          inset: '8px',
-          border: `1.5px solid ${theme.accentColor}`,
-          opacity: 0.7,
-        }}
-      />
-      {/* Inner decorative double line */}
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          inset: '14px',
-          border: `2px double ${theme.borderColor}`,
-          opacity: 0.4,
-        }}
-      />
-      {/* Corner ornaments */}
-      {['top-left', 'top-right', 'bottom-left', 'bottom-right'].map((corner) => {
-        const isTop = corner.includes('top')
-        const isLeft = corner.includes('left')
-        return (
-          <div
-            key={corner}
-            className="absolute pointer-events-none"
-            style={{
-              [isTop ? 'top' : 'bottom']: '4px',
-              [isLeft ? 'left' : 'right']: '4px',
-              width: '30px',
-              height: '30px',
-              borderTop: isTop ? `3px solid ${theme.accentColor}` : 'none',
-              borderBottom: !isTop ? `3px solid ${theme.accentColor}` : 'none',
-              borderLeft: isLeft ? `3px solid ${theme.accentColor}` : 'none',
-              borderRight: !isLeft ? `3px solid ${theme.accentColor}` : 'none',
-            }}
-          />
-        )
-      })}
-    </>
-  )
-}
-
-function MinimalBorder({ theme }: { theme: CertificateTheme }) {
-  return (
-    <div
-      className="absolute inset-0 pointer-events-none"
-      style={{
-        border: `1px solid ${theme.borderColor}`,
-        opacity: 0.6,
-      }}
-    />
   )
 }
 
@@ -180,159 +82,35 @@ function OrnateBorder({ theme }: { theme: CertificateTheme }) {
       {/* Second layer */}
       <div
         className="absolute pointer-events-none"
-        style={{ inset: '6px', border: `1px solid ${theme.borderColor}`, opacity: 0.6 }}
+        style={{ inset: '5px', border: `1px solid ${theme.borderColor}`, opacity: 0.6 }}
       />
-      {/* Third layer - double */}
+      {/* Third layer — double effect */}
       <div
         className="absolute pointer-events-none"
-        style={{ inset: '10px', border: `2px double ${theme.accentColor}`, opacity: 0.5 }}
+        style={{ inset: '9px', border: `2px double ${theme.accentColor}`, opacity: 0.4 }}
       />
-      {/* Fourth layer */}
+      {/* Innermost fine line */}
       <div
         className="absolute pointer-events-none"
-        style={{ inset: '16px', border: `1px solid ${theme.borderColor}`, opacity: 0.3 }}
+        style={{ inset: '14px', border: `0.5px solid ${theme.borderColor}`, opacity: 0.2 }}
       />
-      {/* Innermost */}
-      <div
-        className="absolute pointer-events-none"
-        style={{ inset: '20px', border: `0.5px solid ${theme.accentColor}`, opacity: 0.2 }}
-      />
-      {/* Corner rosettes */}
-      {['top-left', 'top-right', 'bottom-left', 'bottom-right'].map((corner) => {
+      {/* Corner accent marks */}
+      {(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const).map((corner) => {
         const isTop = corner.includes('top')
         const isLeft = corner.includes('left')
         return (
           <div
             key={corner}
-            className="absolute pointer-events-none flex items-center justify-center"
+            className="absolute pointer-events-none"
             style={{
-              [isTop ? 'top' : 'bottom']: '6px',
-              [isLeft ? 'left' : 'right']: '6px',
+              [isTop ? 'top' : 'bottom']: '3px',
+              [isLeft ? 'left' : 'right']: '3px',
               width: '24px',
               height: '24px',
-              color: theme.accentColor,
-              fontSize: '18px',
-              lineHeight: 1,
-              opacity: 0.6,
-            }}
-          >
-            ✦
-          </div>
-        )
-      })}
-    </>
-  )
-}
-
-function GeometricBorder({ theme }: { theme: CertificateTheme }) {
-  return (
-    <>
-      {/* Outer border */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ border: `2px solid ${theme.borderColor}` }}
-      />
-      {/* Geometric pattern - top */}
-      <div
-        className="absolute top-0 left-0 right-0 pointer-events-none"
-        style={{
-          height: '10px',
-          background: `repeating-linear-gradient(90deg, ${theme.primaryColor} 0px, ${theme.primaryColor} 8px, transparent 8px, transparent 16px, ${theme.secondaryColor} 16px, ${theme.secondaryColor} 24px, transparent 24px, transparent 32px)`,
-          opacity: 0.2,
-        }}
-      />
-      {/* Geometric pattern - bottom */}
-      <div
-        className="absolute bottom-0 left-0 right-0 pointer-events-none"
-        style={{
-          height: '10px',
-          background: `repeating-linear-gradient(90deg, ${theme.primaryColor} 0px, ${theme.primaryColor} 8px, transparent 8px, transparent 16px, ${theme.secondaryColor} 16px, ${theme.secondaryColor} 24px, transparent 24px, transparent 32px)`,
-          opacity: 0.2,
-        }}
-      />
-      {/* Inner border */}
-      <div
-        className="absolute pointer-events-none"
-        style={{ inset: '12px', border: `1px solid ${theme.borderColor}`, opacity: 0.3 }}
-      />
-      {/* Corner diamonds */}
-      {['top-left', 'top-right', 'bottom-left', 'bottom-right'].map((corner) => {
-        const isTop = corner.includes('top')
-        const isLeft = corner.includes('left')
-        return (
-          <div
-            key={corner}
-            className="absolute pointer-events-none"
-            style={{
-              [isTop ? 'top' : 'bottom']: '2px',
-              [isLeft ? 'left' : 'right']: '2px',
-              width: '18px',
-              height: '18px',
-              transform: 'rotate(45deg)',
-              border: `1.5px solid ${theme.accentColor}`,
-              opacity: 0.4,
-            }}
-          />
-        )
-      })}
-    </>
-  )
-}
-
-function AcademicBorder({ theme }: { theme: CertificateTheme }) {
-  return (
-    <>
-      {/* Outer border */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ border: `3px solid ${theme.borderColor}` }}
-      />
-      {/* Inner double border */}
-      <div
-        className="absolute pointer-events-none"
-        style={{ inset: '8px', border: `2px double ${theme.borderColor}`, opacity: 0.6 }}
-      />
-      {/* Innermost line */}
-      <div
-        className="absolute pointer-events-none"
-        style={{ inset: '14px', border: `1px solid ${theme.borderColor}`, opacity: 0.3 }}
-      />
-      {/* Top center scroll ornament */}
-      <div
-        className="absolute top-[3px] left-1/2 -translate-x-1/2 pointer-events-none flex items-center gap-1"
-        style={{ color: theme.accentColor, opacity: 0.5 }}
-      >
-        <span style={{ fontSize: '10px' }}>&#9698;</span>
-        <span style={{ fontSize: '14px' }}>&#9830;</span>
-        <span style={{ fontSize: '10px' }}>&#9699;</span>
-      </div>
-      {/* Bottom center scroll ornament */}
-      <div
-        className="absolute bottom-[3px] left-1/2 -translate-x-1/2 pointer-events-none flex items-center gap-1"
-        style={{ color: theme.accentColor, opacity: 0.5 }}
-      >
-        <span style={{ fontSize: '10px' }}>&#9698;</span>
-        <span style={{ fontSize: '14px' }}>&#9830;</span>
-        <span style={{ fontSize: '10px' }}>&#9699;</span>
-      </div>
-      {/* Corner laurel-style marks */}
-      {['top-left', 'top-right', 'bottom-left', 'bottom-right'].map((corner) => {
-        const isTop = corner.includes('top')
-        const isLeft = corner.includes('left')
-        return (
-          <div
-            key={corner}
-            className="absolute pointer-events-none"
-            style={{
-              [isTop ? 'top' : 'bottom']: '5px',
-              [isLeft ? 'left' : 'right']: '5px',
-              width: '20px',
-              height: '20px',
               borderTop: isTop ? `2.5px solid ${theme.accentColor}` : 'none',
               borderBottom: !isTop ? `2.5px solid ${theme.accentColor}` : 'none',
               borderLeft: isLeft ? `2.5px solid ${theme.accentColor}` : 'none',
               borderRight: !isLeft ? `2.5px solid ${theme.accentColor}` : 'none',
-              borderRadius: isTop && isLeft ? '6px 0 0 0' : isTop && !isLeft ? '0 6px 0 0' : !isTop && isLeft ? '0 0 0 6px' : '0 0 6px 0',
               opacity: 0.5,
             }}
           />
@@ -342,57 +120,36 @@ function AcademicBorder({ theme }: { theme: CertificateTheme }) {
   )
 }
 
-function BorderRenderer({ pattern, theme }: { pattern: BorderPattern; theme: CertificateTheme }) {
-  switch (pattern) {
-    case 'classic':
-      return <ClassicBorder theme={theme} />
-    case 'modern':
-      return <ModernBorder theme={theme} />
-    case 'elegant':
-      return <ElegantBorder theme={theme} />
-    case 'minimal':
-      return <MinimalBorder theme={theme} />
+function BorderRenderer({ borderStyle, theme }: { borderStyle: BorderStyle; theme: CertificateTheme }) {
+  switch (borderStyle) {
+    case 'double':
+      return <DoubleBorder theme={theme} />
+    case 'solid':
+      return <SolidBorder theme={theme} />
     case 'ornate':
       return <OrnateBorder theme={theme} />
-    case 'geometric':
-      return <GeometricBorder theme={theme} />
-    case 'academic':
-      return <AcademicBorder theme={theme} />
     default:
-      return <ClassicBorder theme={theme} />
+      return <DoubleBorder theme={theme} />
   }
 }
 
-// ─── Decorative Divider ───────────────────────────────────────────────────────
+// ─── Date Formatter ──────────────────────────────────────────────────────────
 
-function DecorativeDivider({ theme }: { theme: CertificateTheme }) {
-  return (
-    <div className="flex items-center justify-center gap-2 my-1">
-      <div
-        className="h-px flex-1 max-w-[80px]"
-        style={{
-          background: `linear-gradient(to right, transparent, ${theme.accentColor})`,
-          opacity: 0.5,
-        }}
-      />
-      <div style={{ color: theme.accentColor, opacity: 0.6, fontSize: '10px' }}>&#9830;</div>
-      <div
-        className="h-px w-[60px]"
-        style={{ background: theme.accentColor, opacity: 0.4 }}
-      />
-      <div style={{ color: theme.accentColor, opacity: 0.6, fontSize: '10px' }}>&#9830;</div>
-      <div
-        className="h-px flex-1 max-w-[80px]"
-        style={{
-          background: `linear-gradient(to left, transparent, ${theme.accentColor})`,
-          opacity: 0.5,
-        }}
-      />
-    </div>
-  )
+function formatDate(dateStr: string): string {
+  try {
+    const date = new Date(dateStr)
+    if (isNaN(date.getTime())) return dateStr
+    return date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  } catch {
+    return dateStr
+  }
 }
 
-// ─── Main Certificate Component ───────────────────────────────────────────────
+// ─── Main Certificate Component ──────────────────────────────────────────────
 
 const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
   (
@@ -411,93 +168,132 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
     ref
   ) => {
     const theme = getCertificateTheme(themeId)
-    const isLeftAligned = theme.headerStyle === 'left-aligned'
+    const formattedDate = formatDate(issuedDate)
 
     return (
       <div
         ref={ref}
         id="certificate-preview"
-        className="relative w-full overflow-hidden"
+        className="certificate-font-db relative w-full overflow-hidden"
         style={{
           aspectRatio: '1.414 / 1',
           background: theme.bgGradient,
-          fontFamily: '"Sarabun", "Noto Sans Thai", sans-serif',
+          maxWidth: '1200px',
         }}
       >
-        {/* ── Border ── */}
-        <BorderRenderer pattern={theme.borderPattern} theme={theme} />
+        {/* ── Themed Border ── */}
+        <BorderRenderer borderStyle={theme.borderStyle} theme={theme} />
 
-        {/* ── Subtle background watermark pattern ── */}
+        {/* ── SVG Pattern — Top-Right Corner ── */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-[0.02]"
+          className="absolute pointer-events-none"
           style={{
-            backgroundImage: `radial-gradient(${theme.primaryColor} 1px, transparent 1px)`,
-            backgroundSize: '24px 24px',
+            top: 0,
+            right: 0,
+            width: '35%',
+            height: '40%',
+            backgroundImage: `url("${theme.patternSvg}")`,
+            backgroundRepeat: 'repeat',
+            backgroundSize: '120px 120px',
+            opacity: 0.5,
+            maskImage: 'linear-gradient(135deg, transparent 10%, black 50%)',
+            WebkitMaskImage: 'linear-gradient(135deg, transparent 10%, black 50%)',
           }}
         />
 
-        {/* ── Content Container ── */}
+        {/* ── SVG Pattern — Bottom-Left Corner ── */}
         <div
-          className="relative z-10 flex flex-col items-center justify-between h-full"
-          style={{ padding: '5% 8%' }}
+          className="absolute pointer-events-none"
+          style={{
+            bottom: 0,
+            left: 0,
+            width: '35%',
+            height: '40%',
+            backgroundImage: `url("${theme.patternSvg}")`,
+            backgroundRepeat: 'repeat',
+            backgroundSize: '120px 120px',
+            opacity: 0.5,
+            maskImage: 'linear-gradient(315deg, transparent 10%, black 50%)',
+            WebkitMaskImage: 'linear-gradient(315deg, transparent 10%, black 50%)',
+          }}
+        />
+
+        {/* ── Gold Accent Line (top) ── */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            top: '18px',
+            left: '15%',
+            right: '15%',
+            height: '1px',
+            background: `linear-gradient(to right, transparent, ${theme.accentColor}, transparent)`,
+            opacity: 0.25,
+          }}
+        />
+
+        {/* ── Content Container — Safe Area 40px padding ── */}
+        <div
+          className="relative z-10 flex flex-col h-full"
+          style={{ padding: '40px' }}
         >
-          {/* ── Top: Logo + Academy Name ── */}
-          <div
-            className={`flex items-center gap-3 w-full ${
-              isLeftAligned ? 'justify-start' : 'justify-center'
-            }`}
-          >
-            <div className="relative shrink-0" style={{ width: '48px', height: '48px' }}>
+          {/* ════════════════════════════════════════════════════════════════
+              TOP ZONE — Logo + Academy Name + Certificate Title
+              ════════════════════════════════════════════════════════════════ */}
+          <div className="flex flex-col items-center" style={{ flex: '0 0 auto' }}>
+            {/* Logo */}
+            <div className="relative shrink-0" style={{ width: '80px', height: '80px' }}>
               <Image
                 src={logoUrl || '/images/brand/spu-bus-logo.svg'}
-                alt="SPU BUS Logo"
+                alt="AI Business Academy"
                 fill
                 className="object-contain"
                 unoptimized
               />
             </div>
-            <div className={isLeftAligned ? 'text-left' : 'text-center'}>
-              <p
-                className="font-bold leading-tight"
-                style={{
-                  color: theme.headerColor,
-                  fontSize: 'clamp(10px, 1.6vw, 18px)',
-                  letterSpacing: '0.05em',
-                }}
-              >
-                AI Business Academy
-              </p>
-              <p
-                className="leading-tight"
-                style={{
-                  color: theme.secondaryColor,
-                  fontSize: 'clamp(7px, 1vw, 11px)',
-                  opacity: 0.8,
-                }}
-              >
-                คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม &middot; School of Business Administration, Sripatum University
-              </p>
-            </div>
-          </div>
 
-          {/* ── Certificate Title ── */}
-          <div className="text-center mt-1">
-            <h1
-              className="font-bold tracking-widest uppercase"
+            {/* Academy Name */}
+            <p
+              className="cert-text-academy text-center mt-2"
               style={{
                 color: theme.headerColor,
-                fontSize: 'clamp(14px, 2.6vw, 30px)',
-                letterSpacing: '0.15em',
+                fontSize: 'clamp(12px, 1.8vw, 20px)',
+              }}
+            >
+              AI Business Academy
+            </p>
+
+            {/* Subtitle — University */}
+            <p
+              className="cert-text-meta text-center"
+              style={{
+                color: theme.secondaryColor,
+                fontSize: 'clamp(7px, 0.9vw, 11px)',
+                opacity: 0.7,
+                marginTop: '2px',
+              }}
+            >
+              School of Business Administration, Sripatum University
+            </p>
+
+            {/* Certificate Title */}
+            <h1
+              className="cert-text-title text-center"
+              style={{
+                color: theme.headerColor,
+                fontSize: 'clamp(16px, 2.8vw, 32px)',
+                marginTop: 'clamp(8px, 1.5vw, 16px)',
               }}
             >
               Certificate of Completion
             </h1>
+
+            {/* Thai Subtitle */}
             <p
-              className="font-medium"
+              className="cert-text-body text-center"
               style={{
                 color: theme.primaryColor,
-                fontSize: 'clamp(10px, 1.6vw, 18px)',
-                opacity: 0.85,
+                fontSize: 'clamp(9px, 1.4vw, 16px)',
+                opacity: 0.75,
                 marginTop: '2px',
               }}
             >
@@ -505,179 +301,258 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
             </p>
           </div>
 
-          {/* ── Decorative Divider ── */}
-          <DecorativeDivider theme={theme} />
+          {/* ════════════════════════════════════════════════════════════════
+              CENTER ZONE — Student Name + Course Title
+              ════════════════════════════════════════════════════════════════ */}
+          <div className="flex flex-col items-center justify-center" style={{ flex: '1 1 auto', minHeight: 0 }}>
+            {/* Decorative divider */}
+            <div className="flex items-center justify-center w-full" style={{ marginBottom: 'clamp(6px, 1.2vw, 14px)' }}>
+              <div
+                style={{
+                  width: 'clamp(40px, 8vw, 80px)',
+                  height: '1px',
+                  background: `linear-gradient(to right, transparent, ${theme.accentColor})`,
+                  opacity: 0.4,
+                }}
+              />
+              <div
+                style={{
+                  width: '4px',
+                  height: '4px',
+                  borderRadius: '50%',
+                  background: theme.accentColor,
+                  opacity: 0.5,
+                  margin: '0 8px',
+                }}
+              />
+              <div
+                style={{
+                  width: 'clamp(40px, 8vw, 80px)',
+                  height: '1px',
+                  background: `linear-gradient(to left, transparent, ${theme.accentColor})`,
+                  opacity: 0.4,
+                }}
+              />
+            </div>
 
-          {/* ── Presented To ── */}
-          <div className="text-center w-full">
+            {/* "This certifies that" */}
             <p
-              className="mb-1"
+              className="cert-text-body text-center"
               style={{
                 color: theme.textColor,
-                fontSize: 'clamp(8px, 1.2vw, 13px)',
-                opacity: 0.7,
+                fontSize: 'clamp(8px, 1.1vw, 13px)',
+                opacity: 0.6,
+                marginBottom: 'clamp(4px, 0.8vw, 8px)',
               }}
             >
-              ขอมอบให้แก่ &middot; This certificate is proudly presented to
+              This certifies that
             </p>
 
-            {/* ── Student Name ── */}
+            {/* Student Name — LARGEST */}
             <h2
-              className="font-bold"
+              className="cert-text-student text-center"
               style={{
                 color: theme.headerColor,
-                fontSize: 'clamp(18px, 3.4vw, 40px)',
-                lineHeight: 1.2,
+                fontSize: 'clamp(22px, 4vw, 48px)',
+                paddingBottom: 'clamp(4px, 0.6vw, 8px)',
+                paddingLeft: 'clamp(16px, 3vw, 40px)',
+                paddingRight: 'clamp(16px, 3vw, 40px)',
                 borderBottom: `2px solid ${theme.accentColor}`,
                 display: 'inline-block',
-                paddingBottom: '4px',
-                paddingLeft: '24px',
-                paddingRight: '24px',
                 minWidth: '40%',
               }}
             >
               {studentName}
             </h2>
-          </div>
 
-          {/* ── Course Info ── */}
-          <div className="text-center w-full">
+            {/* "has successfully completed the course" */}
             <p
-              className="mb-1"
+              className="cert-text-body text-center"
               style={{
                 color: theme.textColor,
-                fontSize: 'clamp(8px, 1.2vw, 13px)',
-                opacity: 0.7,
+                fontSize: 'clamp(8px, 1.1vw, 13px)',
+                opacity: 0.6,
+                marginTop: 'clamp(6px, 1vw, 12px)',
+                marginBottom: 'clamp(4px, 0.6vw, 6px)',
               }}
             >
-              ที่ได้สำเร็จหลักสูตร &middot; for successfully completing the course
+              has successfully completed the course
             </p>
+
+            {/* Course Title — Second Largest */}
             <h3
-              className="font-semibold"
+              className="cert-text-course text-center"
               style={{
                 color: theme.primaryColor,
-                fontSize: 'clamp(12px, 2vw, 22px)',
-                lineHeight: 1.3,
+                fontSize: 'clamp(14px, 2.2vw, 26px)',
+                maxWidth: '80%',
               }}
             >
               {courseName}
             </h3>
           </div>
 
-          {/* ── Date ── */}
-          <p
-            className="text-center"
+          {/* ════════════════════════════════════════════════════════════════
+              BOTTOM ZONE — 3-Column: Date | Signature | Cert ID + QR
+              ════════════════════════════════════════════════════════════════ */}
+          <div
+            className="grid items-end"
             style={{
-              color: theme.textColor,
-              fontSize: 'clamp(8px, 1.1vw, 12px)',
-              opacity: 0.6,
+              flex: '0 0 auto',
+              gridTemplateColumns: '1fr 1.2fr 1fr',
+              gap: 'clamp(8px, 1.5vw, 20px)',
+              marginTop: 'auto',
             }}
           >
-            วันที่ออกใบประกาศนียบัตร: {issuedDate}
-          </p>
+            {/* ── Left Column: Completion Date ── */}
+            <div className="text-left">
+              <p
+                className="cert-text-meta"
+                style={{
+                  color: theme.textColor,
+                  fontSize: 'clamp(6px, 0.8vw, 9px)',
+                  opacity: 0.5,
+                  textTransform: 'uppercase',
+                  marginBottom: '4px',
+                }}
+              >
+                Completion Date
+              </p>
+              <p
+                className="cert-text-body"
+                style={{
+                  color: theme.textColor,
+                  fontSize: 'clamp(8px, 1.1vw, 13px)',
+                  opacity: 0.8,
+                }}
+              >
+                {formattedDate}
+              </p>
+            </div>
 
-          {/* ── Signature Area ── */}
-          <div className="text-center mt-auto">
-            {/* Signature image */}
-            {signatureUrl && (
-              <div className="relative mx-auto mb-1" style={{ width: '100px', height: '36px' }}>
-                <Image
-                  src={signatureUrl}
-                  alt="Signature"
-                  fill
-                  className="object-contain"
-                  unoptimized
-                />
-              </div>
-            )}
+            {/* ── Center Column: Signature ── */}
+            <div className="flex flex-col items-center">
+              {/* Signature image */}
+              {signatureUrl && (
+                <div className="relative mx-auto" style={{ width: '100px', height: '36px', marginBottom: '4px' }}>
+                  <Image
+                    src={signatureUrl}
+                    alt="Signature"
+                    fill
+                    className="object-contain"
+                    unoptimized
+                  />
+                </div>
+              )}
 
-            {/* Signature line */}
-            <div
-              className="mx-auto"
-              style={{
-                width: 'clamp(120px, 22vw, 240px)',
-                height: '1px',
-                background:
-                  theme.signatureStyle === 'modern'
-                    ? `linear-gradient(to right, transparent, ${theme.primaryColor}, transparent)`
-                    : theme.primaryColor,
-                opacity: theme.signatureStyle === 'minimal' ? 0.3 : 0.5,
-              }}
-            />
+              {/* Signature line */}
+              <div
+                style={{
+                  width: 'clamp(120px, 20vw, 220px)',
+                  height: '1px',
+                  background: theme.primaryColor,
+                  opacity: 0.4,
+                }}
+              />
 
-            {/* Signer name */}
-            <p
-              className="font-semibold mt-1"
-              style={{
-                color: theme.headerColor,
-                fontSize: 'clamp(9px, 1.2vw, 13px)',
-              }}
-            >
-              {signerName}
-            </p>
+              {/* Signer name */}
+              <p
+                className="cert-text-signer text-center"
+                style={{
+                  color: theme.headerColor,
+                  fontSize: 'clamp(8px, 1.1vw, 13px)',
+                  marginTop: '6px',
+                }}
+              >
+                {signerName}
+              </p>
 
-            {/* Signer title */}
-            <p
-              style={{
-                color: theme.textColor,
-                fontSize: 'clamp(7px, 1vw, 11px)',
-                opacity: 0.6,
-              }}
-            >
-              {signerTitle}
-            </p>
+              {/* Signer title */}
+              <p
+                className="cert-text-body text-center"
+                style={{
+                  color: theme.textColor,
+                  fontSize: 'clamp(6px, 0.85vw, 10px)',
+                  opacity: 0.55,
+                  marginTop: '1px',
+                }}
+              >
+                {signerTitle}
+              </p>
+            </div>
+
+            {/* ── Right Column: Certificate ID + QR ── */}
+            <div className="flex flex-col items-end">
+              {/* Certificate ID label */}
+              <p
+                className="cert-text-meta text-right"
+                style={{
+                  color: theme.textColor,
+                  fontSize: 'clamp(6px, 0.8vw, 9px)',
+                  opacity: 0.5,
+                  textTransform: 'uppercase',
+                  marginBottom: '4px',
+                }}
+              >
+                Certificate ID
+              </p>
+
+              {/* Certificate code */}
+              <p
+                className="text-right"
+                style={{
+                  color: theme.textColor,
+                  fontSize: 'clamp(6px, 0.8vw, 9px)',
+                  opacity: 0.5,
+                  fontFamily: '"SF Mono", "Fira Code", "Consolas", monospace',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                {certificateCode}
+              </p>
+
+              {/* QR Code */}
+              {verificationUrl && (
+                <div className="flex flex-col items-center" style={{ marginTop: '6px' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(verificationUrl)}`}
+                    alt="QR Verification"
+                    style={{
+                      width: 'clamp(50px, 8vw, 100px)',
+                      height: 'clamp(50px, 8vw, 100px)',
+                      borderRadius: '4px',
+                    }}
+                  />
+                  <span
+                    className="cert-text-meta"
+                    style={{
+                      color: theme.textColor,
+                      fontSize: 'clamp(5px, 0.65vw, 8px)',
+                      opacity: 0.4,
+                      marginTop: '3px',
+                    }}
+                  >
+                    Verify Certificate
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
-
-          {/* ── Certificate Code ── */}
-          <p
-            className="text-center mt-1"
-            style={{
-              color: theme.textColor,
-              fontSize: 'clamp(6px, 0.8vw, 9px)',
-              opacity: 0.4,
-              fontFamily: 'monospace',
-              letterSpacing: '0.08em',
-            }}
-          >
-            {certificateCode}
-          </p>
         </div>
 
-        {/* ── QR Code (bottom-right) ── */}
-        {verificationUrl && (
-          <div
-            className="absolute pointer-events-none"
-            style={{
-              bottom: '4%',
-              right: '4%',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '2px',
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(verificationUrl)}`}
-              alt="QR Verification"
-              style={{
-                width: 'clamp(48px, 8vw, 80px)',
-                height: 'clamp(48px, 8vw, 80px)',
-                borderRadius: '4px',
-              }}
-            />
-            <span
-              style={{
-                color: theme.textColor,
-                fontSize: 'clamp(4px, 0.6vw, 7px)',
-                opacity: 0.4,
-                fontFamily: 'monospace',
-              }}
-            >
-              Verify
-            </span>
-          </div>
-        )}
+        {/* ── Gold Accent Line (bottom) ── */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            bottom: '18px',
+            left: '15%',
+            right: '15%',
+            height: '1px',
+            background: `linear-gradient(to right, transparent, ${theme.accentColor}, transparent)`,
+            opacity: 0.25,
+          }}
+        />
       </div>
     )
   }

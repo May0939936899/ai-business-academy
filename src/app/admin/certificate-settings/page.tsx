@@ -25,7 +25,7 @@ export default function CertificateSettingsPage() {
   const [signerName, setSignerName] = useState('')
   const [signerTitle, setSignerTitle] = useState('')
   const [certificatePrefix, setCertificatePrefix] = useState('')
-  const [defaultThemeId, setDefaultThemeId] = useState('royal-blue')
+  const [defaultThemeId, setDefaultThemeId] = useState('executive-navy')
   const [enabledThemes, setEnabledThemes] = useState<string[]>([])
   const [enableQrCode, setEnableQrCode] = useState(true)
   const [verificationBaseUrl, setVerificationBaseUrl] = useState('')

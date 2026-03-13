@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import db from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
-import { generateCertificateCode } from "@/lib/utils";
+import { generateCertificate } from "@/lib/certificate-utils";
 
 // GET /api/quizzes/[quizId] - Get quiz with questions
 export async function GET(
@@ -182,60 +182,16 @@ export async function POST(
       },
     });
 
-    // Auto-issue certificate if passed and course has certificate
+    // Auto-generate certificate if quiz passed
+    // generateCertificate checks all requirements (lessons + quiz + hasCertificate)
+    // and returns existing certificate if already issued
     let certificate = null;
     if (passed && quiz.course.hasCertificate) {
-      // Check if certificate already exists
-      const existingCertificate = await db.certificate.findFirst({
-        where: {
-          userId: user.id,
-          courseId: quiz.course.id,
-        },
-      });
-
-      if (!existingCertificate) {
-        // Generate certificate code: SPUBUS-COURSECODE-YYYY-XXXX
-        const currentYear = new Date().getFullYear();
-        const existingCertCount = await db.certificate.count({
-          where: {
-            courseId: quiz.course.id,
-            issuedAt: {
-              gte: new Date(`${currentYear}-01-01`),
-              lt: new Date(`${currentYear + 1}-01-01`),
-            },
-          },
-        });
-        const certCode = generateCertificateCode(
-          quiz.course.courseCode,
-          currentYear,
-          existingCertCount + 1
-        );
-
-        certificate = await db.certificate.create({
-          data: {
-            certificateCode: certCode,
-            userId: user.id,
-            courseId: quiz.course.id,
-          },
-          include: {
-            user: {
-              select: {
-                id: true,
-                fullName: true,
-                email: true,
-              },
-            },
-            course: {
-              select: {
-                id: true,
-                title: true,
-                slug: true,
-              },
-            },
-          },
-        });
-      } else {
-        certificate = existingCertificate;
+      try {
+        certificate = await generateCertificate(user.id, quiz.course.id);
+      } catch (certError) {
+        console.error("Auto certificate generation after quiz:", certError);
+        // Don't fail the quiz submission if certificate generation fails
       }
     }
 

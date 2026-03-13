@@ -222,9 +222,13 @@ model Certificate {
   certificateCode String   @unique
   userId          String
   courseId         String
-  themeId         String   @default("royal-blue")
+  themeId         String   @default("executive-navy")
   issuedAt        DateTime @default(now())
+  completionDate  DateTime @default(now())
   certificateUrl  String?
+  verificationUrl String?
+  qrCodeUrl       String?
+  pdfUrl          String?
 
   // Relations
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -257,8 +261,8 @@ model CertificateSettings {
   signerName       String   @default("ผศ.ดร.รวิภา อัครจินดานนท์")
   signerTitle      String   @default("คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม")
   certificatePrefix   String   @default("SPUBUS")
-  defaultThemeId      String   @default("royal-blue")
-  enabledThemes       String[] @default(["royal-blue", "executive-navy", "elegant-gold", "modern-cyan", "academic-crimson", "premium-purple", "minimal-bw"])
+  defaultThemeId      String   @default("executive-navy")
+  enabledThemes       String[] @default(["executive-navy", "royal-blue-data", "elegant-gold", "minimal-white", "academic-crimson", "ai-circuit", "business-flow"])
   verificationBaseUrl String   @default("")
   enableQrCode        Boolean  @default(true)
   updatedAt           DateTime @updatedAt
