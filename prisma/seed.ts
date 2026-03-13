@@ -1283,6 +1283,136 @@ async function main() {
   await prisma.fAQ.createMany({ data: faqs });
   console.log(`  ✅ ${faqs.length} FAQs`);
 
+  // ─── 5. Instructors ─────────────────────────────────────────────────────
+  console.log("\n👨‍🏫 Seeding Instructors...");
+
+  const instructorData = [
+    {
+      name: "เกวลิน สามเจริญ",
+      title: "อาจารย์ประจำสาขาการบริหารและการจัดการสมัยใหม่",
+      bio: "อาจารย์เกวลิน สามเจริญ เป็นอาจารย์ประจำสาขาการบริหารและการจัดการสมัยใหม่ คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม มีความเชี่ยวชาญด้านการนำ AI มาประยุกต์ใช้ในการบริหารจัดการองค์กรยุคดิจิทัล มีประสบการณ์ด้านการวิจัยและพัฒนาระบบบริหารจัดการสมัยใหม่ที่ผสมผสานเทคโนโลยี AI เข้ากับกระบวนการทางธุรกิจอย่างมีประสิทธิภาพ",
+      expertise: ["AI for Business", "Digital Management", "Modern Organization"],
+      sortOrder: 1,
+    },
+    {
+      name: "ผศ.อรนิษฐ์ แสงทองสุข",
+      title: "รองศาสตราจารย์ คณะบริหารธุรกิจ",
+      bio: "ผศ.อรนิษฐ์ แสงทองสุข เป็นรองศาสตราจารย์ประจำคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม มีความเชี่ยวชาญด้านกลยุทธ์ธุรกิจและการตลาดดิจิทัล เน้นการนำ AI มาใช้ในงานการตลาดและพาณิชย์อิเล็กทรอนิกส์ มีผลงานวิจัยและบทความวิชาการด้าน AI Marketing จำนวนมาก และเป็นที่ปรึกษาให้กับหลายองค์กรชั้นนำ",
+      expertise: ["Business Strategy", "AI Marketing", "Digital Commerce"],
+      sortOrder: 2,
+    },
+    {
+      name: "ผศ.ดร.ประเสริฐ สิทธิจิรพัฒน์",
+      title: "รองศาสตราจารย์ ด้านการบริหารธุรกิจ",
+      bio: "ผศ.ดร.ประเสริฐ สิทธิจิรพัฒน์ เป็นรองศาสตราจารย์ด้านการบริหารธุรกิจ มีความเชี่ยวชาญด้าน Business Analytics และกลยุทธ์ AI สำหรับการเปลี่ยนแปลงองค์กรสู่ดิจิทัล จบการศึกษาระดับปริญญาเอกด้านบริหารธุรกิจ มีประสบการณ์ในการให้คำปรึกษาด้าน Digital Transformation แก่องค์กรภาครัฐและเอกชน",
+      expertise: ["Business Analytics", "AI Strategy", "Digital Transformation"],
+      sortOrder: 3,
+    },
+    {
+      name: "ดร.ศิดานุช กิตติเสรีกุล",
+      title: "อาจารย์ ด้านการจัดการและนวัตกรรมธุรกิจ",
+      bio: "ดร.ศิดานุช กิตติเสรีกุล เป็นอาจารย์ด้านการจัดการและนวัตกรรมธุรกิจ มีความเชี่ยวชาญในการนำ AI มาใช้ในการบริหารจัดการและสร้างนวัตกรรมใหม่ให้กับธุรกิจ มีประสบการณ์ในการบ่มเพาะสตาร์ทอัพและให้คำปรึกษาด้านนวัตกรรมธุรกิจ เน้นการพัฒนาธุรกิจด้วยเทคโนโลยี AI อย่างยั่งยืน",
+      expertise: ["Business Innovation", "AI Management", "Startup"],
+      sortOrder: 4,
+    },
+    {
+      name: "ผศ.กิ่งแก้ว พรอภิรักษสกุล",
+      title: "รองศาสตราจารย์ คณะบริหารธุรกิจ",
+      bio: "ผศ.กิ่งแก้ว พรอภิรักษสกุล เป็นรองศาสตราจารย์ประจำคณะบริหารธุรกิจ มีความเชี่ยวชาญด้านการจัดการทรัพยากรมนุษย์และพฤติกรรมองค์กร เน้นการนำ AI มาประยุกต์ใช้ในงาน HR สมัยใหม่ มีผลงานวิจัยด้านการพัฒนาองค์กรและการบริหารทรัพยากรมนุษย์ด้วย AI เป็นที่ยอมรับในวงวิชาการ",
+      expertise: ["HR Management", "AI for HR", "Organizational Behavior"],
+      sortOrder: 5,
+    },
+    {
+      name: "ชลากร อุดมอุกฤษฏ์",
+      title: "อาจารย์ ด้านธุรกิจดิจิทัล",
+      bio: "ชลากร อุดมอุกฤษฏ์ เป็นอาจารย์ด้านธุรกิจดิจิทัล มีความเชี่ยวชาญด้านการทำธุรกิจออนไลน์และ E-Commerce รวมถึงการนำ AI มาใช้ในการ Automate กระบวนการทางธุรกิจ มีประสบการณ์จริงในการสร้างและบริหารธุรกิจดิจิทัล และเป็นวิทยากรรับเชิญด้าน Digital Business ให้กับหลายองค์กร",
+      expertise: ["Digital Business", "AI Automation", "E-Commerce"],
+      sortOrder: 6,
+    },
+    {
+      name: "ณัฐดนัย สาทสนิท",
+      title: "ผู้เชี่ยวชาญด้าน AI และเทคโนโลยีธุรกิจ",
+      bio: "ณัฐดนัย สาทสนิท เป็นผู้เชี่ยวชาญด้าน AI และเทคโนโลยีธุรกิจ มีความรู้ลึกด้าน Machine Learning และ Business Intelligence สามารถนำเทคโนโลยี AI มาประยุกต์ใช้เพื่อแก้ปัญหาทางธุรกิจได้อย่างมีประสิทธิภาพ มีประสบการณ์ในการพัฒนาระบบ AI สำหรับองค์กรธุรกิจชั้นนำหลายแห่ง",
+      expertise: ["AI Technology", "Machine Learning", "Business Intelligence"],
+      sortOrder: 7,
+    },
+    {
+      name: "สุนทรี พุฒิวร",
+      title: "ผู้เชี่ยวชาญด้านการจัดการองค์กร",
+      bio: "สุนทรี พุฒิวร เป็นผู้เชี่ยวชาญด้านการจัดการองค์กร มีความเชี่ยวชาญในการนำ AI มาใช้เพิ่มผลิตภาพขององค์กรและการบริหารการเปลี่ยนแปลง มีประสบการณ์ในการให้คำปรึกษาด้าน Organization Management และ Change Management แก่องค์กรทั้งภาครัฐและเอกชนมากกว่า 10 ปี",
+      expertise: ["Organization Management", "AI Productivity", "Change Management"],
+      sortOrder: 8,
+    },
+    {
+      name: "ธรรมนูญ วิศิษฏ์ศักดิ์",
+      title: "ผู้เชี่ยวชาญด้านการบริหารธุรกิจและการพัฒนาองค์กร",
+      bio: "ธรรมนูญ วิศิษฏ์ศักดิ์ เป็นผู้เชี่ยวชาญด้านการบริหารธุรกิจและการพัฒนาองค์กร มีความเชี่ยวชาญในการนำ AI มาผสมผสานกับกลยุทธ์การพัฒนาธุรกิจและภาวะผู้นำ มีประสบการณ์ในการบริหารและพัฒนาองค์กรขนาดใหญ่ เน้นการสร้างผู้นำยุคใหม่ที่เข้าใจและใช้ประโยชน์จาก AI ได้อย่างเต็มศักยภาพ",
+      expertise: ["Business Development", "AI Integration", "Leadership"],
+      sortOrder: 9,
+    },
+  ];
+
+  // Delete existing instructors (cascade deletes CourseInstructor links)
+  await prisma.courseInstructor.deleteMany();
+  await prisma.instructor.deleteMany();
+
+  const instructors: Record<string, string> = {};
+  for (const inst of instructorData) {
+    const instructor = await prisma.instructor.create({
+      data: {
+        name: inst.name,
+        title: inst.title,
+        bio: inst.bio,
+        expertise: inst.expertise,
+        sortOrder: inst.sortOrder,
+        isActive: true,
+      },
+    });
+    instructors[inst.name] = instructor.id;
+  }
+  console.log(`  ✅ ${instructorData.length} instructors`);
+
+  // ─── 6. CourseInstructor Links ─────────────────────────────────────────
+  console.log("\n🔗 Linking instructors to courses...");
+
+  // Map course codes to instructor names
+  const courseInstructorMap: Record<string, string[]> = {
+    AIHR: ["ผศ.กิ่งแก้ว พรอภิรักษสกุล", "เกวลิน สามเจริญ"],
+    AIPRO: ["ณัฐดนัย สาทสนิท"],
+    AIMKT: ["ผศ.อรนิษฐ์ แสงทองสุข"],
+    AIAUTO: ["ชลากร อุดมอุกฤษฏ์", "ณัฐดนัย สาทสนิท"],
+    AIPMT: ["ดร.ศิดานุช กิตติเสรีกุล"],
+    AIPRES: ["เกวลิน สามเจริญ"],
+    AIMGR: ["ผศ.ดร.ประเสริฐ สิทธิจิรพัฒน์", "สุนทรี พุฒิวร"],
+    AIDATA: ["ผศ.ดร.ประเสริฐ สิทธิจิรพัฒน์"],
+    AIORG: ["สุนทรี พุฒิวร", "ธรรมนูญ วิศิษฏ์ศักดิ์"],
+    AIDX: ["ธรรมนูญ วิศิษฏ์ศักดิ์", "ผศ.อรนิษฐ์ แสงทองสุข"],
+  };
+
+  let linkCount = 0;
+  for (const [courseCode, instructorNames] of Object.entries(courseInstructorMap)) {
+    const course = await prisma.course.findUnique({ where: { courseCode } });
+    if (!course) {
+      console.log(`  ⚠️ Course ${courseCode} not found, skipping`);
+      continue;
+    }
+    for (const instructorName of instructorNames) {
+      const instructorId = instructors[instructorName];
+      if (!instructorId) {
+        console.log(`  ⚠️ Instructor ${instructorName} not found, skipping`);
+        continue;
+      }
+      await prisma.courseInstructor.create({
+        data: {
+          courseId: course.id,
+          instructorId: instructorId,
+        },
+      });
+      linkCount++;
+    }
+  }
+  console.log(`  ✅ ${linkCount} course-instructor links`);
+
   // ─── Summary ─────────────────────────────────────────────────────────────
   console.log("\n🎉 Seed completed successfully!");
   console.log("─────────────────────────────────────");
@@ -1293,6 +1423,8 @@ async function main() {
   console.log(`  ⚙️  1 global certificate settings`);
   console.log(`  💬 ${testimonials.length} testimonials`);
   console.log(`  ❓ ${faqs.length} FAQs`);
+  console.log(`  👨‍🏫 ${instructorData.length} instructors`);
+  console.log(`  🔗 ${linkCount} course-instructor links`);
   console.log("─────────────────────────────────────");
 }
 

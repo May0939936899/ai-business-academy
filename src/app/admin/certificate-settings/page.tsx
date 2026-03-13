@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { Settings, Save, Award, Palette, Eye, EyeOff } from 'lucide-react'
+import { Settings, Save, Award, Palette, Eye, EyeOff, QrCode } from 'lucide-react'
 import { CERTIFICATE_THEMES } from '@/lib/certificate-themes'
 import CertificatePreview from '@/components/features/CertificatePreview'
 import { cn } from '@/lib/utils'
@@ -27,6 +27,8 @@ export default function CertificateSettingsPage() {
   const [certificatePrefix, setCertificatePrefix] = useState('')
   const [defaultThemeId, setDefaultThemeId] = useState('royal-blue')
   const [enabledThemes, setEnabledThemes] = useState<string[]>([])
+  const [enableQrCode, setEnableQrCode] = useState(true)
+  const [verificationBaseUrl, setVerificationBaseUrl] = useState('')
 
   const fetchSettings = useCallback(async () => {
     try {
@@ -40,6 +42,8 @@ export default function CertificateSettingsPage() {
         setCertificatePrefix(data.certificatePrefix)
         setDefaultThemeId(data.defaultThemeId)
         setEnabledThemes(data.enabledThemes)
+        if ('enableQrCode' in data) setEnableQrCode((data as Record<string, unknown>).enableQrCode as boolean)
+        if ('verificationBaseUrl' in data) setVerificationBaseUrl((data as Record<string, unknown>).verificationBaseUrl as string || '')
       }
     } catch {
       setAlert({ type: 'error', message: 'ไม่สามารถโหลดข้อมูลการตั้งค่าได้' })
@@ -65,6 +69,8 @@ export default function CertificateSettingsPage() {
           certificatePrefix,
           defaultThemeId,
           enabledThemes,
+          enableQrCode,
+          verificationBaseUrl,
         }),
       })
       const json = await res.json()
@@ -173,6 +179,81 @@ export default function CertificateSettingsPage() {
                   ใช้เป็นตัวนำหน้ารหัส Certificate เช่น {certificatePrefix || 'SPUBUS'}-AIMKT-2026-0001
                 </p>
               </div>
+            </div>
+          </div>
+
+          {/* QR Code Settings */}
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+            <div className="mb-5 flex items-center gap-2">
+              <QrCode className="h-5 w-5 text-cyan-400" />
+              <h2 className="text-lg font-semibold text-white">QR Code บน Certificate</h2>
+            </div>
+
+            <div className="space-y-4">
+              {/* Enable QR Code Toggle */}
+              <label className="flex cursor-pointer items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.04] px-4 py-3">
+                <div>
+                  <p className="text-sm font-medium text-gray-200">
+                    แสดง QR Code บน Certificate
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    QR Code สำหรับตรวจสอบความถูกต้องจะแสดงที่มุมขวาล่างของ Certificate
+                  </p>
+                </div>
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    checked={enableQrCode}
+                    onChange={(e) => setEnableQrCode(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="h-6 w-11 rounded-full bg-white/10 transition-colors peer-checked:bg-blue-600 peer-focus:ring-2 peer-focus:ring-blue-500/30" />
+                  <div className="absolute left-[2px] top-[2px] h-5 w-5 rounded-full bg-white transition-transform peer-checked:translate-x-5" />
+                </div>
+              </label>
+
+              {/* Verification Base URL */}
+              <div>
+                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
+                  Verification Base URL
+                </label>
+                <input
+                  type="url"
+                  value={verificationBaseUrl}
+                  onChange={(e) => setVerificationBaseUrl(e.target.value)}
+                  className="w-full rounded-lg border border-white/[0.06] bg-white/[0.04] px-4 py-2.5 font-mono text-sm text-gray-200 outline-none transition-colors placeholder:text-gray-600 focus:border-blue-500/50 focus:bg-white/[0.06]"
+                  placeholder="https://ai-academy.spu.ac.th"
+                  disabled={!enableQrCode}
+                />
+                <p className="mt-1.5 text-xs text-gray-600">
+                  URL หลักสำหรับสร้าง QR Code ยืนยัน เช่น {verificationBaseUrl || 'https://ai-academy.spu.ac.th'}/verify/CERT-CODE
+                </p>
+              </div>
+
+              {/* QR Preview */}
+              {enableQrCode && (
+                <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
+                  <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-500">
+                    ตัวอย่าง QR Code
+                  </p>
+                  <div className="flex items-center gap-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(
+                        `${verificationBaseUrl || 'https://ai-academy.spu.ac.th'}/verify/${certificatePrefix || 'SPUBUS'}-AIMKT-2026-0001`
+                      )}`}
+                      alt="QR Preview"
+                      className="h-20 w-20 rounded"
+                    />
+                    <div className="text-xs text-gray-500">
+                      <p className="mb-1 font-medium text-gray-400">QR จะนำไปสู่:</p>
+                      <p className="break-all font-mono">
+                        {verificationBaseUrl || 'https://ai-academy.spu.ac.th'}/verify/{certificatePrefix || 'SPUBUS'}-AIMKT-2026-0001
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -292,6 +373,11 @@ export default function CertificateSettingsPage() {
                 themeId={defaultThemeId}
                 signerName={signerName}
                 signerTitle={signerTitle}
+                verificationUrl={
+                  enableQrCode
+                    ? `${verificationBaseUrl || 'https://ai-academy.spu.ac.th'}/verify/${certificatePrefix || 'SPUBUS'}-AIMKT-2026-0001`
+                    : undefined
+                }
               />
             </div>
 

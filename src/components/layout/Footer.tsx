@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Facebook, Youtube, MessageCircle } from 'lucide-react'
+import { Facebook, Youtube, MessageCircle, Phone, MapPin, Mail } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const footerSections = [
@@ -91,6 +91,29 @@ export default function Footer() {
               แพลตฟอร์มเรียนรู้ AI สำหรับธุรกิจ โดยคณะบริหารธุรกิจ
               มหาวิทยาลัยศรีปทุม เรียนฟรี พร้อมใบประกาศนียบัตร
             </p>
+
+            {/* Contact Info */}
+            <div className="mb-5 space-y-3">
+              <div className="flex items-start gap-2.5 text-sm text-gray-500">
+                <Phone className="mt-0.5 h-4 w-4 shrink-0 text-gray-600" />
+                <span>0 2579 1111 ต่อ 2354</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-sm text-gray-500">
+                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-gray-600" />
+                <a
+                  href="mailto:direct.sbs@spu.ac.th"
+                  className="transition-colors hover:text-gray-300"
+                >
+                  direct.sbs@spu.ac.th
+                </a>
+              </div>
+              <div className="flex items-start gap-2.5 text-sm text-gray-500">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-600" />
+                <span>
+                  มหาวิทยาลัยศรีปทุม 2410/2 ถนนพหลโยธิน เขตจตุจักร กรุงเทพฯ 10900
+                </span>
+              </div>
+            </div>
 
             {/* Social Links */}
             <div className="flex items-center gap-3">

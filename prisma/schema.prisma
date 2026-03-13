@@ -98,6 +98,7 @@ model Course {
   quizzes             Quiz[]
   certificates        Certificate[]
   certificateTemplate CertificateTemplate?
+  courseInstructors    CourseInstructor[]
 
   @@index([slug])
   @@index([category])
@@ -255,10 +256,12 @@ model CertificateSettings {
   signatureUrl     String?
   signerName       String   @default("ผศ.ดร.รวิภา อัครจินดานนท์")
   signerTitle      String   @default("คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม")
-  certificatePrefix String  @default("SPUBUS")
-  defaultThemeId   String   @default("royal-blue")
-  enabledThemes    String[] @default(["royal-blue", "executive-navy", "elegant-gold", "modern-cyan", "academic-crimson", "premium-purple", "minimal-bw"])
-  updatedAt        DateTime @updatedAt
+  certificatePrefix   String   @default("SPUBUS")
+  defaultThemeId      String   @default("royal-blue")
+  enabledThemes       String[] @default(["royal-blue", "executive-navy", "elegant-gold", "modern-cyan", "academic-crimson", "premium-purple", "minimal-bw"])
+  verificationBaseUrl String   @default("")
+  enableQrCode        Boolean  @default(true)
+  updatedAt           DateTime @updatedAt
 }
 
 model Resource {
@@ -305,4 +308,35 @@ model FAQ {
   isActive  Boolean @default(true)
 
   @@index([isActive, sortOrder])
+}
+
+model Instructor {
+  id           String   @id @default(cuid())
+  name         String
+  title        String
+  bio          String?  @db.Text
+  profileImage String?
+  expertise    String[] @default([])
+  sortOrder    Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  courses CourseInstructor[]
+
+  @@index([isActive, sortOrder])
+}
+
+model CourseInstructor {
+  id           String @id @default(cuid())
+  courseId      String
+  instructorId String
+
+  course     Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  instructor Instructor @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, instructorId])
+  @@index([courseId])
+  @@index([instructorId])
 }

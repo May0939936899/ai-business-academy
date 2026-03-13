@@ -14,6 +14,7 @@ interface CertificatePreviewProps {
   signerTitle?: string
   signatureUrl?: string
   logoUrl?: string
+  verificationUrl?: string
 }
 
 // ─── Border SVG Patterns ──────────────────────────────────────────────────────
@@ -405,6 +406,7 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
       signerTitle = 'คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม',
       signatureUrl,
       logoUrl,
+      verificationUrl,
     },
     ref
   ) => {
@@ -640,6 +642,42 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
             {certificateCode}
           </p>
         </div>
+
+        {/* ── QR Code (bottom-right) ── */}
+        {verificationUrl && (
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              bottom: '4%',
+              right: '4%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '2px',
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(verificationUrl)}`}
+              alt="QR Verification"
+              style={{
+                width: 'clamp(48px, 8vw, 80px)',
+                height: 'clamp(48px, 8vw, 80px)',
+                borderRadius: '4px',
+              }}
+            />
+            <span
+              style={{
+                color: theme.textColor,
+                fontSize: 'clamp(4px, 0.6vw, 7px)',
+                opacity: 0.4,
+                fontFamily: 'monospace',
+              }}
+            >
+              Verify
+            </span>
+          </div>
+        )}
       </div>
     )
   }

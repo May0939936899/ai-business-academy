@@ -10,6 +10,9 @@ import {
   Calendar,
   BookOpen,
   Check,
+  ExternalLink,
+  Copy,
+  CheckCircle,
 } from 'lucide-react'
 import CertificatePreview from '@/components/features/CertificatePreview'
 import {
@@ -60,10 +63,33 @@ export default function CertificatePageClient({
   const [selectedThemeId, setSelectedThemeId] = useState(certificate.themeId)
   const [saving, setSaving] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [copied, setCopied] = useState(false)
   const certRef = useRef<HTMLDivElement>(null)
 
   const template = certificate.course.certificateTemplate
   const verifyUrl = `/a/certificate/${certificate.certificateCode}`
+  const verificationUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/verify/${certificate.certificateCode}`
+      : `/verify/${certificate.certificateCode}`
+
+  const handleCopyUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(verificationUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // fallback
+      const textarea = document.createElement('textarea')
+      textarea.value = verificationUrl
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
 
   // Available themes filtered by settings
   const availableThemes = CERTIFICATE_THEMES.filter((t) =>
@@ -221,6 +247,7 @@ export default function CertificatePageClient({
               signerTitle={template?.signerTitle ?? settings.signerTitle}
               signatureUrl={template?.signatureUrl ?? settings.signatureUrl ?? undefined}
               logoUrl={template?.logoUrl ?? settings.logoUrl ?? undefined}
+              verificationUrl={verificationUrl}
             />
           </div>
         </div>
@@ -266,21 +293,66 @@ export default function CertificatePageClient({
           </div>
         </div>
 
-        {/* Verification Info */}
-        <div className="mt-8 rounded-xl border border-white/[0.06] bg-[#0a1628]/50 p-6 text-center">
-          <ShieldCheck className="mx-auto mb-3 h-6 w-6 text-green-400" />
-          <h3 className="mb-2 text-sm font-semibold text-white">การตรวจสอบความถูกต้อง</h3>
-          <p className="text-sm leading-relaxed text-gray-400">
-            Certificate นี้ออกโดย AI Business Academy คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม
-            สามารถตรวจสอบความถูกต้องได้โดยใช้รหัส Certificate ที่หน้ายืนยัน
-          </p>
-          <Link
-            href={verifyUrl}
-            className="mt-3 inline-flex items-center gap-1.5 text-sm text-blue-400 hover:text-blue-300"
-          >
-            <ShieldCheck className="h-4 w-4" />
-            ตรวจสอบ Certificate
-          </Link>
+        {/* Verification & Share */}
+        <div className="mt-8 space-y-4">
+          {/* Verification Info */}
+          <div className="rounded-xl border border-white/[0.06] bg-[#0a1628]/50 p-6 text-center">
+            <ShieldCheck className="mx-auto mb-3 h-6 w-6 text-green-400" />
+            <h3 className="mb-2 text-sm font-semibold text-white">การตรวจสอบความถูกต้อง</h3>
+            <p className="text-sm leading-relaxed text-gray-400">
+              Certificate นี้ออกโดย AI Business Academy คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม
+              สามารถตรวจสอบความถูกต้องได้โดยใช้รหัส Certificate ที่หน้ายืนยัน
+            </p>
+            <div className="mt-4 flex items-center justify-center gap-3">
+              <Link
+                href={verifyUrl}
+                className="inline-flex items-center gap-1.5 text-sm text-blue-400 hover:text-blue-300"
+              >
+                <ShieldCheck className="h-4 w-4" />
+                ตรวจสอบ Certificate
+              </Link>
+              <a
+                href={`/verify/${certificate.certificateCode}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-sm text-gray-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                เปิดหน้ายืนยัน
+              </a>
+            </div>
+          </div>
+
+          {/* Share Section */}
+          <div className="rounded-xl border border-white/[0.06] bg-[#0a1628]/50 p-6">
+            <h3 className="mb-3 text-sm font-semibold text-white">แชร์ Certificate</h3>
+            <p className="mb-3 text-xs text-gray-500">
+              คัดลอก URL สำหรับยืนยัน Certificate เพื่อแชร์ให้ผู้อื่นตรวจสอบ
+            </p>
+            <div className="flex items-center gap-2">
+              <div className="flex-1 overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.04] px-3 py-2">
+                <p className="truncate font-mono text-xs text-gray-400">
+                  {verificationUrl}
+                </p>
+              </div>
+              <button
+                onClick={handleCopyUrl}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-xs font-medium text-gray-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+              >
+                {copied ? (
+                  <>
+                    <CheckCircle className="h-3.5 w-3.5 text-green-400" />
+                    คัดลอกแล้ว
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3.5 w-3.5" />
+                    คัดลอก
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -12,6 +12,7 @@ import Button from '@/components/ui/Button'
 const navLinks = [
   { href: '/', label: 'หน้าแรก' },
   { href: '/courses', label: 'คอร์สเรียน' },
+  { href: '/instructors', label: 'ทีมผู้สอน' },
   { href: '/about', label: 'เกี่ยวกับ' },
 ]
 
@@ -57,13 +58,13 @@ export default function Navbar() {
     >
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8" style={{ height: '72px' }}>
         {/* Logo + Brand */}
-        <Link href="/" className="flex items-center gap-3 sm:gap-4">
+        <Link href="/" className="flex items-center gap-2 sm:gap-3">
           <Image
             src="/images/brand/spu-bus-logo.svg"
             alt="SPU BUS Logo"
-            width={140}
-            height={48}
-            className="h-10 w-auto sm:h-12"
+            width={120}
+            height={40}
+            className="h-8 w-auto shrink-0 sm:h-10"
             priority
           />
           <div className="hidden sm:block">

@@ -44,6 +44,9 @@ export default withAuth(
           pathname.startsWith("/courses") ||
           pathname.startsWith("/a/certificate") ||
           pathname.startsWith("/about") ||
+          pathname.startsWith("/verify") ||
+          pathname.startsWith("/instructors") ||
+          pathname.startsWith("/instructor") ||
           pathname.startsWith("/api/auth") ||
           pathname.startsWith("/api/courses") ||
           pathname.startsWith("/_next") ||

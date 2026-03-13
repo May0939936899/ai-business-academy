@@ -154,3 +154,63 @@ body {
 ::selection {
   @apply bg-blue-500/30 text-white;
 }
+
+/* ===== Theme Switcher Styles ===== */
+:root {
+  --bg-primary: #030712;
+  --bg-secondary: #0a1628;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --border-color: rgba(255, 255, 255, 0.06);
+}
+
+.theme-navy {
+  --bg-primary: #030712;
+  --bg-secondary: #0a1628;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --border-color: rgba(255, 255, 255, 0.06);
+}
+
+.theme-dark {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --border-color: rgba(255, 255, 255, 0.08);
+}
+
+.theme-light {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: rgba(0, 0, 0, 0.02);
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --border-color: rgba(0, 0, 0, 0.08);
+}
+
+.theme-light .glass {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.theme-light footer {
+  background: #f1f5f9 !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.theme-light footer * {
+  color: #334155;
+}
+
+.theme-light header {
+  background: rgba(248, 250, 252, 0.9) !important;
+}
+
+.theme-light header nav a,
+.theme-light header button {
+  color: #334155;
+}
