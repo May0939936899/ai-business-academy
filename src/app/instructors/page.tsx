@@ -3,6 +3,8 @@ import { GraduationCap, Sparkles, ArrowRight } from "lucide-react";
 import db from "@/lib/db";
 import { cn } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "ทีมผู้สอน | AI Business Academy",
   description:
