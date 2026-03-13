@@ -11,6 +11,7 @@ import db from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
 import { getTranslations, getLocale } from 'next-intl/server'
+import ExportButton from '@/components/admin/ExportButton'
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   ACTIVE: {
@@ -68,11 +69,14 @@ export default async function UsersPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white">{t('manageUsers')}</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          {t('manageUsersDesc', { count: totalCount })}
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">{t('manageUsers')}</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            {t('manageUsersDesc', { count: totalCount })}
+          </p>
+        </div>
+        <ExportButton exportType="users" />
       </div>
 
       {/* Stats */}

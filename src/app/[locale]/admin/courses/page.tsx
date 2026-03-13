@@ -11,6 +11,7 @@ import db from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
 import { getTranslations, getLocale } from 'next-intl/server'
+import ExportButton from '@/components/admin/ExportButton'
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   PUBLISHED: {
@@ -63,13 +64,16 @@ export default async function CoursesPage() {
             {t('manageCoursesDesc', { count: courses.length })}
           </p>
         </div>
-        <Link
+        <div className="flex items-center gap-2">
+          <ExportButton exportType="courses" />
+          <Link
           href={`/${locale}/admin/courses/new`}
           className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-500 hover:shadow-blue-500/30"
         >
           <Plus className="h-4 w-4" />
           {t('addCourse')}
         </Link>
+        </div>
       </div>
 
       {/* Table */}

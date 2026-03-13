@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getTranslations, getLocale } from 'next-intl/server';
 import {
   ArrowRight,
@@ -212,10 +213,11 @@ export default async function HomePage() {
         orderBy: { createdAt: "desc" },
         take: 6,
       }),
-      db.user.findMany({
-        where: { role: "INSTRUCTOR", status: "ACTIVE" },
-        select: { id: true, fullName: true, image: true, profileImage: true },
-        take: 9,
+      db.instructor.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: { id: true, name: true, title: true, profileImage: true, expertise: true },
+        take: 6,
       }),
       db.testimonial.findMany({
         where: { isActive: true },
@@ -259,17 +261,17 @@ export default async function HomePage() {
 
   const hasCourses = courses.length > 0;
 
-  // Use DB instructors if available, otherwise hardcoded
+  // Use DB instructors if available, otherwise hardcoded (first 6)
   const instructors =
     instructorUsers.length > 0
-      ? instructorUsers.map((u, i) => ({
+      ? instructorUsers.map((u) => ({
           id: u.id,
-          fullName: u.fullName,
-          title: t('instructorDefaultTitle'),
-          expertise: ["AI", "Business"],
-          image: u.profileImage || u.image,
+          fullName: u.name,
+          title: u.title,
+          expertise: u.expertise,
+          image: u.profileImage,
         }))
-      : hardcodedInstructors.map((ins) => ({ ...ins, image: null as string | null }));
+      : hardcodedInstructors.slice(0, 6).map((ins) => ({ ...ins, image: null as string | null }));
 
   return (
     <>
@@ -792,15 +794,27 @@ export default async function HomePage() {
                 )}
               >
                 <div className="flex items-start gap-4">
-                  {/* Avatar */}
-                  <div
-                    className={cn(
-                      "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-lg font-bold text-white shadow-lg",
-                      avatarGradients[i % avatarGradients.length]
-                    )}
-                  >
-                    {getInitials(inst.fullName)}
-                  </div>
+                  {/* Avatar / Image */}
+                  {inst.image ? (
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl shadow-lg ring-2 ring-white/[0.08]">
+                      <Image
+                        src={inst.image}
+                        alt={inst.fullName}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className={cn(
+                        "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-lg font-bold text-white shadow-lg",
+                        avatarGradients[i % avatarGradients.length]
+                      )}
+                    >
+                      {getInitials(inst.fullName)}
+                    </div>
+                  )}
 
                   <div className="min-w-0">
                     <h3 className="truncate text-base font-bold text-white">

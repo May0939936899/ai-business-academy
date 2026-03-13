@@ -10,6 +10,7 @@ import db from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
 import { getTranslations } from 'next-intl/server'
+import ExportButton from '@/components/admin/ExportButton'
 
 export default async function AnalyticsPage() {
   await requireAdmin()
@@ -119,11 +120,20 @@ export default async function AnalyticsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white">{t('analyticsTitle')}</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          {t('analyticsDesc')}
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">{t('analyticsTitle')}</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            {t('analyticsDesc')}
+          </p>
+        </div>
+        <ExportButton
+          options={[
+            { type: 'all', labelKey: 'exportAll' },
+            { type: 'enrollments', labelKey: 'exportEnrollments' },
+            { type: 'quiz-attempts', labelKey: 'exportQuizAttempts' },
+          ]}
+        />
       </div>
 
       {/* Overview Stats */}

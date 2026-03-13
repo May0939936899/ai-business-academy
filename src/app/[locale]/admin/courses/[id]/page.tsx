@@ -218,6 +218,9 @@ export default async function CourseDetailPage({
                       {t('colLessonTitle')}
                     </th>
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                      {t('colLevel')}
+                    </th>
+                    <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                       YouTube
                     </th>
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -240,11 +243,27 @@ export default async function CourseDetailPage({
                         <p className="text-sm font-medium text-gray-200">
                           {lesson.title}
                         </p>
-                        {lesson.description && (
-                          <p className="mt-0.5 max-w-md truncate text-xs text-gray-500">
-                            {lesson.description}
+                        {lesson.subtitle && (
+                          <p className="mt-0.5 text-xs text-gray-400">
+                            {lesson.subtitle}
                           </p>
                         )}
+                        {lesson.durationText && (
+                          <p className="mt-0.5 text-[10px] text-gray-600">
+                            {lesson.durationText}
+                          </p>
+                        )}
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-4">
+                        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                          lesson.lessonLevel === 'ADVANCED'
+                            ? 'bg-red-500/10 text-red-400'
+                            : lesson.lessonLevel === 'INTERMEDIATE'
+                            ? 'bg-yellow-500/10 text-yellow-400'
+                            : 'bg-green-500/10 text-green-400'
+                        }`}>
+                          {levelLabels[lesson.lessonLevel] ?? lesson.lessonLevel}
+                        </span>
                       </td>
                       <td className="whitespace-nowrap px-5 py-4">
                         {lesson.youtubeUrl ? (

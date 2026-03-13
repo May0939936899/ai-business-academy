@@ -10,6 +10,7 @@ import db from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
 import { getTranslations, getLocale } from 'next-intl/server'
+import ExportButton from '@/components/admin/ExportButton'
 
 export default async function AdminDashboardPage() {
   await requireAdmin()
@@ -77,9 +78,21 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">{t('dashboard')}</h1>
-        <p className="mt-1 text-sm text-gray-500">{t('systemOverview')}</p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">{t('dashboard')}</h1>
+          <p className="mt-1 text-sm text-gray-500">{t('systemOverview')}</p>
+        </div>
+        <ExportButton
+          options={[
+            { type: 'all', labelKey: 'exportAll' },
+            { type: 'users', labelKey: 'exportUsers' },
+            { type: 'courses', labelKey: 'exportCourses' },
+            { type: 'certificates', labelKey: 'exportCertificates' },
+            { type: 'enrollments', labelKey: 'exportEnrollments' },
+            { type: 'quiz-attempts', labelKey: 'exportQuizAttempts' },
+          ]}
+        />
       </div>
 
       {/* Stats */}

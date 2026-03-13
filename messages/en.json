@@ -131,9 +131,18 @@
   },
   "login": {
     "title": "Sign In",
-    "subtitle": "Sign in with Google to start learning",
+    "subtitle": "Enter your email to get started",
+    "confirmSubtitle": "Confirm your email before signing in",
     "redirecting": "Redirecting you to the system...",
+    "emailLabel": "Your email",
+    "emailPlaceholder": "example@email.com",
+    "emailRequired": "Please enter your email",
+    "emailInvalid": "Invalid email format",
+    "continueButton": "Continue",
+    "confirmEmailLabel": "Email for sign-in",
+    "confirmEmailHint": "Please verify your email is correct, then click the button below to sign in with Google",
     "googleButton": "Sign in with Google",
+    "changeEmail": "Change email",
     "spuBus": "School of Business Administration, Sripatum University",
     "termsNotice": "By signing in, you agree to the Terms of Service and Privacy Policy",
     "loading": "Signing in...",
@@ -302,6 +311,9 @@
     "resources": "Resources",
     "download": "Download",
     "lessonContent": "Lesson Content",
+    "summary": "Lesson Summary",
+    "learningOutcomes": "Learning Outcomes",
+    "keyTakeaways": "Key Takeaways",
     "takeQuiz": "Take Quiz"
   },
   "quiz": {
@@ -560,7 +572,12 @@
     "briefBio": "Brief Biography",
     "briefBioPlaceholder": "Background and experience of the instructor...",
     "expertiseLabel": "Expertise (comma-separated)",
-    "profileImageUrl": "Profile Image URL",
+    "profileImageUrl": "Profile Image",
+    "removeImage": "Remove image",
+    "uploadImage": "Upload Image",
+    "uploading": "Uploading...",
+    "or": "or",
+    "imageHint": "Supports JPG, PNG, WebP, GIF up to 2MB",
     "update": "Update",
     "confirmDelete": "Confirm Deletion",
     "confirmDeleteMsg": "Are you sure you want to delete this instructor? This action cannot be undone.",
@@ -641,6 +658,15 @@
     "statusPublished": "Published",
     "certificateLabel": "Certificate",
     "navInstructors": "Instructors",
-    "thumbnail": "Thumbnail"
+    "thumbnail": "Thumbnail",
+
+    "exportExcel": "Export Excel",
+    "exportAll": "Export All",
+    "exportUsers": "Export Users",
+    "exportCourses": "Export Courses",
+    "exportCertificates": "Export Certificates",
+    "exportEnrollments": "Export Enrollments",
+    "exportQuizAttempts": "Export Quiz Results",
+    "exporting": "Exporting..."
   }
 }

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#EC4899" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#EC4899" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect width="1280" height="720" fill="url(#glow)"/>
+  <!-- Dot pattern -->
+  <g opacity="0.08">
+    <circle cx="80" cy="80" r="2" fill="#EC4899"/><circle cx="120" cy="80" r="2" fill="#EC4899"/><circle cx="160" cy="80" r="2" fill="#EC4899"/>
+    <circle cx="80" cy="120" r="2" fill="#EC4899"/><circle cx="120" cy="120" r="2" fill="#EC4899"/><circle cx="160" cy="120" r="2" fill="#EC4899"/>
+    <circle cx="1100" cy="580" r="2" fill="#EC4899"/><circle cx="1140" cy="580" r="2" fill="#EC4899"/><circle cx="1180" cy="580" r="2" fill="#EC4899"/>
+  </g>
+  <!-- Globe icon -->
+  <g transform="translate(640, 200)" opacity="0.2">
+    <circle cx="0" cy="0" r="60" fill="none" stroke="#EC4899" stroke-width="2"/>
+    <ellipse cx="0" cy="0" rx="35" ry="60" fill="none" stroke="#EC4899" stroke-width="1"/>
+    <ellipse cx="0" cy="0" rx="15" ry="60" fill="none" stroke="#EC4899" stroke-width="0.8"/>
+    <line x1="-60" y1="0" x2="60" y2="0" stroke="#EC4899" stroke-width="1"/>
+    <line x1="-55" y1="-25" x2="55" y2="-25" stroke="#EC4899" stroke-width="0.8"/>
+    <line x1="-55" y1="25" x2="55" y2="25" stroke="#EC4899" stroke-width="0.8"/>
+    <!-- Data points on globe -->
+    <circle cx="-20" cy="-15" r="4" fill="#EC4899" opacity="0.5"/>
+    <circle cx="25" cy="10" r="4" fill="#EC4899" opacity="0.5"/>
+    <circle cx="-10" cy="30" r="3" fill="#EC4899" opacity="0.4"/>
+    <circle cx="35" cy="-20" r="3" fill="#EC4899" opacity="0.4"/>
+  </g>
+  <!-- Analytics bars on sides -->
+  <g opacity="0.12">
+    <rect x="380" y="170" width="8" height="60" rx="4" fill="#EC4899"/>
+    <rect x="395" y="190" width="8" height="40" rx="4" fill="#EC4899"/>
+    <rect x="410" y="180" width="8" height="50" rx="4" fill="#EC4899"/>
+    <rect x="862" y="175" width="8" height="55" rx="4" fill="#EC4899"/>
+    <rect x="877" y="185" width="8" height="45" rx="4" fill="#EC4899"/>
+    <rect x="892" y="165" width="8" height="65" rx="4" fill="#EC4899"/>
+  </g>
+  <!-- Decorative circles -->
+  <circle cx="180" cy="520" r="100" fill="#EC4899" opacity="0.03"/>
+  <circle cx="1100" cy="200" r="80" fill="#EC4899" opacity="0.03"/>
+  <!-- Level Badge -->
+  <rect x="1060" y="30" width="190" height="42" rx="21" fill="#8B5CF6"/>
+  <text x="1155" y="57" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">★ Advanced</text>
+  <!-- Title -->
+  <text x="640" y="410" font-family="system-ui, -apple-system, sans-serif" font-size="52" font-weight="800" fill="white" text-anchor="middle">AI Marketing Strategy</text>
+  <text x="640" y="460" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#94A3B8" text-anchor="middle">Build comprehensive AI-powered marketing strategies</text>
+  <rect x="540" y="490" width="200" height="3" rx="1.5" fill="#EC4899" opacity="0.6"/>
+  <!-- Bottom branding -->
+  <text x="640" y="670" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#475569" text-anchor="middle" letter-spacing="2">AI BUSINESS ACADEMY</text>
+  <rect x="440" y="685" width="400" height="1" fill="#334155" opacity="0.5"/>
+</svg>

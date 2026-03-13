@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#06B6D4" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect width="1280" height="720" fill="url(#glow)"/>
+  <!-- Dot pattern -->
+  <g opacity="0.08">
+    <circle cx="80" cy="80" r="2" fill="#06B6D4"/><circle cx="120" cy="80" r="2" fill="#06B6D4"/><circle cx="160" cy="80" r="2" fill="#06B6D4"/><circle cx="200" cy="80" r="2" fill="#06B6D4"/>
+    <circle cx="80" cy="120" r="2" fill="#06B6D4"/><circle cx="120" cy="120" r="2" fill="#06B6D4"/><circle cx="160" cy="120" r="2" fill="#06B6D4"/><circle cx="200" cy="120" r="2" fill="#06B6D4"/>
+    <circle cx="1080" cy="580" r="2" fill="#06B6D4"/><circle cx="1120" cy="580" r="2" fill="#06B6D4"/><circle cx="1160" cy="580" r="2" fill="#06B6D4"/><circle cx="1200" cy="580" r="2" fill="#06B6D4"/>
+    <circle cx="1080" cy="620" r="2" fill="#06B6D4"/><circle cx="1120" cy="620" r="2" fill="#06B6D4"/><circle cx="1160" cy="620" r="2" fill="#06B6D4"/><circle cx="1200" cy="620" r="2" fill="#06B6D4"/>
+  </g>
+  <!-- API/Flow connected nodes -->
+  <g opacity="0.2">
+    <!-- Node 1 -->
+    <rect x="320" y="160" width="80" height="50" rx="10" fill="none" stroke="#06B6D4" stroke-width="2"/>
+    <text x="360" y="190" font-family="monospace" font-size="12" fill="#06B6D4" text-anchor="middle">API</text>
+    <!-- Node 2 -->
+    <rect x="500" y="130" width="80" height="50" rx="10" fill="none" stroke="#06B6D4" stroke-width="2"/>
+    <text x="540" y="160" font-family="monospace" font-size="12" fill="#06B6D4" text-anchor="middle">Flow</text>
+    <!-- Node 3 -->
+    <rect x="680" y="160" width="80" height="50" rx="10" fill="none" stroke="#06B6D4" stroke-width="2"/>
+    <text x="720" y="190" font-family="monospace" font-size="12" fill="#06B6D4" text-anchor="middle">Hook</text>
+    <!-- Node 4 -->
+    <rect x="860" y="130" width="80" height="50" rx="10" fill="none" stroke="#06B6D4" stroke-width="2"/>
+    <text x="900" y="160" font-family="monospace" font-size="12" fill="#06B6D4" text-anchor="middle">Out</text>
+    <!-- Connections -->
+    <line x1="400" y1="185" x2="500" y2="155" stroke="#06B6D4" stroke-width="1.5"/>
+    <line x1="580" y1="155" x2="680" y2="185" stroke="#06B6D4" stroke-width="1.5"/>
+    <line x1="760" y1="185" x2="860" y2="155" stroke="#06B6D4" stroke-width="1.5"/>
+    <!-- Connection dots -->
+    <circle cx="450" cy="170" r="4" fill="#06B6D4"/>
+    <circle cx="630" cy="170" r="4" fill="#06B6D4"/>
+    <circle cx="810" cy="170" r="4" fill="#06B6D4"/>
+  </g>
+  <!-- Branch lines -->
+  <g opacity="0.1">
+    <line x1="540" y1="180" x2="540" y2="250" stroke="#06B6D4" stroke-width="1" stroke-dasharray="4,4"/>
+    <rect x="500" y="250" width="80" height="40" rx="8" fill="none" stroke="#06B6D4" stroke-width="1"/>
+    <line x1="720" y1="210" x2="720" y2="260" stroke="#06B6D4" stroke-width="1" stroke-dasharray="4,4"/>
+    <rect x="680" y="260" width="80" height="40" rx="8" fill="none" stroke="#06B6D4" stroke-width="1"/>
+  </g>
+  <!-- Decorative circles -->
+  <circle cx="150" cy="550" r="120" fill="#06B6D4" opacity="0.03"/>
+  <circle cx="1150" cy="180" r="90" fill="#06B6D4" opacity="0.04"/>
+  <!-- Level Badge -->
+  <rect x="1040" y="30" width="210" height="42" rx="21" fill="#3B82F6"/>
+  <text x="1145" y="57" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">◆ Intermediate</text>
+  <!-- Title -->
+  <text x="640" y="400" font-family="system-ui, -apple-system, sans-serif" font-size="52" font-weight="800" fill="white" text-anchor="middle">AI Workflow &amp; Integration</text>
+  <text x="640" y="450" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#94A3B8" text-anchor="middle">Connect and orchestrate AI-powered business workflows</text>
+  <rect x="540" y="480" width="200" height="3" rx="1.5" fill="#06B6D4" opacity="0.6"/>
+  <!-- Bottom branding -->
+  <text x="640" y="670" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#475569" text-anchor="middle" letter-spacing="2">AI BUSINESS ACADEMY</text>
+  <rect x="440" y="685" width="400" height="1" fill="#334155" opacity="0.5"/>
+</svg>

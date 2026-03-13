@@ -132,9 +132,18 @@
   },
   "login": {
     "title": "เข้าสู่ระบบ",
-    "subtitle": "เข้าสู่ระบบด้วย Google เพื่อเริ่มต้นการเรียนรู้",
+    "subtitle": "กรอกอีเมลของคุณเพื่อเริ่มต้นเข้าสู่ระบบ",
+    "confirmSubtitle": "ยืนยันอีเมลของคุณก่อนเข้าสู่ระบบ",
     "redirecting": "กำลังนำท่านเข้าสู่ระบบ...",
+    "emailLabel": "อีเมลของคุณ",
+    "emailPlaceholder": "example@email.com",
+    "emailRequired": "กรุณากรอกอีเมล",
+    "emailInvalid": "รูปแบบอีเมลไม่ถูกต้อง",
+    "continueButton": "ดำเนินการต่อ",
+    "confirmEmailLabel": "อีเมลที่ใช้เข้าสู่ระบบ",
+    "confirmEmailHint": "กรุณาตรวจสอบว่าอีเมลถูกต้อง แล้วกดปุ่มด้านล่างเพื่อเข้าสู่ระบบด้วย Google",
     "googleButton": "เข้าสู่ระบบด้วย Google",
+    "changeEmail": "เปลี่ยนอีเมล",
     "spuBus": "คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",
     "termsNotice": "การเข้าสู่ระบบถือว่าคุณยอมรับ เงื่อนไขการใช้งานและนโยบายความเป็นส่วนตัว",
     "loading": "กำลังเข้าสู่ระบบ...",
@@ -303,6 +312,9 @@
     "resources": "ไฟล์ประกอบ",
     "download": "ดาวน์โหลด",
     "lessonContent": "เนื้อหาบทเรียน",
+    "summary": "สรุปบทเรียน",
+    "learningOutcomes": "ผลลัพธ์การเรียนรู้",
+    "keyTakeaways": "ประเด็นสำคัญ",
     "takeQuiz": "ทำแบบทดสอบ"
   },
   "quiz": {
@@ -561,7 +573,12 @@
     "briefBio": "ประวัติโดยย่อ",
     "briefBioPlaceholder": "ประวัติและประสบการณ์ของผู้สอน...",
     "expertiseLabel": "ความเชี่ยวชาญ (คั่นด้วยเครื่องหมาย ,)",
-    "profileImageUrl": "URL รูปโปรไฟล์",
+    "profileImageUrl": "รูปโปรไฟล์",
+    "removeImage": "ลบรูป",
+    "uploadImage": "อัปโหลดรูปภาพ",
+    "uploading": "กำลังอัปโหลด...",
+    "or": "หรือ",
+    "imageHint": "รองรับ JPG, PNG, WebP, GIF ขนาดไม่เกิน 2MB",
     "update": "อัพเดต",
     "confirmDelete": "ยืนยันการลบ",
     "confirmDeleteMsg": "คุณต้องการลบผู้สอนคนนี้หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้",
@@ -642,6 +659,15 @@
     "statusPublished": "เผยแพร่แล้ว",
     "certificateLabel": "Certificate",
     "navInstructors": "ผู้สอน",
-    "thumbnail": "Thumbnail"
+    "thumbnail": "Thumbnail",
+
+    "exportExcel": "Export Excel",
+    "exportAll": "Export ทั้งหมด",
+    "exportUsers": "Export ผู้ใช้งาน",
+    "exportCourses": "Export คอร์สเรียน",
+    "exportCertificates": "Export Certificate",
+    "exportEnrollments": "Export การลงทะเบียน",
+    "exportQuizAttempts": "Export ผลสอบ",
+    "exporting": "กำลัง Export..."
   }
 }

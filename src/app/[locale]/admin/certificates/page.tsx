@@ -10,6 +10,7 @@ import db from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
 import { getTranslations, getLocale } from 'next-intl/server'
+import ExportButton from '@/components/admin/ExportButton'
 import { CERTIFICATE_THEMES } from '@/lib/certificate-themes'
 import CertificateActions from '@/components/admin/CertificateActions'
 import CertificateSearch from '@/components/admin/CertificateSearch'
@@ -89,11 +90,14 @@ export default async function CertificatesPage({ searchParams }: PageProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white">{t('manageCertificates')}</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          {t('manageCertificatesDesc')}
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">{t('manageCertificates')}</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            {t('manageCertificatesDesc')}
+          </p>
+        </div>
+        <ExportButton exportType="certificates" />
       </div>
 
       {/* Stats Row */}

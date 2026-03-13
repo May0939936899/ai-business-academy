@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect width="1280" height="720" fill="url(#glow)"/>
+  <!-- Dot pattern -->
+  <g opacity="0.08">
+    <circle cx="80" cy="80" r="2" fill="#8B5CF6"/><circle cx="120" cy="80" r="2" fill="#8B5CF6"/><circle cx="160" cy="80" r="2" fill="#8B5CF6"/>
+    <circle cx="80" cy="120" r="2" fill="#8B5CF6"/><circle cx="120" cy="120" r="2" fill="#8B5CF6"/><circle cx="160" cy="120" r="2" fill="#8B5CF6"/>
+    <circle cx="1100" cy="580" r="2" fill="#8B5CF6"/><circle cx="1140" cy="580" r="2" fill="#8B5CF6"/><circle cx="1180" cy="580" r="2" fill="#8B5CF6"/>
+  </g>
+  <!-- Leadership/transformation visuals -->
+  <g opacity="0.2">
+    <!-- Rising hexagons (futuristic) -->
+    <g transform="translate(500, 160)">
+      <polygon points="30,0 60,17 60,52 30,69 0,52 0,17" fill="none" stroke="#8B5CF6" stroke-width="1.5"/>
+      <polygon points="30,0 60,17 60,52 30,69 0,52 0,17" fill="#8B5CF6" opacity="0.05"/>
+    </g>
+    <g transform="translate(570, 130)">
+      <polygon points="30,0 60,17 60,52 30,69 0,52 0,17" fill="none" stroke="#8B5CF6" stroke-width="1.5"/>
+      <polygon points="30,0 60,17 60,52 30,69 0,52 0,17" fill="#8B5CF6" opacity="0.08"/>
+    </g>
+    <g transform="translate(640, 100)">
+      <polygon points="30,0 60,17 60,52 30,69 0,52 0,17" fill="none" stroke="#8B5CF6" stroke-width="2"/>
+      <polygon points="30,0 60,17 60,52 30,69 0,52 0,17" fill="#8B5CF6" opacity="0.12"/>
+    </g>
+    <g transform="translate(710, 130)">
+      <polygon points="30,0 60,17 60,52 30,69 0,52 0,17" fill="none" stroke="#8B5CF6" stroke-width="1.5"/>
+      <polygon points="30,0 60,17 60,52 30,69 0,52 0,17" fill="#8B5CF6" opacity="0.08"/>
+    </g>
+    <!-- Upward arrow through center -->
+    <line x1="670" y1="180" x2="670" y2="80" stroke="#8B5CF6" stroke-width="2"/>
+    <polygon points="662,90 670,72 678,90" fill="#8B5CF6" opacity="0.6"/>
+    <!-- Transformation symbol: circle to star -->
+    <g transform="translate(420, 190)" opacity="0.6">
+      <circle cx="0" cy="0" r="15" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <path d="M35,0 L38,-3 L42,0 L38,3 Z" fill="#8B5CF6" opacity="0.4"/>
+    </g>
+    <g transform="translate(870, 150)" opacity="0.6">
+      <path d="M0,-15 L4,-5 L15,-5 L6,2 L9,13 L0,6 L-9,13 L-6,2 L-15,-5 L-4,-5 Z" fill="none" stroke="#8B5CF6" stroke-width="1.5"/>
+    </g>
+  </g>
+  <!-- Light rays from top hexagon -->
+  <g opacity="0.06">
+    <line x1="670" y1="100" x2="570" y2="50" stroke="#8B5CF6" stroke-width="1"/>
+    <line x1="670" y1="100" x2="670" y2="40" stroke="#8B5CF6" stroke-width="1"/>
+    <line x1="670" y1="100" x2="770" y2="50" stroke="#8B5CF6" stroke-width="1"/>
+  </g>
+  <!-- AI brain sparkle -->
+  <g transform="translate(670, 130)" opacity="0.35">
+    <path d="M0,-8 L2,-2 L8,0 L2,2 L0,8 L-2,2 L-8,0 L-2,-2 Z" fill="#8B5CF6"/>
+  </g>
+  <!-- Decorative circles -->
+  <circle cx="180" cy="520" r="100" fill="#8B5CF6" opacity="0.03"/>
+  <circle cx="1100" cy="200" r="80" fill="#8B5CF6" opacity="0.03"/>
+  <!-- Level Badge -->
+  <rect x="1060" y="30" width="190" height="42" rx="21" fill="#8B5CF6"/>
+  <text x="1155" y="57" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">★ Advanced</text>
+  <!-- Title -->
+  <text x="640" y="400" font-family="system-ui, -apple-system, sans-serif" font-size="46" font-weight="800" fill="white" text-anchor="middle">AI Leadership &amp; Transformation</text>
+  <text x="640" y="450" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#94A3B8" text-anchor="middle">Lead organizational transformation in the age of AI</text>
+  <rect x="540" y="480" width="200" height="3" rx="1.5" fill="#8B5CF6" opacity="0.6"/>
+  <!-- Bottom branding -->
+  <text x="640" y="670" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#475569" text-anchor="middle" letter-spacing="2">AI BUSINESS ACADEMY</text>
+  <rect x="440" y="685" width="400" height="1" fill="#334155" opacity="0.5"/>
+</svg>

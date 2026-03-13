@@ -13,6 +13,12 @@ import {
   Download,
   ChevronRight,
   BookOpen,
+  Lightbulb,
+  Target,
+  Zap,
+  Clock,
+  BarChart2,
+  Youtube,
 } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import { getYouTubeEmbedUrl } from '@/lib/utils'
@@ -27,9 +33,18 @@ interface Resource {
 interface Lesson {
   id: string
   title: string
+  subtitle: string | null
   lessonOrder: number
+  lessonLevel: string
   youtubeUrl: string | null
+  videoTitle: string | null
+  videoChannel: string | null
+  durationText: string | null
   description: string | null
+  summary: string | null
+  learningOutcomes: string | null
+  keyTakeaways: string | null
+  coverImage: string | null
   resources: Resource[]
 }
 
@@ -39,6 +54,18 @@ interface LearnClientProps {
   currentLessonId: string
   completedLessonIds: string[]
   quizId: string | null
+}
+
+const levelColors: Record<string, string> = {
+  BEGINNER: 'bg-green-500/10 text-green-400 border-green-500/20',
+  INTERMEDIATE: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+  ADVANCED: 'bg-red-500/10 text-red-400 border-red-500/20',
+}
+
+const levelLabels: Record<string, string> = {
+  BEGINNER: 'Beginner',
+  INTERMEDIATE: 'Intermediate',
+  ADVANCED: 'Advanced',
 }
 
 export default function LearnClient({
@@ -88,6 +115,12 @@ export default function LearnClient({
     ? getYouTubeEmbedUrl(currentLesson.youtubeUrl)
     : null
 
+  // Parse multi-line text into bullet points
+  const parseLines = (text: string | null) => {
+    if (!text) return []
+    return text.split('\n').filter((line) => line.trim().length > 0)
+  }
+
   return (
     <div className="min-h-screen bg-[#030712]">
       {/* Top Progress Bar */}
@@ -125,21 +158,36 @@ export default function LearnClient({
       <div className="mx-auto flex max-w-screen-2xl flex-col lg:flex-row">
         {/* Left: Video + Content */}
         <div className="flex-1 p-4 lg:p-6">
+          {/* Lesson Header */}
           <div className="mb-4">
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-blue-400">
-              {t('lessonPrefix')} {currentLesson.lessonOrder}
-            </p>
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">
+                {t('lessonPrefix', { order: currentLesson.lessonOrder })}
+              </p>
+              <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-semibold ${levelColors[currentLesson.lessonLevel] || levelColors.BEGINNER}`}>
+                {levelLabels[currentLesson.lessonLevel] || currentLesson.lessonLevel}
+              </span>
+              {currentLesson.durationText && (
+                <span className="flex items-center gap-1 text-xs text-gray-500">
+                  <Clock className="h-3 w-3" />
+                  {currentLesson.durationText}
+                </span>
+              )}
+            </div>
             <h2 className="text-xl font-bold text-white sm:text-2xl">
               {currentLesson.title}
             </h2>
+            {currentLesson.subtitle && (
+              <p className="mt-1 text-sm text-gray-400">{currentLesson.subtitle}</p>
+            )}
           </div>
 
           {/* Video Player */}
-          <div className="relative mb-6 aspect-video w-full overflow-hidden rounded-xl border border-white/[0.06] bg-[#0a1628]">
+          <div className="relative mb-4 aspect-video w-full overflow-hidden rounded-xl border border-white/[0.06] bg-[#0a1628]">
             {embedUrl ? (
               <iframe
                 src={embedUrl}
-                title={currentLesson.title}
+                title={currentLesson.videoTitle || currentLesson.title}
                 className="absolute inset-0 h-full w-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -150,6 +198,20 @@ export default function LearnClient({
               </div>
             )}
           </div>
+
+          {/* Video Info */}
+          {(currentLesson.videoTitle || currentLesson.videoChannel) && (
+            <div className="mb-6 flex items-center gap-2 text-xs text-gray-500">
+              <Youtube className="h-3.5 w-3.5 text-red-400" />
+              {currentLesson.videoTitle && <span>{currentLesson.videoTitle}</span>}
+              {currentLesson.videoChannel && (
+                <>
+                  <span className="text-gray-600">|</span>
+                  <span>{currentLesson.videoChannel}</span>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Mark Complete */}
           <div className="mb-8">
@@ -170,6 +232,53 @@ export default function LearnClient({
               </Button>
             )}
           </div>
+
+          {/* Summary */}
+          {currentLesson.summary && (
+            <div className="mb-6 rounded-xl border border-blue-500/10 bg-blue-500/5 p-5">
+              <div className="mb-3 flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-blue-400" />
+                <h3 className="text-base font-semibold text-white">{t('summary')}</h3>
+              </div>
+              <p className="text-sm leading-relaxed text-gray-300">{currentLesson.summary}</p>
+            </div>
+          )}
+
+          {/* Learning Outcomes */}
+          {currentLesson.learningOutcomes && (
+            <div className="mb-6 rounded-xl border border-purple-500/10 bg-purple-500/5 p-5">
+              <div className="mb-3 flex items-center gap-2">
+                <Target className="h-5 w-5 text-purple-400" />
+                <h3 className="text-base font-semibold text-white">{t('learningOutcomes')}</h3>
+              </div>
+              <ul className="space-y-2">
+                {parseLines(currentLesson.learningOutcomes).map((line, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-purple-400" />
+                    <span>{line.replace(/^[-•]\s*/, '')}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Key Takeaways */}
+          {currentLesson.keyTakeaways && (
+            <div className="mb-6 rounded-xl border border-cyan-500/10 bg-cyan-500/5 p-5">
+              <div className="mb-3 flex items-center gap-2">
+                <Zap className="h-5 w-5 text-cyan-400" />
+                <h3 className="text-base font-semibold text-white">{t('keyTakeaways')}</h3>
+              </div>
+              <ul className="space-y-2">
+                {parseLines(currentLesson.keyTakeaways).map((line, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                    <Zap className="mt-0.5 h-4 w-4 flex-shrink-0 text-cyan-400" />
+                    <span>{line.replace(/^[-•]\s*/, '')}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Description */}
           {currentLesson.description && (
@@ -258,9 +367,14 @@ export default function LearnClient({
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className={`text-xs ${isActive ? 'text-blue-400' : 'text-gray-500'}`}>
-                        {t('lessonPrefix')} {lesson.lessonOrder}
-                      </p>
+                      <div className="flex items-center gap-1.5">
+                        <p className={`text-xs ${isActive ? 'text-blue-400' : 'text-gray-500'}`}>
+                          {t('lessonPrefix', { order: lesson.lessonOrder })}
+                        </p>
+                        <span className={`rounded px-1.5 py-0 text-[9px] font-semibold ${levelColors[lesson.lessonLevel] || levelColors.BEGINNER}`}>
+                          {levelLabels[lesson.lessonLevel]?.[0] || 'B'}
+                        </span>
+                      </div>
                       <p
                         className={`text-sm font-medium leading-snug ${
                           isActive
@@ -272,6 +386,9 @@ export default function LearnClient({
                       >
                         {lesson.title}
                       </p>
+                      {lesson.durationText && (
+                        <p className="mt-0.5 text-[10px] text-gray-600">{lesson.durationText}</p>
+                      )}
                     </div>
                     {isActive && (
                       <ChevronRight className="h-4 w-4 flex-shrink-0 text-blue-400" />

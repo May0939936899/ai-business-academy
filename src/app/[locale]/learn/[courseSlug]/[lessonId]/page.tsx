@@ -83,9 +83,18 @@ export default async function LearnPage({ params }: Props) {
       lessons={course.lessons.map((l) => ({
         id: l.id,
         title: l.title,
+        subtitle: l.subtitle,
         lessonOrder: l.lessonOrder,
+        lessonLevel: l.lessonLevel,
         youtubeUrl: l.youtubeUrl,
+        videoTitle: l.videoTitle,
+        videoChannel: l.videoChannel,
+        durationText: l.durationText,
         description: l.description,
+        summary: l.summary,
+        learningOutcomes: l.learningOutcomes,
+        keyTakeaways: l.keyTakeaways,
+        coverImage: l.coverImage,
         resources: l.resources.map((r) => ({
           id: r.id,
           fileName: r.fileName,

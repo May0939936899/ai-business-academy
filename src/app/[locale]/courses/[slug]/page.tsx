@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getTranslations, getLocale } from 'next-intl/server'
+import Image from 'next/image'
 import {
   ArrowLeft,
   Clock,
@@ -42,8 +43,12 @@ export default async function CourseDetailPage({ params }: Props) {
         select: {
           id: true,
           title: true,
+          subtitle: true,
           lessonOrder: true,
+          lessonLevel: true,
+          durationText: true,
           description: true,
+          coverImage: true,
         },
       },
       quizzes: {
@@ -165,25 +170,57 @@ export default async function CourseDetailPage({ params }: Props) {
                 {t('lessonContent', { count: course.lessons.length })}
               </h2>
               <div className="space-y-3">
-                {course.lessons.map((lesson) => (
-                  <Card key={lesson.id} hover={true} className="p-0">
-                    <div className="flex items-center gap-4 p-4">
-                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-500/10">
-                        <Play className="h-4 w-4 text-blue-400" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium text-gray-200">
-                          {t('lessonPrefix', { order: lesson.lessonOrder })}: {lesson.title}
-                        </p>
-                        {lesson.description && (
-                          <p className="mt-0.5 text-sm text-gray-500">
-                            {lesson.description}
-                          </p>
+                {course.lessons.map((lesson) => {
+                  const lessonLevelColor: Record<string, string> = {
+                    BEGINNER: 'bg-green-500/10 text-green-400 border-green-500/20',
+                    INTERMEDIATE: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+                    ADVANCED: 'bg-red-500/10 text-red-400 border-red-500/20',
+                  }
+                  return (
+                    <Card key={lesson.id} hover={true} className="p-0">
+                      <div className="flex items-start gap-4 p-4">
+                        {lesson.coverImage ? (
+                          <div className="relative h-16 w-28 flex-shrink-0 overflow-hidden rounded-lg border border-white/[0.06]">
+                            <Image
+                              src={lesson.coverImage}
+                              alt={lesson.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex h-16 w-28 flex-shrink-0 items-center justify-center rounded-lg bg-blue-500/10">
+                            <Play className="h-6 w-6 text-blue-400" />
+                          </div>
                         )}
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-1 flex flex-wrap items-center gap-2">
+                            <span className="text-xs font-semibold text-blue-400">
+                              {t('lessonPrefix', { order: lesson.lessonOrder })}
+                            </span>
+                            <span className={`rounded border px-2 py-0.5 text-[10px] font-semibold ${lessonLevelColor[lesson.lessonLevel] || lessonLevelColor.BEGINNER}`}>
+                              {levelLabels[lesson.lessonLevel] || lesson.lessonLevel}
+                            </span>
+                            {lesson.durationText && (
+                              <span className="flex items-center gap-1 text-[10px] text-gray-500">
+                                <Clock className="h-3 w-3" />
+                                {lesson.durationText}
+                              </span>
+                            )}
+                          </div>
+                          <p className="font-medium text-gray-200">
+                            {lesson.title}
+                          </p>
+                          {lesson.subtitle && (
+                            <p className="mt-0.5 text-xs text-gray-400">
+                              {lesson.subtitle}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </Card>
-                ))}
+                    </Card>
+                  )
+                })}
               </div>
             </div>
 

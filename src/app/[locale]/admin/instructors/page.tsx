@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import {
@@ -17,6 +17,7 @@ import {
   GraduationCap,
   Save,
   ImageIcon,
+  Upload,
 } from 'lucide-react'
 
 /* ── Types ────────────────────────────────────────────────────────────── */
@@ -69,6 +70,32 @@ export default function AdminInstructorsPage() {
   // Delete confirmation
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
+
+  // Image upload
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch('/api/admin/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (data.success) {
+        setForm(prev => ({ ...prev, profileImage: data.url }))
+      } else {
+        setError(data.error || 'Upload failed')
+      }
+    } catch {
+      setError('Upload failed')
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
 
   /* ── Fetch instructors ─────────────────────────────────────────────── */
 
@@ -474,18 +501,10 @@ export default function AdminInstructorsPage() {
                 <label className="mb-1.5 block text-xs font-medium text-gray-400">
                   {t('profileImageUrl')}
                 </label>
-                <div className="flex gap-3">
-                  <input
-                    type="text"
-                    value={form.profileImage}
-                    onChange={(e) =>
-                      setForm({ ...form, profileImage: e.target.value })
-                    }
-                    placeholder="https://example.com/photo.jpg"
-                    className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-2.5 text-sm text-gray-200 placeholder-gray-600 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
-                  />
-                  {form.profileImage && (
-                    <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg ring-1 ring-white/[0.08]">
+                {/* Image preview */}
+                {form.profileImage && (
+                  <div className="mb-3 flex items-center gap-3">
+                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl ring-2 ring-white/[0.08]">
                       <Image
                         src={form.profileImage}
                         alt="Preview"
@@ -494,8 +513,51 @@ export default function AdminInstructorsPage() {
                         unoptimized
                       />
                     </div>
-                  )}
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, profileImage: '' })}
+                      className="text-xs text-red-400 hover:text-red-300"
+                    >
+                      {t('removeImage') || 'ลบรูป'}
+                    </button>
+                  </div>
+                )}
+                {/* Upload button */}
+                <div className="flex gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="hidden"
+                    onChange={handleFileUpload}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="inline-flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-2.5 text-sm text-gray-300 transition-all hover:bg-white/[0.08] disabled:opacity-50"
+                  >
+                    {uploading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Upload className="h-4 w-4" />
+                    )}
+                    {uploading ? t('uploading') || 'กำลังอัปโหลด...' : t('uploadImage') || 'อัปโหลดรูปภาพ'}
+                  </button>
+                  <span className="self-center text-xs text-gray-600">{t('or') || 'หรือ'}</span>
+                  <input
+                    type="text"
+                    value={form.profileImage.startsWith('data:') ? '' : form.profileImage}
+                    onChange={(e) =>
+                      setForm({ ...form, profileImage: e.target.value })
+                    }
+                    placeholder="https://example.com/photo.jpg"
+                    className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-2.5 text-sm text-gray-200 placeholder-gray-600 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
+                  />
                 </div>
+                <p className="mt-1.5 text-[10px] text-gray-600">
+                  {t('imageHint') || 'รองรับ JPG, PNG, WebP, GIF ขนาดไม่เกิน 2MB'}
+                </p>
               </div>
             </div>
 

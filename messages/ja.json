@@ -119,9 +119,18 @@
   },
   "login": {
     "title": "ログイン",
-    "subtitle": "Googleでログインして学習を始めましょう",
+    "subtitle": "メールアドレスを入力してログインを開始",
+    "confirmSubtitle": "ログイン前にメールアドレスを確認してください",
     "redirecting": "リダイレクト中...",
+    "emailLabel": "メールアドレス",
+    "emailPlaceholder": "example@email.com",
+    "emailRequired": "メールアドレスを入力してください",
+    "emailInvalid": "メールアドレスの形式が正しくありません",
+    "continueButton": "続行",
+    "confirmEmailLabel": "ログイン用メールアドレス",
+    "confirmEmailHint": "メールアドレスが正しいことを確認し、下のボタンをクリックしてGoogleでログインしてください",
     "googleButton": "Googleでログイン",
+    "changeEmail": "メールアドレスを変更",
     "spuBus": "スリパトゥム大学経営学部",
     "termsNotice": "ログインすることで、利用規約とプライバシーポリシーに同意したことになります",
     "loading": "ログイン中...",
@@ -290,6 +299,9 @@
     "resources": "教材",
     "download": "ダウンロード",
     "lessonContent": "レッスン内容",
+    "summary": "レッスン概要",
+    "learningOutcomes": "学習成果",
+    "keyTakeaways": "重要ポイント",
     "takeQuiz": "テストを受ける"
   },
   "quiz": {
@@ -548,7 +560,12 @@
     "briefBio": "略歴",
     "briefBioPlaceholder": "講師の経歴と経験...",
     "expertiseLabel": "専門分野（カンマ区切り）",
-    "profileImageUrl": "プロフィール画像URL",
+    "profileImageUrl": "プロフィール画像",
+    "removeImage": "画像を削除",
+    "uploadImage": "画像をアップロード",
+    "uploading": "アップロード中...",
+    "or": "または",
+    "imageHint": "JPG、PNG、WebP、GIF対応（最大2MB）",
     "update": "更新",
     "confirmDelete": "削除の確認",
     "confirmDeleteMsg": "この講師を削除しますか？この操作は元に戻せません。",
@@ -629,6 +646,15 @@
     "statusPublished": "公開済み",
     "certificateLabel": "証明書",
     "navInstructors": "講師",
-    "thumbnail": "サムネイル"
+    "thumbnail": "サムネイル",
+
+    "exportExcel": "Excel出力",
+    "exportAll": "すべて出力",
+    "exportUsers": "ユーザー出力",
+    "exportCourses": "コース出力",
+    "exportCertificates": "証明書出力",
+    "exportEnrollments": "登録出力",
+    "exportQuizAttempts": "テスト結果出力",
+    "exporting": "出力中..."
   }
 }

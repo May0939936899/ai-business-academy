@@ -56,10 +56,18 @@ export async function GET(
 // PUT /api/lessons/[lessonId] - Update lesson (admin only)
 const updateLessonSchema = z.object({
   title: z.string().min(1).optional(),
+  subtitle: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   youtubeUrl: z.string().optional().nullable(),
+  videoTitle: z.string().optional().nullable(),
+  videoChannel: z.string().optional().nullable(),
+  durationText: z.string().optional().nullable(),
   lessonOrder: z.number().int().min(1).optional(),
+  lessonLevel: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']).optional(),
   summary: z.string().optional().nullable(),
+  learningOutcomes: z.string().optional().nullable(),
+  keyTakeaways: z.string().optional().nullable(),
+  coverImage: z.string().optional().nullable(),
   isActive: z.boolean().optional(),
 });
 

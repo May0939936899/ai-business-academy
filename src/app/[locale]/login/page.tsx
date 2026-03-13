@@ -5,7 +5,7 @@ import { signIn, useSession } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
-import { LogIn, AlertCircle, Sparkles, Loader2 } from 'lucide-react'
+import { AlertCircle, Sparkles, Loader2, Mail, ArrowLeft, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 function LoginContent() {
@@ -17,6 +17,11 @@ function LoginContent() {
   const callbackUrl = searchParams.get('callbackUrl')
   const errorParam = searchParams.get('error')
   const [isLoading, setIsLoading] = useState(false)
+
+  // Two-step flow
+  const [step, setStep] = useState<'email' | 'confirm'>('email')
+  const [email, setEmail] = useState('')
+  const [emailError, setEmailError] = useState('')
 
   // If already logged in, redirect based on role
   useEffect(() => {
@@ -31,13 +36,38 @@ function LoginContent() {
     }
   }, [status, session, router, callbackUrl, locale])
 
+  const validateEmail = (value: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(value)
+  }
+
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setEmailError('')
+
+    if (!email.trim()) {
+      setEmailError(t('emailRequired'))
+      return
+    }
+    if (!validateEmail(email.trim())) {
+      setEmailError(t('emailInvalid'))
+      return
+    }
+
+    setStep('confirm')
+  }
+
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
-    // Use callbackUrl from query, or default to /api/auth/callback
-    // After signIn, the middleware redirect logic will handle role-based routing
     await signIn('google', {
       callbackUrl: callbackUrl || `/${locale}/dashboard`,
+      login_hint: email.trim(),
     })
+  }
+
+  const handleBack = () => {
+    setStep('email')
+    setEmailError('')
   }
 
   // Show loading while checking session
@@ -74,11 +104,11 @@ function LoginContent() {
           </div>
           <h1 className="text-2xl font-bold text-white">AI Business Academy</h1>
           <p className="mt-2 text-sm text-gray-400">
-            {t('subtitle')}
+            {step === 'email' ? t('subtitle') : t('confirmSubtitle')}
           </p>
         </div>
 
-        {/* Error */}
+        {/* Error from OAuth */}
         {errorParam && (
           <div className="mb-6 flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
             <AlertCircle className="h-4 w-4 shrink-0" />
@@ -90,43 +120,119 @@ function LoginContent() {
           </div>
         )}
 
-        {/* Google Sign-In Button */}
-        <button
-          onClick={handleGoogleSignIn}
-          disabled={isLoading}
-          className={cn(
-            'flex w-full items-center justify-center gap-3 rounded-xl px-6 py-3.5 text-sm font-semibold transition-all duration-200',
-            'bg-white text-gray-800 hover:bg-gray-100',
-            'disabled:cursor-not-allowed disabled:opacity-50',
-            'shadow-lg shadow-white/10'
-          )}
-        >
-          {isLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-gray-600" />
-          ) : (
-            <>
-              <svg className="h-5 w-5" viewBox="0 0 24 24">
-                <path
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
-                  fill="#4285F4"
+        {/* Step 1: Email Input */}
+        {step === 'email' && (
+          <form onSubmit={handleEmailSubmit}>
+            <div className="mb-4">
+              <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-300">
+                {t('emailLabel')}
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-gray-500" />
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    if (emailError) setEmailError('')
+                  }}
+                  placeholder={t('emailPlaceholder')}
+                  autoFocus
+                  className={cn(
+                    'w-full rounded-xl border bg-white/[0.04] py-3.5 pl-11 pr-4 text-sm text-white placeholder-gray-500 outline-none transition-all',
+                    emailError
+                      ? 'border-red-500/50 focus:border-red-500'
+                      : 'border-white/[0.08] focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20'
+                  )}
                 />
-                <path
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  fill="#34A853"
-                />
-                <path
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                  fill="#FBBC05"
-                />
-                <path
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                  fill="#EA4335"
-                />
-              </svg>
-              {t('googleButton')}
-            </>
-          )}
-        </button>
+              </div>
+              {emailError && (
+                <p className="mt-2 flex items-center gap-1.5 text-xs text-red-400">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  {emailError}
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className={cn(
+                'flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold transition-all duration-200',
+                'bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600',
+                'shadow-lg shadow-blue-500/20'
+              )}
+            >
+              {t('continueButton')}
+            </button>
+          </form>
+        )}
+
+        {/* Step 2: Confirm Email + Google Sign-In */}
+        {step === 'confirm' && (
+          <div>
+            {/* Email confirmation box */}
+            <div className="mb-5 rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+              <div className="mb-2 flex items-center gap-2 text-xs font-medium text-blue-400">
+                <ShieldCheck className="h-4 w-4" />
+                {t('confirmEmailLabel')}
+              </div>
+              <p className="break-all text-base font-semibold text-white">
+                {email}
+              </p>
+              <p className="mt-2 text-xs text-gray-400">
+                {t('confirmEmailHint')}
+              </p>
+            </div>
+
+            {/* Google Sign-In Button */}
+            <button
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
+              className={cn(
+                'flex w-full items-center justify-center gap-3 rounded-xl px-6 py-3.5 text-sm font-semibold transition-all duration-200',
+                'bg-white text-gray-800 hover:bg-gray-100',
+                'disabled:cursor-not-allowed disabled:opacity-50',
+                'shadow-lg shadow-white/10'
+              )}
+            >
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin text-gray-600" />
+              ) : (
+                <>
+                  <svg className="h-5 w-5" viewBox="0 0 24 24">
+                    <path
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+                      fill="#4285F4"
+                    />
+                    <path
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      fill="#34A853"
+                    />
+                    <path
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      fill="#FBBC05"
+                    />
+                    <path
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      fill="#EA4335"
+                    />
+                  </svg>
+                  {t('googleButton')}
+                </>
+              )}
+            </button>
+
+            {/* Back button */}
+            <button
+              onClick={handleBack}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-medium text-gray-400 transition-colors hover:text-white"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {t('changeEmail')}
+            </button>
+          </div>
+        )}
 
         {/* Divider */}
         <div className="my-6 flex items-center gap-3">

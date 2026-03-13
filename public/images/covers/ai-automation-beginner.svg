@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#06B6D4" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#06B6D4" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect width="1280" height="720" fill="url(#glow)"/>
+  <!-- Dot pattern -->
+  <g opacity="0.08">
+    <circle cx="80" cy="80" r="2" fill="#06B6D4"/><circle cx="120" cy="80" r="2" fill="#06B6D4"/><circle cx="160" cy="80" r="2" fill="#06B6D4"/><circle cx="200" cy="80" r="2" fill="#06B6D4"/><circle cx="240" cy="80" r="2" fill="#06B6D4"/>
+    <circle cx="80" cy="120" r="2" fill="#06B6D4"/><circle cx="120" cy="120" r="2" fill="#06B6D4"/><circle cx="160" cy="120" r="2" fill="#06B6D4"/><circle cx="200" cy="120" r="2" fill="#06B6D4"/><circle cx="240" cy="120" r="2" fill="#06B6D4"/>
+    <circle cx="80" cy="160" r="2" fill="#06B6D4"/><circle cx="120" cy="160" r="2" fill="#06B6D4"/><circle cx="160" cy="160" r="2" fill="#06B6D4"/><circle cx="200" cy="160" r="2" fill="#06B6D4"/><circle cx="240" cy="160" r="2" fill="#06B6D4"/>
+    <circle cx="1040" cy="560" r="2" fill="#06B6D4"/><circle cx="1080" cy="560" r="2" fill="#06B6D4"/><circle cx="1120" cy="560" r="2" fill="#06B6D4"/><circle cx="1160" cy="560" r="2" fill="#06B6D4"/><circle cx="1200" cy="560" r="2" fill="#06B6D4"/>
+    <circle cx="1040" cy="600" r="2" fill="#06B6D4"/><circle cx="1080" cy="600" r="2" fill="#06B6D4"/><circle cx="1120" cy="600" r="2" fill="#06B6D4"/><circle cx="1160" cy="600" r="2" fill="#06B6D4"/><circle cx="1200" cy="600" r="2" fill="#06B6D4"/>
+  </g>
+  <!-- Decorative lines -->
+  <line x1="0" y1="350" x2="200" y2="350" stroke="#06B6D4" stroke-opacity="0.1" stroke-width="1"/>
+  <line x1="1080" y1="350" x2="1280" y2="350" stroke="#06B6D4" stroke-opacity="0.1" stroke-width="1"/>
+  <!-- Gear icon 1 -->
+  <g transform="translate(540, 200)" opacity="0.25">
+    <circle cx="0" cy="0" r="50" fill="none" stroke="#06B6D4" stroke-width="2"/>
+    <circle cx="0" cy="0" r="20" fill="none" stroke="#06B6D4" stroke-width="2"/>
+    <rect x="-5" y="-60" width="10" height="20" rx="3" fill="#06B6D4"/>
+    <rect x="-5" y="40" width="10" height="20" rx="3" fill="#06B6D4"/>
+    <rect x="-60" y="-5" width="20" height="10" rx="3" fill="#06B6D4"/>
+    <rect x="40" y="-5" width="20" height="10" rx="3" fill="#06B6D4"/>
+    <rect x="32" y="-42" width="10" height="20" rx="3" fill="#06B6D4" transform="rotate(45 37 -32)"/>
+    <rect x="-42" y="22" width="10" height="20" rx="3" fill="#06B6D4" transform="rotate(45 -37 32)"/>
+    <rect x="-42" y="-42" width="10" height="20" rx="3" fill="#06B6D4" transform="rotate(-45 -37 -32)"/>
+    <rect x="32" y="22" width="10" height="20" rx="3" fill="#06B6D4" transform="rotate(-45 37 32)"/>
+  </g>
+  <!-- Gear icon 2 -->
+  <g transform="translate(740, 220)" opacity="0.2">
+    <circle cx="0" cy="0" r="35" fill="none" stroke="#06B6D4" stroke-width="1.5"/>
+    <circle cx="0" cy="0" r="14" fill="none" stroke="#06B6D4" stroke-width="1.5"/>
+    <rect x="-4" y="-44" width="8" height="16" rx="2" fill="#06B6D4"/>
+    <rect x="-4" y="28" width="8" height="16" rx="2" fill="#06B6D4"/>
+    <rect x="-44" y="-4" width="16" height="8" rx="2" fill="#06B6D4"/>
+    <rect x="28" y="-4" width="16" height="8" rx="2" fill="#06B6D4"/>
+  </g>
+  <!-- Workflow arrows -->
+  <g opacity="0.15">
+    <path d="M360 280 L440 280" stroke="#06B6D4" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M840 280 L920 280" stroke="#06B6D4" stroke-width="2" fill="none"/>
+    <polygon points="920,275 930,280 920,285" fill="#06B6D4"/>
+    <rect x="300" y="265" width="60" height="30" rx="6" fill="none" stroke="#06B6D4" stroke-width="1.5"/>
+    <rect x="930" y="265" width="60" height="30" rx="6" fill="none" stroke="#06B6D4" stroke-width="1.5"/>
+  </g>
+  <!-- Decorative circles -->
+  <circle cx="200" cy="500" r="100" fill="url(#accent)" opacity="0.3"/>
+  <circle cx="1100" cy="200" r="80" fill="url(#accent)" opacity="0.2"/>
+  <!-- Level Badge -->
+  <rect x="1060" y="30" width="190" height="42" rx="21" fill="#10B981"/>
+  <text x="1155" y="57" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">● Beginner</text>
+  <!-- Title -->
+  <text x="640" y="400" font-family="system-ui, -apple-system, sans-serif" font-size="52" font-weight="800" fill="white" text-anchor="middle">Introduction to AI Automation</text>
+  <text x="640" y="450" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#94A3B8" text-anchor="middle">Learn the fundamentals of automating business processes with AI</text>
+  <!-- Category indicator line -->
+  <rect x="540" y="480" width="200" height="3" rx="1.5" fill="#06B6D4" opacity="0.6"/>
+  <!-- Bottom branding -->
+  <text x="640" y="670" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#475569" text-anchor="middle" letter-spacing="2">AI BUSINESS ACADEMY</text>
+  <!-- Bottom line -->
+  <rect x="440" y="685" width="400" height="1" fill="#334155" opacity="0.5"/>
+</svg>

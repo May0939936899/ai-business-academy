@@ -119,9 +119,18 @@
   },
   "login": {
     "title": "登录",
-    "subtitle": "使用Google登录，开始学习",
+    "subtitle": "请输入您的电子邮件以开始登录",
+    "confirmSubtitle": "登录前请确认您的电子邮件",
     "redirecting": "正在跳转...",
+    "emailLabel": "您的电子邮件",
+    "emailPlaceholder": "example@email.com",
+    "emailRequired": "请输入电子邮件",
+    "emailInvalid": "电子邮件格式无效",
+    "continueButton": "继续",
+    "confirmEmailLabel": "登录电子邮件",
+    "confirmEmailHint": "请确认电子邮件正确，然后点击下方按钮使用Google登录",
     "googleButton": "使用Google登录",
+    "changeEmail": "更改电子邮件",
     "spuBus": "斯巴顿大学商学院",
     "termsNotice": "登录即表示您同意服务条款和隐私政策",
     "loading": "登录中...",
@@ -290,6 +299,9 @@
     "resources": "学习资料",
     "download": "下载",
     "lessonContent": "课程内容",
+    "summary": "课程摘要",
+    "learningOutcomes": "学习成果",
+    "keyTakeaways": "要点总结",
     "takeQuiz": "参加测验"
   },
   "quiz": {
@@ -548,7 +560,12 @@
     "briefBio": "简介",
     "briefBioPlaceholder": "讲师的背景和经验...",
     "expertiseLabel": "专业领域（用逗号分隔）",
-    "profileImageUrl": "头像URL",
+    "profileImageUrl": "个人头像",
+    "removeImage": "删除图片",
+    "uploadImage": "上传图片",
+    "uploading": "上传中...",
+    "or": "或",
+    "imageHint": "支持 JPG、PNG、WebP、GIF，最大 2MB",
     "update": "更新",
     "confirmDelete": "确认删除",
     "confirmDeleteMsg": "确定要删除此讲师吗？此操作不可撤销。",
@@ -629,6 +646,15 @@
     "statusPublished": "已发布",
     "certificateLabel": "证书",
     "navInstructors": "讲师",
-    "thumbnail": "缩略图"
+    "thumbnail": "缩略图",
+
+    "exportExcel": "导出Excel",
+    "exportAll": "导出全部",
+    "exportUsers": "导出用户",
+    "exportCourses": "导出课程",
+    "exportCertificates": "导出证书",
+    "exportEnrollments": "导出注册",
+    "exportQuizAttempts": "导出测验结果",
+    "exporting": "正在导出..."
   }
 }

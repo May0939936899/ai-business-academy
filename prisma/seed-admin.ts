@@ -8,7 +8,7 @@ async function main() {
 
   // ─── 1. Create Admin Account ────────────────────────────────────────────────
   const adminEmail = "admin@ai-academy.com"
-  const adminPassword = "Admin1234"
+  const adminPassword = "ADMINSPUBUS"
   const passwordHash = await bcrypt.hash(adminPassword, 12)
 
   const admin = await prisma.user.upsert({

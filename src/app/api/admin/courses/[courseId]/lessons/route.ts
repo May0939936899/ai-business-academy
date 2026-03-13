@@ -42,10 +42,18 @@ export async function GET(
 
 const createLessonSchema = z.object({
   title: z.string().min(1, 'กรุณาระบุชื่อบทเรียน'),
-  description: z.string().optional(),
-  youtubeUrl: z.string().optional(),
+  subtitle: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
+  youtubeUrl: z.string().optional().nullable(),
+  videoTitle: z.string().optional().nullable(),
+  videoChannel: z.string().optional().nullable(),
+  durationText: z.string().optional().nullable(),
   lessonOrder: z.number().int().min(1),
-  summary: z.string().optional(),
+  lessonLevel: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']).default('BEGINNER'),
+  summary: z.string().optional().nullable(),
+  learningOutcomes: z.string().optional().nullable(),
+  keyTakeaways: z.string().optional().nullable(),
+  coverImage: z.string().optional().nullable(),
   isActive: z.boolean().default(true),
 })
 
