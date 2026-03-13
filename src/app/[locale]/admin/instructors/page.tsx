@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import {
   Plus,
@@ -58,6 +59,7 @@ export default function AdminInstructorsPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [search, setSearch] = useState('')
+  const t = useTranslations('admin')
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false)
@@ -78,10 +80,10 @@ export default function AdminInstructorsPage() {
       if (data.success) {
         setInstructors(data.data)
       } else {
-        setError(data.error || 'เกิดข้อผิดพลาด')
+        setError(data.error || 'Error')
       }
     } catch {
-      setError('ไม่สามารถโหลดข้อมูลได้')
+      setError(t('cannotLoad'))
     } finally {
       setLoading(false)
     }
@@ -95,15 +97,15 @@ export default function AdminInstructorsPage() {
 
   useEffect(() => {
     if (success) {
-      const t = setTimeout(() => setSuccess(''), 3000)
-      return () => clearTimeout(t)
+      const timer = setTimeout(() => setSuccess(''), 3000)
+      return () => clearTimeout(timer)
     }
   }, [success])
 
   useEffect(() => {
     if (error) {
-      const t = setTimeout(() => setError(''), 5000)
-      return () => clearTimeout(t)
+      const timer = setTimeout(() => setError(''), 5000)
+      return () => clearTimeout(timer)
     }
   }, [error])
 
@@ -137,7 +139,7 @@ export default function AdminInstructorsPage() {
 
   async function handleSave() {
     if (!form.name.trim() || !form.title.trim()) {
-      setError('กรุณากรอกชื่อและตำแหน่ง')
+      setError(t('fillNamePosition'))
       return
     }
 
@@ -174,14 +176,14 @@ export default function AdminInstructorsPage() {
       const data = await res.json()
 
       if (data.success) {
-        setSuccess(editingId ? 'อัพเดตผู้สอนสำเร็จ' : 'เพิ่มผู้สอนสำเร็จ')
+        setSuccess(editingId ? t('instructorUpdated') : t('instructorAdded'))
         closeModal()
         fetchInstructors()
       } else {
-        setError(data.error || 'เกิดข้อผิดพลาด')
+        setError(data.error || 'Error')
       }
     } catch {
-      setError('ไม่สามารถบันทึกข้อมูลได้')
+      setError(t('cannotSave'))
     } finally {
       setSaving(false)
     }
@@ -200,14 +202,14 @@ export default function AdminInstructorsPage() {
       })
       const data = await res.json()
       if (data.success) {
-        setSuccess('ลบผู้สอนสำเร็จ')
+        setSuccess(t('instructorDeleted'))
         setDeleteId(null)
         fetchInstructors()
       } else {
-        setError(data.error || 'เกิดข้อผิดพลาด')
+        setError(data.error || 'Error')
       }
     } catch {
-      setError('ไม่สามารถลบข้อมูลได้')
+      setError(t('cannotDelete'))
     } finally {
       setDeleting(false)
     }
@@ -247,9 +249,9 @@ export default function AdminInstructorsPage() {
             <GraduationCap className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">จัดการผู้สอน</h1>
+            <h1 className="text-2xl font-bold text-white">{t('instructorsTitle')}</h1>
             <p className="text-sm text-gray-500">
-              เพิ่ม แก้ไข และจัดการข้อมูลผู้สอนทั้งหมด
+              {t('instructorsDesc')}
             </p>
           </div>
         </div>
@@ -259,7 +261,7 @@ export default function AdminInstructorsPage() {
           className="inline-flex items-center gap-2 self-start rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-blue-500/40 hover:brightness-110"
         >
           <Plus className="h-4 w-4" />
-          เพิ่มผู้สอน
+          {t('addInstructor')}
         </button>
       </div>
 
@@ -270,7 +272,7 @@ export default function AdminInstructorsPage() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="ค้นหาผู้สอน..."
+          placeholder={t('searchInstructors')}
           className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] py-2.5 pl-10 pr-4 text-sm text-gray-300 placeholder-gray-600 outline-none transition-colors focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
         />
       </div>
@@ -316,7 +318,7 @@ export default function AdminInstructorsPage() {
                       <p className="text-sm text-gray-400">{instructor.title}</p>
                       {!instructor.isActive && (
                         <span className="mt-1 inline-flex rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-semibold text-red-400 ring-1 ring-red-500/20">
-                          ปิดใช้งาน
+                          {t('inactive')}
                         </span>
                       )}
                     </div>
@@ -347,7 +349,7 @@ export default function AdminInstructorsPage() {
                   {instructor.courses.length > 0 && (
                     <div className="mb-4 flex items-center gap-1.5 text-xs text-gray-500">
                       <BookOpen className="h-3.5 w-3.5" />
-                      <span>{instructor.courses.length} คอร์ส</span>
+                      <span>{t('courseCount', { count: instructor.courses.length })}</span>
                     </div>
                   )}
 
@@ -358,7 +360,7 @@ export default function AdminInstructorsPage() {
                       className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-xs font-semibold text-gray-300 transition-all hover:bg-white/[0.08]"
                     >
                       <Pencil className="h-3.5 w-3.5" />
-                      แก้ไข
+                      {t('edit')}
                     </button>
                     <button
                       onClick={() => setDeleteId(instructor.id)}
@@ -374,12 +376,12 @@ export default function AdminInstructorsPage() {
             <div className="rounded-2xl border border-white/[0.06] bg-[#0a1628]/40 p-12 text-center">
               <Users className="mx-auto mb-3 h-10 w-10 text-gray-600" />
               <p className="text-lg font-medium text-gray-300">
-                {search ? 'ไม่พบผู้สอนที่ค้นหา' : 'ยังไม่มีข้อมูลผู้สอน'}
+                {search ? t('noInstructorsFound') : t('noInstructorsFound')}
               </p>
               <p className="mt-1 text-sm text-gray-500">
                 {search
-                  ? 'ลองเปลี่ยนคำค้นหา'
-                  : 'เริ่มเพิ่มข้อมูลผู้สอนเพื่อจัดการคอร์สเรียน'}
+                  ? t('tryDifferentSearch')
+                  : t('startAddingInstructors')}
               </p>
             </div>
           )}
@@ -397,7 +399,7 @@ export default function AdminInstructorsPage() {
             {/* Modal header */}
             <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-4">
               <h2 className="text-lg font-bold text-white">
-                {editingId ? 'แก้ไขผู้สอน' : 'เพิ่มผู้สอนใหม่'}
+                {editingId ? t('editInstructor') : t('addNewInstructor')}
               </h2>
               <button
                 onClick={closeModal}
@@ -412,13 +414,13 @@ export default function AdminInstructorsPage() {
               {/* Name */}
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-gray-400">
-                  ชื่อ-นามสกุล <span className="text-red-400">*</span>
+                  {t('fullName')} <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="เช่น ผศ.ดร.สมชาย ใจดี"
+                  placeholder={t('fullNamePlaceholder')}
                   className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-2.5 text-sm text-gray-200 placeholder-gray-600 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
                 />
               </div>
@@ -426,13 +428,13 @@ export default function AdminInstructorsPage() {
               {/* Title */}
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-gray-400">
-                  ตำแหน่ง/สาขา <span className="text-red-400">*</span>
+                  {t('positionDept')} <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="เช่น อาจารย์ประจำสาขา AI & Digital Business"
+                  placeholder={t('positionDeptPlaceholder')}
                   className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-2.5 text-sm text-gray-200 placeholder-gray-600 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
                 />
               </div>
@@ -440,12 +442,12 @@ export default function AdminInstructorsPage() {
               {/* Bio */}
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-gray-400">
-                  ประวัติโดยย่อ
+                  {t('briefBio')}
                 </label>
                 <textarea
                   value={form.bio}
                   onChange={(e) => setForm({ ...form, bio: e.target.value })}
-                  placeholder="ประวัติและประสบการณ์ของผู้สอน..."
+                  placeholder={t('briefBioPlaceholder')}
                   rows={3}
                   className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-2.5 text-sm text-gray-200 placeholder-gray-600 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
                 />
@@ -454,7 +456,7 @@ export default function AdminInstructorsPage() {
               {/* Expertise */}
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-gray-400">
-                  ความเชี่ยวชาญ (คั่นด้วยเครื่องหมาย ,)
+                  {t('expertiseLabel')}
                 </label>
                 <input
                   type="text"
@@ -462,7 +464,7 @@ export default function AdminInstructorsPage() {
                   onChange={(e) =>
                     setForm({ ...form, expertise: e.target.value })
                   }
-                  placeholder="เช่น AI Marketing, Data Analytics, Machine Learning"
+                  placeholder={t('expertisePlaceholder')}
                   className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-2.5 text-sm text-gray-200 placeholder-gray-600 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
                 />
               </div>
@@ -470,7 +472,7 @@ export default function AdminInstructorsPage() {
               {/* Profile Image */}
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-gray-400">
-                  URL รูปโปรไฟล์
+                  {t('profileImageUrl')}
                 </label>
                 <div className="flex gap-3">
                   <input
@@ -503,7 +505,7 @@ export default function AdminInstructorsPage() {
                 onClick={closeModal}
                 className="rounded-xl border border-white/[0.08] bg-white/[0.04] px-5 py-2 text-sm font-medium text-gray-400 transition-all hover:bg-white/[0.08]"
               >
-                ยกเลิก
+                {t('cancel')}
               </button>
               <button
                 onClick={handleSave}
@@ -515,7 +517,7 @@ export default function AdminInstructorsPage() {
                 ) : (
                   <Save className="h-4 w-4" />
                 )}
-                {editingId ? 'อัพเดต' : 'บันทึก'}
+                {editingId ? t('update') : t('saveBtn')}
               </button>
             </div>
           </div>
@@ -533,16 +535,16 @@ export default function AdminInstructorsPage() {
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 ring-1 ring-red-500/20">
               <Trash2 className="h-6 w-6 text-red-400" />
             </div>
-            <h3 className="mb-2 text-lg font-bold text-white">ยืนยันการลบ</h3>
+            <h3 className="mb-2 text-lg font-bold text-white">{t('confirmDelete')}</h3>
             <p className="mb-6 text-sm text-gray-400">
-              คุณต้องการลบผู้สอนคนนี้หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้
+              {t('confirmDeleteMsg')}
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteId(null)}
                 className="rounded-xl border border-white/[0.08] bg-white/[0.04] px-5 py-2 text-sm font-medium text-gray-400 transition-all hover:bg-white/[0.08]"
               >
-                ยกเลิก
+                {t('cancel')}
               </button>
               <button
                 onClick={handleDelete}
@@ -554,7 +556,7 @@ export default function AdminInstructorsPage() {
                 ) : (
                   <Trash2 className="h-4 w-4" />
                 )}
-                ลบ
+                {t('deleteBtn')}
               </button>
             </div>
           </div>

@@ -8,9 +8,11 @@ import {
 import db from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
+import { getTranslations } from 'next-intl/server'
 
 export default async function QuizzesPage() {
   await requireAdmin()
+  const t = await getTranslations('admin')
 
   const [quizzes, totalQuizzes, totalQuestions, totalAttempts, passedAttempts] =
     await Promise.all([
@@ -58,9 +60,9 @@ export default async function QuizzesPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">จัดการแบบทดสอบ</h1>
+        <h1 className="text-2xl font-bold text-white">{t('quizzesTitle')}</h1>
         <p className="mt-1 text-sm text-gray-500">
-          ดูและจัดการแบบทดสอบทั้งหมดในระบบ ({totalQuizzes} รายการ)
+          {t('quizzesDesc', { count: totalQuizzes })}
         </p>
       </div>
 
@@ -73,7 +75,7 @@ export default async function QuizzesPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{totalQuizzes}</p>
-              <p className="text-xs text-gray-500">แบบทดสอบทั้งหมด</p>
+              <p className="text-xs text-gray-500">{t('allQuizzes')}</p>
             </div>
           </div>
         </div>
@@ -84,7 +86,7 @@ export default async function QuizzesPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{totalQuestions}</p>
-              <p className="text-xs text-gray-500">คำถามทั้งหมด</p>
+              <p className="text-xs text-gray-500">{t('allQuestions')}</p>
             </div>
           </div>
         </div>
@@ -95,7 +97,7 @@ export default async function QuizzesPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{totalAttempts}</p>
-              <p className="text-xs text-gray-500">ทำแบบทดสอบทั้งหมด</p>
+              <p className="text-xs text-gray-500">{t('totalAttempts')}</p>
             </div>
           </div>
         </div>
@@ -106,7 +108,7 @@ export default async function QuizzesPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{avgPassRate}%</p>
-              <p className="text-xs text-gray-500">อัตราผ่านเฉลี่ย</p>
+              <p className="text-xs text-gray-500">{t('avgPassRate')}</p>
             </div>
           </div>
         </div>
@@ -117,10 +119,10 @@ export default async function QuizzesPage() {
         <div className="flex flex-col items-center justify-center rounded-xl border border-white/[0.06] bg-[#0a1628]/50 px-6 py-20 text-center">
           <FileQuestion className="h-8 w-8 text-gray-600" />
           <h3 className="mt-4 text-lg font-medium text-gray-300">
-            ยังไม่มีแบบทดสอบ
+            {t('noQuizzesYet')}
           </h3>
           <p className="mt-1.5 text-sm text-gray-500">
-            แบบทดสอบจะแสดงที่นี่เมื่อมีการสร้างในคอร์สต่างๆ
+            {t('noQuizzesDesc')}
           </p>
         </div>
       ) : (
@@ -130,28 +132,28 @@ export default async function QuizzesPage() {
               <thead>
                 <tr className="border-b border-white/[0.06]">
                   <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    ชื่อแบบทดสอบ
+                    {t('colQuizName')}
                   </th>
                   <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    คอร์ส
+                    {t('colCourse')}
                   </th>
                   <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    จำนวนคำถาม
+                    {t('colQuestions')}
                   </th>
                   <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    คะแนนผ่าน
+                    {t('colPassingScore')}
                   </th>
                   <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    จำนวนทำ
+                    {t('colAttempts')}
                   </th>
                   <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    อัตราผ่าน
+                    {t('colPassRate')}
                   </th>
                   <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    สถานะ
+                    {t('colStatus')}
                   </th>
                   <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    วันที่สร้าง
+                    {t('colCreatedAt')}
                   </th>
                 </tr>
               </thead>
@@ -188,13 +190,13 @@ export default async function QuizzesPage() {
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-5 py-4 text-sm text-gray-400">
-                        {quiz._count.questions} ข้อ
+                        {quiz._count.questions} {t('questionsSuffix')}
                       </td>
                       <td className="whitespace-nowrap px-5 py-4 text-sm text-gray-400">
                         {quiz.passingScore}%
                       </td>
                       <td className="whitespace-nowrap px-5 py-4 text-sm text-gray-400">
-                        {attemptCount} ครั้ง
+                        {attemptCount} {t('attemptsSuffix')}
                       </td>
                       <td className="whitespace-nowrap px-5 py-4">
                         {attemptCount > 0 ? (
@@ -217,12 +219,12 @@ export default async function QuizzesPage() {
                         {quiz.isActive ? (
                           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
                             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                            เปิดใช้งาน
+                            {t('enabled')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 rounded-full bg-gray-500/10 px-2.5 py-0.5 text-xs font-medium text-gray-500">
                             <span className="h-1.5 w-1.5 rounded-full bg-gray-500" />
-                            ปิดใช้งาน
+                            {t('disabled')}
                           </span>
                         )}
                       </td>
@@ -239,7 +241,7 @@ export default async function QuizzesPage() {
           {/* Footer */}
           <div className="border-t border-white/[0.06] px-5 py-3.5">
             <p className="text-sm text-gray-500">
-              ทั้งหมด {quizzes.length} รายการ
+              {t('totalItems', { count: quizzes.length })}
             </p>
           </div>
         </div>

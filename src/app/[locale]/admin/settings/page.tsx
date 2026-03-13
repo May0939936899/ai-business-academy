@@ -9,12 +9,14 @@ import {
   ImageIcon,
   PenTool,
 } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 import db from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
 
 export default async function SettingsPage() {
   await requireAdmin()
+  const t = await getTranslations('admin')
 
   const [courses, templateCount, totalCertificates] = await Promise.all([
     db.course.findMany({
@@ -35,9 +37,9 @@ export default async function SettingsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">ตั้งค่าระบบ</h1>
+        <h1 className="text-2xl font-bold text-white">{t('settingsTitle')}</h1>
         <p className="mt-1 text-sm text-gray-500">
-          จัดการตั้งค่า Certificate Template และระบบ
+          {t('settingsDesc')}
         </p>
       </div>
 
@@ -52,7 +54,7 @@ export default async function SettingsPage() {
               <p className="text-2xl font-bold text-white">
                 {coursesWithTemplate.length}
               </p>
-              <p className="text-xs text-gray-500">คอร์สที่มี Template</p>
+              <p className="text-xs text-gray-500">{t('coursesWithTemplate')}</p>
             </div>
           </div>
         </div>
@@ -65,7 +67,7 @@ export default async function SettingsPage() {
               <p className="text-2xl font-bold text-white">
                 {coursesWithoutTemplate.length}
               </p>
-              <p className="text-xs text-gray-500">คอร์สที่ยังไม่มี Template</p>
+              <p className="text-xs text-gray-500">{t('coursesWithoutTemplate')}</p>
             </div>
           </div>
         </div>
@@ -78,7 +80,7 @@ export default async function SettingsPage() {
               <p className="text-2xl font-bold text-white">
                 {totalCertificates}
               </p>
-              <p className="text-xs text-gray-500">Certificate ออกทั้งหมด</p>
+              <p className="text-xs text-gray-500">{t('totalCertsIssued')}</p>
             </div>
           </div>
         </div>
@@ -89,7 +91,7 @@ export default async function SettingsPage() {
         <div className="mb-4 flex items-center gap-2">
           <FileSignature className="h-5 w-5 text-gray-400" />
           <h2 className="text-lg font-semibold text-white">
-            Certificate Templates
+            {t('certTemplates')}
           </h2>
         </div>
 
@@ -97,10 +99,10 @@ export default async function SettingsPage() {
           <div className="flex flex-col items-center justify-center rounded-xl border border-white/[0.06] bg-[#0a1628]/50 px-6 py-20 text-center">
             <Settings className="h-8 w-8 text-gray-600" />
             <h3 className="mt-4 text-lg font-medium text-gray-300">
-              ยังไม่มีคอร์สที่เผยแพร่
+              {t('noPublishedCourses')}
             </h3>
             <p className="mt-1.5 text-sm text-gray-500">
-              เพิ่มคอร์สและเผยแพร่เพื่อตั้งค่า Certificate Template
+              {t('noPublishedCoursesDesc')}
             </p>
           </div>
         ) : (
@@ -110,22 +112,22 @@ export default async function SettingsPage() {
                 <thead>
                   <tr className="border-b border-white/[0.06]">
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      คอร์ส
+                      {t('colCourse')}
                     </th>
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      Template
+                      {t('colTemplate')}
                     </th>
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      ผู้ลงนาม
+                      {t('colSigner')}
                     </th>
                     <th className="px-5 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
-                      Logo
+                      {t('colLogo')}
                     </th>
                     <th className="px-5 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
-                      ลายเซ็น
+                      {t('colSignature')}
                     </th>
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      อัปเดตล่าสุด
+                      {t('colLastUpdated')}
                     </th>
                   </tr>
                 </thead>
@@ -151,12 +153,12 @@ export default async function SettingsPage() {
                           {template ? (
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-400">
                               <CheckCircle2 className="h-3.5 w-3.5" />
-                              ตั้งค่าแล้ว
+                              {t('configured')}
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-500/10 px-2.5 py-1 text-xs font-medium text-gray-500">
                               <XCircle className="h-3.5 w-3.5" />
-                              ยังไม่ได้ตั้งค่า
+                              {t('notConfigured')}
                             </span>
                           )}
                         </td>
@@ -203,8 +205,7 @@ export default async function SettingsPage() {
             {/* Footer */}
             <div className="border-t border-white/[0.06] px-5 py-3.5">
               <p className="text-sm text-gray-500">
-                ทั้งหมด {courses.length} คอร์ส ({coursesWithTemplate.length}{' '}
-                มี Template)
+                {t('totalCoursesTemplate', { count: courses.length, configured: coursesWithTemplate.length })}
               </p>
             </div>
           </div>
@@ -216,7 +217,7 @@ export default async function SettingsPage() {
         <div className="mb-4 flex items-center gap-2">
           <Building2 className="h-5 w-5 text-gray-400" />
           <h2 className="text-lg font-semibold text-white">
-            ข้อมูลแพลตฟอร์ม
+            {t('platformInfo')}
           </h2>
         </div>
 
@@ -224,7 +225,7 @@ export default async function SettingsPage() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
-                ชื่อแพลตฟอร์ม
+                {t('platformName')}
               </p>
               <p className="mt-1.5 text-sm font-medium text-gray-200">
                 AI Business Academy
@@ -232,15 +233,15 @@ export default async function SettingsPage() {
             </div>
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
-                สังกัด
+                {t('affiliation')}
               </p>
               <p className="mt-1.5 text-sm font-medium text-gray-200">
-                คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม
+                {t('affiliationName')}
               </p>
             </div>
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
-                รูปแบบรหัส Certificate
+                {t('certCodeFormat')}
               </p>
               <p className="mt-1.5 font-mono text-sm font-medium text-blue-400">
                 SPUBUS-&#123;COURSECODE&#125;-&#123;YYYY&#125;-&#123;XXXX&#125;
@@ -248,7 +249,7 @@ export default async function SettingsPage() {
             </div>
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
-                เกณฑ์ผ่านการสอบ
+                {t('passingCriteria')}
               </p>
               <p className="mt-1.5 text-sm font-medium text-gray-200">
                 70%

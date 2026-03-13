@@ -6,9 +6,11 @@ import {
 } from 'lucide-react'
 import db from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
+import { getTranslations } from 'next-intl/server'
 
 export default async function ContentPage() {
   await requireAdmin()
+  const tr = await getTranslations('admin')
 
   const [
     testimonials,
@@ -31,10 +33,10 @@ export default async function ContentPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">
-          จัดการเนื้อหาเว็บไซต์
+          {tr('contentTitle')}
         </h1>
         <p className="mt-1 text-sm text-gray-500">
-          จัดการรีวิวจากผู้เรียนและคำถามที่พบบ่อยบนเว็บไซต์
+          {tr('contentDesc')}
         </p>
       </div>
 
@@ -49,7 +51,7 @@ export default async function ContentPage() {
               <p className="text-2xl font-bold text-white">
                 {totalTestimonials}
               </p>
-              <p className="text-xs text-gray-500">รีวิวทั้งหมด</p>
+              <p className="text-xs text-gray-500">{tr('allReviews')}</p>
             </div>
           </div>
         </div>
@@ -62,10 +64,10 @@ export default async function ContentPage() {
               <p className="text-2xl font-bold text-white">
                 {activeTestimonials}
                 <span className="ml-1 text-sm font-normal text-gray-500">
-                  / {totalTestimonials - activeTestimonials} ซ่อน
+                  / {totalTestimonials - activeTestimonials} {tr('hidden')}
                 </span>
               </p>
-              <p className="text-xs text-gray-500">รีวิวที่แสดง</p>
+              <p className="text-xs text-gray-500">{tr('reviewsShown')}</p>
             </div>
           </div>
         </div>
@@ -76,7 +78,7 @@ export default async function ContentPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{totalFaqs}</p>
-              <p className="text-xs text-gray-500">FAQ ทั้งหมด</p>
+              <p className="text-xs text-gray-500">{tr('allFaqs')}</p>
             </div>
           </div>
         </div>
@@ -89,10 +91,10 @@ export default async function ContentPage() {
               <p className="text-2xl font-bold text-white">
                 {activeFaqs}
                 <span className="ml-1 text-sm font-normal text-gray-500">
-                  / {totalFaqs - activeFaqs} ซ่อน
+                  / {totalFaqs - activeFaqs} {tr('hidden')}
                 </span>
               </p>
-              <p className="text-xs text-gray-500">FAQ ที่แสดง</p>
+              <p className="text-xs text-gray-500">{tr('faqsShown')}</p>
             </div>
           </div>
         </div>
@@ -108,9 +110,9 @@ export default async function ContentPage() {
                 <Star className="h-4 w-4 text-amber-400" />
               </div>
               <div>
-                <h2 className="font-semibold text-white">รีวิวจากผู้เรียน</h2>
+                <h2 className="font-semibold text-white">{tr('reviews')}</h2>
                 <p className="text-xs text-gray-500">
-                  {totalTestimonials} รายการ
+                  {totalTestimonials} {tr('items')}
                 </p>
               </div>
             </div>
@@ -120,10 +122,10 @@ export default async function ContentPage() {
             <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
               <Star className="h-8 w-8 text-gray-600" />
               <h3 className="mt-4 text-lg font-medium text-gray-300">
-                ยังไม่มีรีวิว
+                {tr('noReviewsYet')}
               </h3>
               <p className="mt-1.5 text-sm text-gray-500">
-                เพิ่มรีวิวจากผู้เรียนเพื่อแสดงบนเว็บไซต์
+                {tr('noReviewsDesc')}
               </p>
             </div>
           ) : (
@@ -152,11 +154,11 @@ export default async function ContentPage() {
                         </p>
                         {t.isActive ? (
                           <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-400 ring-1 ring-emerald-500/20">
-                            แสดง
+                            {tr('show')}
                           </span>
                         ) : (
                           <span className="inline-flex rounded-full bg-gray-500/10 px-2 py-0.5 text-xs font-medium text-gray-400 ring-1 ring-gray-500/20">
-                            ซ่อน
+                            {tr('hide')}
                           </span>
                         )}
                       </div>
@@ -180,7 +182,7 @@ export default async function ContentPage() {
           {testimonials.length > 0 && (
             <div className="border-t border-white/[0.06] px-5 py-3.5">
               <p className="text-sm text-gray-500">
-                ทั้งหมด {testimonials.length} รายการ
+                {tr('totalItems', { count: testimonials.length })}
               </p>
             </div>
           )}
@@ -194,8 +196,8 @@ export default async function ContentPage() {
                 <HelpCircle className="h-4 w-4 text-blue-400" />
               </div>
               <div>
-                <h2 className="font-semibold text-white">คำถามที่พบบ่อย</h2>
-                <p className="text-xs text-gray-500">{totalFaqs} รายการ</p>
+                <h2 className="font-semibold text-white">{tr('faqTitle')}</h2>
+                <p className="text-xs text-gray-500">{totalFaqs} {tr('items')}</p>
               </div>
             </div>
           </div>
@@ -204,10 +206,10 @@ export default async function ContentPage() {
             <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
               <HelpCircle className="h-8 w-8 text-gray-600" />
               <h3 className="mt-4 text-lg font-medium text-gray-300">
-                ยังไม่มี FAQ
+                {tr('noFaqsYet')}
               </h3>
               <p className="mt-1.5 text-sm text-gray-500">
-                เพิ่มคำถามที่พบบ่อยเพื่อแสดงบนเว็บไซต์
+                {tr('noFaqsDesc')}
               </p>
             </div>
           ) : (
@@ -228,11 +230,11 @@ export default async function ContentPage() {
                         </p>
                         {faq.isActive ? (
                           <span className="inline-flex flex-shrink-0 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-400 ring-1 ring-emerald-500/20">
-                            แสดง
+                            {tr('show')}
                           </span>
                         ) : (
                           <span className="inline-flex flex-shrink-0 rounded-full bg-gray-500/10 px-2 py-0.5 text-xs font-medium text-gray-400 ring-1 ring-gray-500/20">
-                            ซ่อน
+                            {tr('hide')}
                           </span>
                         )}
                       </div>
@@ -253,7 +255,7 @@ export default async function ContentPage() {
           {faqs.length > 0 && (
             <div className="border-t border-white/[0.06] px-5 py-3.5">
               <p className="text-sm text-gray-500">
-                ทั้งหมด {faqs.length} รายการ
+                {tr('totalItems', { count: faqs.length })}
               </p>
             </div>
           )}

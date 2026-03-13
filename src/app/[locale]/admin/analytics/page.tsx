@@ -9,9 +9,11 @@ import {
 import db from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
+import { getTranslations } from 'next-intl/server'
 
 export default async function AnalyticsPage() {
   await requireAdmin()
+  const t = await getTranslations('admin')
 
   const now = new Date()
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -118,9 +120,9 @@ export default async function AnalyticsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">วิเคราะห์และรายงาน</h1>
+        <h1 className="text-2xl font-bold text-white">{t('analyticsTitle')}</h1>
         <p className="mt-1 text-sm text-gray-500">
-          ภาพรวมข้อมูลและสถิติของแพลตฟอร์ม
+          {t('analyticsDesc')}
         </p>
       </div>
 
@@ -128,28 +130,32 @@ export default async function AnalyticsPage() {
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
         {[
           {
-            label: 'ผู้เรียนทั้งหมด',
+            id: 'totalStudents',
+            label: t('totalStudents'),
             value: totalUsers.toLocaleString(),
             icon: Users,
             iconBg: 'bg-blue-500/10',
             iconColor: 'text-blue-400',
           },
           {
-            label: 'ลงทะเบียนเดือนนี้',
+            id: 'enrolledThisMonth',
+            label: t('enrolledThisMonth'),
             value: newUsersThisMonth.toString(),
             icon: GraduationCap,
             iconBg: 'bg-cyan-500/10',
             iconColor: 'text-cyan-400',
           },
           {
-            label: 'อัตราจบคอร์ส',
+            id: 'courseCompletionRate',
+            label: t('courseCompletionRate'),
             value: `${completionRate}%`,
             icon: Target,
             iconBg: 'bg-emerald-500/10',
             iconColor: 'text-emerald-400',
           },
           {
-            label: 'Certificate เดือนนี้',
+            id: 'certsThisMonth',
+            label: t('certsThisMonth'),
             value: certsThisMonth.toString(),
             icon: Award,
             iconBg: 'bg-purple-500/10',
@@ -159,7 +165,7 @@ export default async function AnalyticsPage() {
           const Icon = stat.icon
           return (
             <div
-              key={stat.label}
+              key={stat.id}
               className="rounded-xl border border-white/[0.06] bg-[#0a1628]/50 p-5 transition-all hover:border-white/[0.1]"
             >
               <div className="flex items-center gap-3">
@@ -188,17 +194,17 @@ export default async function AnalyticsPage() {
             <div className="flex items-center gap-2">
               <BookOpen className="h-4 w-4 text-cyan-400" />
               <h2 className="text-sm font-semibold text-white">
-                คอร์สยอดนิยม
+                {t('popularCourses')}
               </h2>
             </div>
             <p className="mt-1 text-xs text-gray-500">
-              จัดอันดับตามจำนวนลงทะเบียน
+              {t('popularCoursesDesc')}
             </p>
           </div>
           <div className="divide-y divide-white/[0.04]">
             {topCourses.length === 0 ? (
               <div className="p-8 text-center text-sm text-gray-500">
-                ยังไม่มีข้อมูล
+                {t('noData')}
               </div>
             ) : (
               topCourses.map((course, index) => (
@@ -226,11 +232,11 @@ export default async function AnalyticsPage() {
                     <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
                       <span className="flex items-center gap-1">
                         <Users className="h-3 w-3" />
-                        {course.enrollments} ลงทะเบียน
+                        {course.enrollments} {t('enrolledCount')}
                       </span>
                       <span className="flex items-center gap-1">
                         <Target className="h-3 w-3" />
-                        จบ {course.completionRate}%
+                        {t('completedPercent')} {course.completionRate}%
                       </span>
                     </div>
                   </div>
@@ -256,16 +262,16 @@ export default async function AnalyticsPage() {
             <div className="flex items-center gap-2">
               <Award className="h-4 w-4 text-emerald-400" />
               <h2 className="text-sm font-semibold text-white">
-                อัตราการจบคอร์ส
+                {t('completionRates')}
               </h2>
             </div>
             <p className="mt-1 text-xs text-gray-500">
-              เปอร์เซ็นต์ผู้เรียนที่จบคอร์สสำเร็จ
+              {t('completionRatesDesc')}
             </p>
           </div>
           <div className="space-y-5 p-5">
             {courseStats.length === 0 ? (
-              <p className="text-center text-sm text-gray-500">ยังไม่มีข้อมูล</p>
+              <p className="text-center text-sm text-gray-500">{t('noData')}</p>
             ) : (
               courseStats.map((course, index) => (
                 <div key={course.id} className="space-y-2">
@@ -296,14 +302,14 @@ export default async function AnalyticsPage() {
           <div className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4 text-blue-400" />
             <h2 className="text-sm font-semibold text-white">
-              ผลแบบทดสอบล่าสุด
+              {t('recentQuizResults')}
             </h2>
           </div>
         </div>
         <div className="divide-y divide-white/[0.04]">
           {recentAttempts.length === 0 ? (
             <div className="p-8 text-center text-sm text-gray-500">
-              ยังไม่มีผลแบบทดสอบ
+              {t('noQuizResults')}
             </div>
           ) : (
             recentAttempts.map((attempt) => {
@@ -350,7 +356,7 @@ export default async function AnalyticsPage() {
                       {attempt.score}%
                     </span>
                     <span className="hidden text-xs text-gray-600 sm:block">
-                      {attempt.passed ? '✓ ผ่าน' : '✗ ไม่ผ่าน'}
+                      {attempt.passed ? `✓ ${t('passed')}` : `✗ ${t('failed')}`}
                     </span>
                     <span className="hidden text-xs text-gray-600 md:block">
                       {formatDate(attempt.attemptedAt, 'd MMM yyyy HH:mm')}
@@ -365,17 +371,17 @@ export default async function AnalyticsPage() {
 
       {/* Summary */}
       <div className="rounded-xl border border-white/[0.06] bg-[#0a1628]/50 p-5">
-        <h2 className="mb-4 text-sm font-semibold text-white">สรุปภาพรวม</h2>
+        <h2 className="mb-4 text-sm font-semibold text-white">{t('summaryOverview')}</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {[
-            { label: 'ผู้ใช้ทั้งหมด', value: totalUsers },
-            { label: 'คอร์สที่เปิดสอน', value: courses.length },
-            { label: 'การลงทะเบียนรวม', value: totalEnrollments },
-            { label: 'เรียนจบแล้ว', value: completedEnrollments },
-            { label: 'Certificate ออกแล้ว', value: totalCertificates },
-            { label: 'อัตราจบคอร์ส', value: `${completionRate}%` },
+            { id: 'totalUsers', label: t('totalUsersLabel'), value: totalUsers },
+            { id: 'publishedCourses', label: t('publishedCourses'), value: courses.length },
+            { id: 'totalEnrollments', label: t('totalEnrollments'), value: totalEnrollments },
+            { id: 'completedEnrollments', label: t('completedEnrollments'), value: completedEnrollments },
+            { id: 'certificatesIssued', label: t('certificatesIssued'), value: totalCertificates },
+            { id: 'courseCompletionRate', label: t('courseCompletionRate'), value: `${completionRate}%` },
           ].map((item) => (
-            <div key={item.label} className="text-center">
+            <div key={item.id} className="text-center">
               <p className="text-xl font-bold text-white">
                 {typeof item.value === 'number' ? item.value.toLocaleString() : item.value}
               </p>

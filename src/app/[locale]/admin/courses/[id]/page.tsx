@@ -14,6 +14,7 @@ import {
 import db from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 import { formatDate, levelLabels } from '@/lib/utils'
+import { getTranslations } from 'next-intl/server'
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   PUBLISHED: {
@@ -37,6 +38,7 @@ export default async function CourseDetailPage({
   params: Promise<{ id: string }>
 }) {
   await requireAdmin()
+  const t = await getTranslations('admin')
 
   const { id } = await params
 
@@ -80,7 +82,7 @@ export default async function CourseDetailPage({
           className="inline-flex items-center gap-1.5 text-sm text-gray-400 transition-colors hover:text-white"
         >
           <ArrowLeft className="h-4 w-4" />
-          กลับไปรายการคอร์ส
+          {t('courseDetailBack')}
         </Link>
 
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -110,7 +112,7 @@ export default async function CourseDetailPage({
       {/* Course Info Card */}
       <div className="rounded-xl border border-white/[0.06] bg-[#0a1628]/50 p-6">
         <h2 className="text-lg font-semibold text-white">
-          ข้อมูลคอร์ส
+          {t('courseInfo')}
         </h2>
 
         {/* Description */}
@@ -121,20 +123,20 @@ export default async function CourseDetailPage({
         {/* Meta info */}
         <div className="mt-5 flex flex-wrap gap-x-8 gap-y-3">
           <div>
-            <p className="text-xs text-gray-500">หมวดหมู่</p>
+            <p className="text-xs text-gray-500">{t('colCategory')}</p>
             <p className="mt-0.5 text-sm font-medium text-gray-300">
               {course.category}
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500">ระดับ</p>
+            <p className="text-xs text-gray-500">{t('colLevel')}</p>
             <p className="mt-0.5 text-sm font-medium text-gray-300">
               {levelLabels[course.level] ?? course.level}
             </p>
           </div>
           {course.duration && (
             <div>
-              <p className="text-xs text-gray-500">ระยะเวลา</p>
+              <p className="text-xs text-gray-500">{t('duration')}</p>
               <p className="mt-0.5 text-sm font-medium text-gray-300">
                 {course.duration}
               </p>
@@ -147,7 +149,7 @@ export default async function CourseDetailPage({
           <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-blue-400" />
-              <span className="text-xs text-gray-500">ผู้ลงทะเบียน</span>
+              <span className="text-xs text-gray-500">{t('enrolledStudents')}</span>
             </div>
             <p className="mt-1.5 text-xl font-bold text-white">
               {course._count.enrollments.toLocaleString()}
@@ -165,7 +167,7 @@ export default async function CourseDetailPage({
           <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
             <div className="flex items-center gap-2">
               <PlayCircle className="h-4 w-4 text-cyan-400" />
-              <span className="text-xs text-gray-500">บทเรียน</span>
+              <span className="text-xs text-gray-500">{t('lessons')}</span>
             </div>
             <p className="mt-1.5 text-xl font-bold text-white">
               {course.lessons.length}
@@ -174,7 +176,7 @@ export default async function CourseDetailPage({
           <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
             <div className="flex items-center gap-2">
               <FileQuestion className="h-4 w-4 text-amber-400" />
-              <span className="text-xs text-gray-500">แบบทดสอบ</span>
+              <span className="text-xs text-gray-500">{t('quizzes')}</span>
             </div>
             <p className="mt-1.5 text-xl font-bold text-white">
               {course.quizzes.length}
@@ -187,7 +189,7 @@ export default async function CourseDetailPage({
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <PlayCircle className="h-5 w-5 text-cyan-400" />
-          <h2 className="text-lg font-semibold text-white">บทเรียน</h2>
+          <h2 className="text-lg font-semibold text-white">{t('lessons')}</h2>
           <span className="rounded-full bg-cyan-500/10 px-2 py-0.5 text-xs font-medium text-cyan-400">
             {course.lessons.length}
           </span>
@@ -197,10 +199,10 @@ export default async function CourseDetailPage({
           <div className="flex flex-col items-center justify-center rounded-xl border border-white/[0.06] bg-[#0a1628]/50 px-6 py-16 text-center">
             <PlayCircle className="h-8 w-8 text-gray-600" />
             <h3 className="mt-4 text-lg font-medium text-gray-300">
-              ยังไม่มีบทเรียน
+              {t('noLessonsInCourse')}
             </h3>
             <p className="mt-1.5 text-sm text-gray-500">
-              คอร์สนี้ยังไม่มีบทเรียน เพิ่มบทเรียนเพื่อเริ่มต้นใช้งาน
+              {t('noLessonsInCourseDesc')}
             </p>
           </div>
         ) : (
@@ -210,16 +212,16 @@ export default async function CourseDetailPage({
                 <thead>
                   <tr className="border-b border-white/[0.06]">
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      ลำดับ
+                      {t('colLessonOrder')}
                     </th>
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      ชื่อบทเรียน
+                      {t('colLessonTitle')}
                     </th>
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                       YouTube
                     </th>
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      สถานะ
+                      {t('colStatus')}
                     </th>
                   </tr>
                 </thead>
@@ -253,7 +255,7 @@ export default async function CourseDetailPage({
                             className="inline-flex items-center gap-1.5 text-sm text-cyan-400 transition-colors hover:text-cyan-300"
                           >
                             <Video className="h-3.5 w-3.5" />
-                            ดูวิดีโอ
+                            {t('watchVideo')}
                           </Link>
                         ) : (
                           <span className="text-sm text-gray-600">-</span>
@@ -263,12 +265,12 @@ export default async function CourseDetailPage({
                         {lesson.isActive ? (
                           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
                             <CheckCircle className="h-3 w-3" />
-                            เปิดใช้งาน
+                            {t('enabled')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2.5 py-0.5 text-xs font-medium text-red-400">
                             <XCircle className="h-3 w-3" />
-                            ปิดใช้งาน
+                            {t('disabled')}
                           </span>
                         )}
                       </td>
@@ -280,7 +282,7 @@ export default async function CourseDetailPage({
 
             <div className="border-t border-white/[0.06] px-5 py-3.5">
               <p className="text-sm text-gray-500">
-                ทั้งหมด {course.lessons.length} บทเรียน
+                {t('totalLessonsInCourse', { count: course.lessons.length })}
               </p>
             </div>
           </div>
@@ -291,7 +293,7 @@ export default async function CourseDetailPage({
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <FileQuestion className="h-5 w-5 text-amber-400" />
-          <h2 className="text-lg font-semibold text-white">แบบทดสอบ</h2>
+          <h2 className="text-lg font-semibold text-white">{t('quizzes')}</h2>
           <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-400">
             {course.quizzes.length}
           </span>
@@ -301,10 +303,10 @@ export default async function CourseDetailPage({
           <div className="flex flex-col items-center justify-center rounded-xl border border-white/[0.06] bg-[#0a1628]/50 px-6 py-16 text-center">
             <FileQuestion className="h-8 w-8 text-gray-600" />
             <h3 className="mt-4 text-lg font-medium text-gray-300">
-              ยังไม่มีแบบทดสอบ
+              {t('noQuizzesInCourse')}
             </h3>
             <p className="mt-1.5 text-sm text-gray-500">
-              คอร์สนี้ยังไม่มีแบบทดสอบ เพิ่มแบบทดสอบเพื่อประเมินผู้เรียน
+              {t('noQuizzesInCourseDesc')}
             </p>
           </div>
         ) : (
@@ -314,19 +316,19 @@ export default async function CourseDetailPage({
                 <thead>
                   <tr className="border-b border-white/[0.06]">
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      ชื่อแบบทดสอบ
+                      {t('colQuizTitle')}
                     </th>
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      คะแนนผ่าน
+                      {t('colQuizPassingScore')}
                     </th>
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      จำนวนคำถาม
+                      {t('colQuizQuestions')}
                     </th>
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      จำนวนครั้งที่ทำ
+                      {t('colQuizAttempts')}
                     </th>
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      สถานะ
+                      {t('colStatus')}
                     </th>
                   </tr>
                 </thead>
@@ -349,25 +351,25 @@ export default async function CourseDetailPage({
                       <td className="whitespace-nowrap px-5 py-4">
                         <div className="flex items-center gap-1.5 text-sm text-gray-400">
                           <FileQuestion className="h-3.5 w-3.5 text-gray-500" />
-                          {quiz._count.questions} ข้อ
+                          {quiz._count.questions} {t('questionUnit')}
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-5 py-4">
                         <div className="flex items-center gap-1.5 text-sm text-gray-400">
                           <Users className="h-3.5 w-3.5 text-gray-500" />
-                          {quiz._count.attempts.toLocaleString()} ครั้ง
+                          {quiz._count.attempts.toLocaleString()} {t('attemptUnit')}
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-5 py-4">
                         {quiz.isActive ? (
                           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
                             <CheckCircle className="h-3 w-3" />
-                            เปิดใช้งาน
+                            {t('enabled')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2.5 py-0.5 text-xs font-medium text-red-400">
                             <XCircle className="h-3 w-3" />
-                            ปิดใช้งาน
+                            {t('disabled')}
                           </span>
                         )}
                       </td>
@@ -379,7 +381,7 @@ export default async function CourseDetailPage({
 
             <div className="border-t border-white/[0.06] px-5 py-3.5">
               <p className="text-sm text-gray-500">
-                ทั้งหมด {course.quizzes.length} แบบทดสอบ
+                {t('totalQuizzesInCourse', { count: course.quizzes.length })}
               </p>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { Settings, Save, Award, Palette, Eye, EyeOff, QrCode } from 'lucide-react'
 import { CERTIFICATE_THEMES } from '@/lib/certificate-themes'
 import CertificatePreview from '@/components/features/CertificatePreview'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 
 interface CertificateSettingsData {
@@ -29,6 +30,7 @@ export default function CertificateSettingsPage() {
   const [enabledThemes, setEnabledThemes] = useState<string[]>([])
   const [enableQrCode, setEnableQrCode] = useState(true)
   const [verificationBaseUrl, setVerificationBaseUrl] = useState('')
+  const t = useTranslations('admin')
 
   const fetchSettings = useCallback(async () => {
     try {
@@ -46,7 +48,7 @@ export default function CertificateSettingsPage() {
         if ('verificationBaseUrl' in data) setVerificationBaseUrl((data as Record<string, unknown>).verificationBaseUrl as string || '')
       }
     } catch {
-      setAlert({ type: 'error', message: 'ไม่สามารถโหลดข้อมูลการตั้งค่าได้' })
+      setAlert({ type: 'error', message: t('loadError') })
     } finally {
       setLoading(false)
     }
@@ -76,12 +78,12 @@ export default function CertificateSettingsPage() {
       const json = await res.json()
       if (json.success) {
         setSettings(json.data)
-        setAlert({ type: 'success', message: 'บันทึกการตั้งค่าสำเร็จ' })
+        setAlert({ type: 'success', message: t('saveSuccess') })
       } else {
-        setAlert({ type: 'error', message: json.error || 'เกิดข้อผิดพลาด' })
+        setAlert({ type: 'error', message: json.error || t('error') })
       }
     } catch {
-      setAlert({ type: 'error', message: 'ไม่สามารถบันทึกการตั้งค่าได้' })
+      setAlert({ type: 'error', message: t('saveError') })
     } finally {
       setSaving(false)
     }
@@ -107,9 +109,9 @@ export default function CertificateSettingsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">ตั้งค่า Certificate</h1>
+        <h1 className="text-2xl font-bold text-white">{t('certSettingsTitle')}</h1>
         <p className="mt-1 text-sm text-gray-500">
-          จัดการข้อมูลผู้ลงนาม, รูปแบบรหัส และธีมของ Certificate
+          {t('certSettingsDesc')}
         </p>
       </div>
 
@@ -134,39 +136,39 @@ export default function CertificateSettingsPage() {
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
             <div className="mb-5 flex items-center gap-2">
               <Award className="h-5 w-5 text-amber-400" />
-              <h2 className="text-lg font-semibold text-white">ข้อมูลผู้ลงนาม</h2>
+              <h2 className="text-lg font-semibold text-white">{t('signerInfo')}</h2>
             </div>
 
             <div className="space-y-4">
               <div>
                 <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
-                  ชื่อผู้ลงนาม
+                  {t('signerName')}
                 </label>
                 <input
                   type="text"
                   value={signerName}
                   onChange={(e) => setSignerName(e.target.value)}
                   className="w-full rounded-lg border border-white/[0.06] bg-white/[0.04] px-4 py-2.5 text-sm text-gray-200 outline-none transition-colors placeholder:text-gray-600 focus:border-blue-500/50 focus:bg-white/[0.06]"
-                  placeholder="ผศ.ดร.รวิภา อัครจินดานนท์"
+                  placeholder={t('signerNamePlaceholder')}
                 />
               </div>
 
               <div>
                 <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
-                  ตำแหน่งผู้ลงนาม
+                  {t('signerPosition')}
                 </label>
                 <input
                   type="text"
                   value={signerTitle}
                   onChange={(e) => setSignerTitle(e.target.value)}
                   className="w-full rounded-lg border border-white/[0.06] bg-white/[0.04] px-4 py-2.5 text-sm text-gray-200 outline-none transition-colors placeholder:text-gray-600 focus:border-blue-500/50 focus:bg-white/[0.06]"
-                  placeholder="คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"
+                  placeholder={t('signerPositionPlaceholder')}
                 />
               </div>
 
               <div>
                 <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Certificate Prefix
+                  {t('certPrefix')}
                 </label>
                 <input
                   type="text"
@@ -176,7 +178,7 @@ export default function CertificateSettingsPage() {
                   placeholder="SPUBUS"
                 />
                 <p className="mt-1.5 text-xs text-gray-600">
-                  ใช้เป็นตัวนำหน้ารหัส Certificate เช่น {certificatePrefix || 'SPUBUS'}-AIMKT-2026-0001
+                  {t('certPrefixDesc', { prefix: certificatePrefix || 'SPUBUS' })}
                 </p>
               </div>
             </div>
@@ -186,7 +188,7 @@ export default function CertificateSettingsPage() {
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
             <div className="mb-5 flex items-center gap-2">
               <QrCode className="h-5 w-5 text-cyan-400" />
-              <h2 className="text-lg font-semibold text-white">QR Code บน Certificate</h2>
+              <h2 className="text-lg font-semibold text-white">{t('qrOnCert')}</h2>
             </div>
 
             <div className="space-y-4">
@@ -194,10 +196,10 @@ export default function CertificateSettingsPage() {
               <label className="flex cursor-pointer items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.04] px-4 py-3">
                 <div>
                   <p className="text-sm font-medium text-gray-200">
-                    แสดง QR Code บน Certificate
+                    {t('showQrCode')}
                   </p>
                   <p className="text-xs text-gray-500">
-                    QR Code สำหรับตรวจสอบความถูกต้องจะแสดงที่มุมขวาล่างของ Certificate
+                    {t('qrCodeDesc')}
                   </p>
                 </div>
                 <div className="relative">
@@ -215,7 +217,7 @@ export default function CertificateSettingsPage() {
               {/* Verification Base URL */}
               <div>
                 <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Verification Base URL
+                  {t('verificationBaseUrl')}
                 </label>
                 <input
                   type="url"
@@ -226,7 +228,7 @@ export default function CertificateSettingsPage() {
                   disabled={!enableQrCode}
                 />
                 <p className="mt-1.5 text-xs text-gray-600">
-                  URL หลักสำหรับสร้าง QR Code ยืนยัน เช่น {verificationBaseUrl || 'https://ai-academy.spu.ac.th'}/verify/CERT-CODE
+                  {t('baseUrlDesc', { url: verificationBaseUrl || 'https://ai-academy.spu.ac.th' })}
                 </p>
               </div>
 
@@ -234,7 +236,7 @@ export default function CertificateSettingsPage() {
               {enableQrCode && (
                 <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
                   <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-500">
-                    ตัวอย่าง QR Code
+                    {t('qrPreview')}
                   </p>
                   <div className="flex items-center gap-4">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -246,7 +248,7 @@ export default function CertificateSettingsPage() {
                       className="h-20 w-20 rounded"
                     />
                     <div className="text-xs text-gray-500">
-                      <p className="mb-1 font-medium text-gray-400">QR จะนำไปสู่:</p>
+                      <p className="mb-1 font-medium text-gray-400">{t('qrLinksTo')}</p>
                       <p className="break-all font-mono">
                         {verificationBaseUrl || 'https://ai-academy.spu.ac.th'}/verify/{certificatePrefix || 'SPUBUS'}-AIMKT-2026-0001
                       </p>
@@ -261,14 +263,14 @@ export default function CertificateSettingsPage() {
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
             <div className="mb-5 flex items-center gap-2">
               <Palette className="h-5 w-5 text-purple-400" />
-              <h2 className="text-lg font-semibold text-white">ธีม Certificate</h2>
+              <h2 className="text-lg font-semibold text-white">{t('certThemes')}</h2>
             </div>
 
             <div className="space-y-4">
               {/* Default Theme */}
               <div>
                 <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
-                  ธีมเริ่มต้น
+                  {t('defaultTheme')}
                 </label>
                 <select
                   value={defaultThemeId}
@@ -286,7 +288,7 @@ export default function CertificateSettingsPage() {
               {/* Theme Enable/Disable */}
               <div>
                 <label className="mb-3 block text-xs font-medium uppercase tracking-wider text-gray-500">
-                  เปิด/ปิด ธีม
+                  {t('toggleThemes')}
                 </label>
                 <div className="space-y-2">
                   {CERTIFICATE_THEMES.map((theme) => {
@@ -352,7 +354,7 @@ export default function CertificateSettingsPage() {
             ) : (
               <Save className="h-4 w-4" />
             )}
-            {saving ? 'กำลังบันทึก...' : 'บันทึกการตั้งค่า'}
+            {saving ? t('saving') : t('saveSettings')}
           </button>
         </div>
 
@@ -361,7 +363,7 @@ export default function CertificateSettingsPage() {
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
             <div className="mb-5 flex items-center gap-2">
               <Settings className="h-5 w-5 text-blue-400" />
-              <h2 className="text-lg font-semibold text-white">ตัวอย่าง Certificate</h2>
+              <h2 className="text-lg font-semibold text-white">{t('certPreview')}</h2>
             </div>
 
             <div className="overflow-hidden rounded-xl border border-white/[0.06]">
@@ -382,9 +384,9 @@ export default function CertificateSettingsPage() {
             </div>
 
             <p className="mt-3 text-center text-xs text-gray-600">
-              ตัวอย่างแสดงผลด้วยข้อมูลจำลอง &middot; ธีม:{' '}
+              {t('previewNote')}{' '}
               <span className="text-gray-400">
-                {CERTIFICATE_THEMES.find((t) => t.id === defaultThemeId)?.name || defaultThemeId}
+                {CERTIFICATE_THEMES.find((th) => th.id === defaultThemeId)?.name || defaultThemeId}
               </span>
             </p>
           </div>
