@@ -5,16 +5,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
+import { useTranslations, useLocale } from 'next-intl'
 import { Menu, X, LogIn, LogOut, LayoutDashboard, Award, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Button from '@/components/ui/Button'
-
-const navLinks = [
-  { href: '/', label: 'หน้าแรก' },
-  { href: '/courses', label: 'คอร์สเรียน' },
-  { href: '/instructors', label: 'ทีมผู้สอน' },
-  { href: '/about', label: 'เกี่ยวกับ' },
-]
+import LanguageSwitcher from './LanguageSwitcher'
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -22,6 +17,15 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
+  const t = useTranslations('navbar')
+  const locale = useLocale()
+
+  const navLinks = [
+    { href: `/${locale}`, label: t('home') },
+    { href: `/${locale}/courses`, label: t('courses') },
+    { href: `/${locale}/instructors`, label: t('instructors') },
+    { href: `/${locale}/about`, label: t('about') },
+  ]
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -40,8 +44,12 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href)
+  const isActive = (href: string) => {
+    const normalizedHref = href.replace(/\/$/, '')
+    const normalizedPathname = pathname.replace(/\/$/, '')
+    if (normalizedHref === `/${locale}`) return normalizedPathname === `/${locale}` || normalizedPathname === ''
+    return normalizedPathname.startsWith(normalizedHref)
+  }
 
   const isLoggedIn = status === 'authenticated' && session?.user
 
@@ -58,7 +66,7 @@ export default function Navbar() {
     >
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8" style={{ height: '72px' }}>
         {/* Logo + Brand */}
-        <Link href="/" className="flex items-center gap-2 sm:gap-3">
+        <Link href={`/${locale}`} className="flex items-center gap-2 sm:gap-3">
           <Image
             src="/images/brand/spu-bus-logo.svg"
             alt="SPU BUS Logo"
@@ -117,7 +125,10 @@ export default function Navbar() {
         </nav>
 
         {/* Right Side */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* Language Switcher */}
+          <LanguageSwitcher />
+
           {isLoggedIn ? (
             <div className="relative hidden md:block" ref={userMenuRef}>
               <button
@@ -154,45 +165,45 @@ export default function Navbar() {
                 <div className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-white/[0.08] bg-[#0a0f1e]/95 shadow-2xl backdrop-blur-xl">
                   <div className="py-2">
                     <Link
-                      href="/dashboard"
+                      href={`/${locale}/dashboard`}
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 transition-colors hover:bg-white/[0.06] hover:text-white"
                     >
                       <LayoutDashboard className="h-4 w-4" />
-                      แดชบอร์ด
+                      {t('dashboard')}
                     </Link>
                     <Link
-                      href="/dashboard"
+                      href={`/${locale}/dashboard`}
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 transition-colors hover:bg-white/[0.06] hover:text-white"
                     >
                       <Award className="h-4 w-4" />
-                      ใบประกาศนียบัตร
+                      {t('certificates')}
                     </Link>
                     {session.user.role === 'ADMIN' && (
                       <Link
-                        href="/admin"
+                        href={`/${locale}/admin`}
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-cyan-400 transition-colors hover:bg-white/[0.06] hover:text-cyan-300"
                       >
                         <LayoutDashboard className="h-4 w-4" />
-                        แอดมิน
+                        {t('admin')}
                       </Link>
                     )}
                     <div className="my-1 border-t border-white/[0.06]" />
                     <button
-                      onClick={() => signOut({ callbackUrl: '/' })}
+                      onClick={() => signOut({ callbackUrl: `/${locale}` })}
                       className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-white/[0.06] hover:text-red-300"
                     >
                       <LogOut className="h-4 w-4" />
-                      ออกจากระบบ
+                      {t('logout')}
                     </button>
                   </div>
                 </div>
               )}
             </div>
           ) : (
-            <Link href="/login" className="hidden md:block">
+            <Link href={`/${locale}/login`} className="hidden md:block">
               <Button variant="secondary" size="sm">
                 <LogIn className="h-4 w-4" />
-                เข้าสู่ระบบ
+                {t('login')}
               </Button>
             </Link>
           )}
@@ -206,7 +217,7 @@ export default function Navbar() {
               'hover:bg-white/[0.06] hover:text-white'
             )}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? 'ปิดเมนู' : 'เปิดเมนู'}
+            aria-label={mobileMenuOpen ? t('closeMenu') : t('openMenu')}
           >
             {mobileMenuOpen ? (
               <X className="h-5 w-5" />
@@ -239,34 +250,34 @@ export default function Navbar() {
               {isLoggedIn ? (
                 <div className="space-y-1">
                   <Link
-                    href="/dashboard"
+                    href={`/${locale}/dashboard`}
                     className="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-gray-300 hover:bg-white/[0.06] hover:text-white"
                   >
                     <LayoutDashboard className="h-4 w-4" />
-                    แดชบอร์ด
+                    {t('dashboard')}
                   </Link>
                   {session.user.role === 'ADMIN' && (
                     <Link
-                      href="/admin"
+                      href={`/${locale}/admin`}
                       className="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-cyan-400 hover:bg-white/[0.06]"
                     >
                       <LayoutDashboard className="h-4 w-4" />
-                      แอดมิน
+                      {t('admin')}
                     </Link>
                   )}
                   <button
-                    onClick={() => signOut({ callbackUrl: '/' })}
+                    onClick={() => signOut({ callbackUrl: `/${locale}` })}
                     className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-red-400 hover:bg-white/[0.06]"
                   >
                     <LogOut className="h-4 w-4" />
-                    ออกจากระบบ
+                    {t('logout')}
                   </button>
                 </div>
               ) : (
-                <Link href="/login">
+                <Link href={`/${locale}/login`}>
                   <Button variant="secondary" size="sm" className="w-full">
                     <LogIn className="h-4 w-4" />
-                    เข้าสู่ระบบ
+                    {t('login')}
                   </Button>
                 </Link>
               )}

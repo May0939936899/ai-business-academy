@@ -1,35 +1,10 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import { Facebook, Youtube, MessageCircle, Phone, MapPin, Mail } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
-const footerSections = [
-  {
-    title: 'คอร์สเรียน',
-    links: [
-      { href: '/courses', label: 'คอร์สทั้งหมด' },
-      { href: '/courses?category=AI+Automation', label: 'AI Automation' },
-      { href: '/courses?category=AI+Marketing', label: 'AI Marketing' },
-      { href: '/courses?category=AI+HR', label: 'AI HR' },
-    ],
-  },
-  {
-    title: 'เกี่ยวกับ',
-    links: [
-      { href: '/about', label: 'เกี่ยวกับเรา' },
-      { href: '/about#team', label: 'ทีมผู้สอน' },
-      { href: '/about#faq', label: 'คำถามที่พบบ่อย' },
-    ],
-  },
-  {
-    title: 'ช่วยเหลือ',
-    links: [
-      { href: '/contact', label: 'ติดต่อเรา' },
-      { href: '/privacy', label: 'นโยบายความเป็นส่วนตัว' },
-      { href: '/terms', label: 'เงื่อนไขการใช้งาน' },
-    ],
-  },
-]
+import { useTranslations, useLocale } from 'next-intl'
 
 const socialLinks = [
   {
@@ -50,6 +25,37 @@ const socialLinks = [
 ]
 
 export default function Footer() {
+  const t = useTranslations('footer')
+  const locale = useLocale()
+
+  const footerSections = [
+    {
+      title: t('courses'),
+      links: [
+        { href: `/${locale}/courses`, label: t('allCourses') },
+        { href: `/${locale}/courses?category=AI+Automation`, label: t('aiAutomation') },
+        { href: `/${locale}/courses?category=AI+Marketing`, label: t('aiMarketing') },
+        { href: `/${locale}/courses?category=AI+HR`, label: t('aiHR') },
+      ],
+    },
+    {
+      title: t('about'),
+      links: [
+        { href: `/${locale}/about`, label: t('aboutUs') },
+        { href: `/${locale}/about#team`, label: t('team') },
+        { href: `/${locale}/about#faq`, label: t('faq') },
+      ],
+    },
+    {
+      title: t('help'),
+      links: [
+        { href: `/${locale}/contact`, label: t('contactUs') },
+        { href: `/${locale}/privacy`, label: t('privacy') },
+        { href: `/${locale}/terms`, label: t('terms') },
+      ],
+    },
+  ]
+
   return (
     <footer className="border-t border-white/[0.06] bg-[#030712]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -57,7 +63,7 @@ export default function Footer() {
         <div className="grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <Link href="/" className="mb-4 inline-flex items-center gap-3 sm:gap-4">
+            <Link href={`/${locale}`} className="mb-4 inline-flex items-center gap-3 sm:gap-4">
               <Image
                 src="/images/brand/spu-bus-logo.svg"
                 alt="SPU BUS Logo"
@@ -83,20 +89,19 @@ export default function Footer() {
                   </span>
                 </div>
                 <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-gray-500">
-                  คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม
+                  {t('spuBus')}
                 </p>
               </div>
             </Link>
             <p className="mb-6 max-w-sm text-sm leading-relaxed text-gray-500">
-              แพลตฟอร์มเรียนรู้ AI สำหรับธุรกิจ โดยคณะบริหารธุรกิจ
-              มหาวิทยาลัยศรีปทุม เรียนฟรี พร้อมใบประกาศนียบัตร
+              {t('description')}
             </p>
 
             {/* Contact Info */}
             <div className="mb-5 space-y-3">
               <div className="flex items-start gap-2.5 text-sm text-gray-500">
                 <Phone className="mt-0.5 h-4 w-4 shrink-0 text-gray-600" />
-                <span>0 2579 1111 ต่อ 2354</span>
+                <span>{t('phone')}</span>
               </div>
               <div className="flex items-start gap-2.5 text-sm text-gray-500">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-gray-600" />
@@ -109,9 +114,7 @@ export default function Footer() {
               </div>
               <div className="flex items-start gap-2.5 text-sm text-gray-500">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-600" />
-                <span>
-                  มหาวิทยาลัยศรีปทุม 2410/2 ถนนพหลโยธิน เขตจตุจักร กรุงเทพฯ 10900
-                </span>
+                <span>{t('address')}</span>
               </div>
             </div>
 
@@ -162,8 +165,7 @@ export default function Footer() {
         {/* ── Bottom Bar ── */}
         <div className="border-t border-white/[0.06] py-6">
           <p className="text-center text-xs text-gray-600">
-            &copy; {new Date().getFullYear()} AI Business Academy
-            &mdash; คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม
+            &copy; {new Date().getFullYear()} {t('copyright')}
           </p>
         </div>
       </div>

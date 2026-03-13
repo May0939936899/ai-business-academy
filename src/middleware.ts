@@ -1,73 +1,96 @@
-import { withAuth } from "next-auth/middleware"
-import { NextResponse } from "next/server"
+import createMiddleware from 'next-intl/middleware'
+import { NextRequest, NextResponse } from 'next/server'
+import { getToken } from 'next-auth/jwt'
+import { routing } from '@/i18n/routing'
 
-export default withAuth(
-  function middleware(req) {
-    const token = req.nextauth.token
-    const pathname = req.nextUrl.pathname
+const intlMiddleware = createMiddleware(routing)
 
-    // If user is suspended, redirect to login
-    if (token?.error === "suspended") {
-      return NextResponse.redirect(new URL("/login?error=suspended", req.url))
-    }
+// Paths that are always public (no auth needed)
+const publicPaths = [
+  '/',
+  '/login',
+  '/courses',
+  '/about',
+  '/verify',
+  '/instructors',
+  '/instructor',
+  '/a/certificate',
+  '/admin/login',
+]
 
-    // Admin routes require ADMIN role
-    if (pathname.startsWith("/admin")) {
-      if (!token) {
-        return NextResponse.redirect(new URL("/login?callbackUrl=/admin", req.url))
-      }
-      if (token.role !== "ADMIN") {
-        // Non-admin users get redirected to dashboard
-        return NextResponse.redirect(new URL("/dashboard", req.url))
-      }
-    }
+function isPublicPath(pathname: string): boolean {
+  // Strip locale prefix for matching
+  const strippedPath = stripLocale(pathname)
+  return publicPaths.some(
+    (p) => strippedPath === p || strippedPath.startsWith(p + '/')
+  )
+}
 
-    // If logged in and visiting /login, redirect based on role
-    if (pathname === "/login" && token) {
-      if (token.role === "ADMIN") {
-        return NextResponse.redirect(new URL("/admin", req.url))
-      }
-      return NextResponse.redirect(new URL("/dashboard", req.url))
-    }
+function stripLocale(pathname: string): string {
+  const localePattern = new RegExp(`^/(${routing.locales.join('|')})(/|$)`)
+  return pathname.replace(localePattern, '/$2') || '/'
+}
 
+export default async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl
+
+  // Skip API routes, static files, and Next.js internals entirely
+  if (
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/favicon') ||
+    pathname.startsWith('/images/') ||
+    pathname.includes('.')
+  ) {
     return NextResponse.next()
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const pathname = req.nextUrl.pathname
-
-        // Public routes — always allow (even without token)
-        if (
-          pathname === "/" ||
-          pathname === "/login" ||
-          pathname.startsWith("/courses") ||
-          pathname.startsWith("/a/certificate") ||
-          pathname.startsWith("/about") ||
-          pathname.startsWith("/verify") ||
-          pathname.startsWith("/instructors") ||
-          pathname.startsWith("/instructor") ||
-          pathname.startsWith("/api/auth") ||
-          pathname.startsWith("/api/courses") ||
-          pathname.startsWith("/_next") ||
-          pathname.startsWith("/favicon") ||
-          pathname.includes(".")
-        ) {
-          return true
-        }
-
-        // Protected routes — require token
-        return !!token
-      },
-    },
-    pages: {
-      signIn: "/login",
-    },
   }
-)
+
+  // Run next-intl middleware first to handle locale detection/redirect
+  const intlResponse = intlMiddleware(req)
+
+  // For public paths, just return the intl response (no auth check needed)
+  if (isPublicPath(pathname)) {
+    return intlResponse
+  }
+
+  // For protected paths, check auth
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+  const strippedPath = stripLocale(pathname)
+
+  // Not authenticated → redirect to login
+  if (!token) {
+    const locale = pathname.match(new RegExp(`^/(${routing.locales.join('|')})/`))?.[1] || routing.defaultLocale
+    const loginUrl = new URL(`/${locale}/login`, req.url)
+    loginUrl.searchParams.set('callbackUrl', pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  // Suspended user → redirect to login with error
+  if (token.error === 'suspended') {
+    const locale = pathname.match(new RegExp(`^/(${routing.locales.join('|')})/`))?.[1] || routing.defaultLocale
+    return NextResponse.redirect(new URL(`/${locale}/login?error=suspended`, req.url))
+  }
+
+  // Admin routes require ADMIN role
+  if (strippedPath.startsWith('/admin')) {
+    if (token.role !== 'ADMIN') {
+      const locale = pathname.match(new RegExp(`^/(${routing.locales.join('|')})/`))?.[1] || routing.defaultLocale
+      return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url))
+    }
+  }
+
+  // Logged-in user visiting /login → redirect to dashboard
+  if (strippedPath === '/login') {
+    const locale = pathname.match(new RegExp(`^/(${routing.locales.join('|')})/`))?.[1] || routing.defaultLocale
+    if (token.role === 'ADMIN') {
+      return NextResponse.redirect(new URL(`/${locale}/admin`, req.url))
+    }
+    return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url))
+  }
+
+  return intlResponse
+}
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|images/).*)",
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|images/).*)'],
 }

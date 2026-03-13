@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import {
   Clock,
@@ -7,6 +9,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslations, useLocale } from 'next-intl'
 
 export interface CourseCardProps {
   title: string
@@ -21,22 +24,12 @@ export interface CourseCardProps {
   lessonCount?: number
 }
 
-const levelLabels: Record<string, string> = {
-  BEGINNER: 'เริ่มต้น',
-  INTERMEDIATE: 'ปานกลาง',
-  ADVANCED: 'ขั้นสูง',
-  'เริ่มต้น': 'เริ่มต้น',
-  'ปานกลาง': 'ปานกลาง',
-  'ขั้นสูง': 'ขั้นสูง',
-}
+// Level labels resolved inside component via translations
 
 const levelColors: Record<string, string> = {
   BEGINNER: 'bg-green-500/20 text-green-400 border-green-500/30',
   INTERMEDIATE: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
   ADVANCED: 'bg-red-500/20 text-red-400 border-red-500/30',
-  'เริ่มต้น': 'bg-green-500/20 text-green-400 border-green-500/30',
-  'ปานกลาง': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  'ขั้นสูง': 'bg-red-500/20 text-red-400 border-red-500/30',
 }
 
 const categoryGradients: Record<string, string> = {
@@ -59,11 +52,20 @@ export default function CourseCard({
   thumbnail,
   lessonCount = 0,
 }: CourseCardProps) {
+  const t = useTranslations('coursesPage')
+  const tc = useTranslations('common')
+  const locale = useLocale()
   const gradientColor = categoryGradients[category] || categoryGradients.default
   const snippet = shortDescription || description
 
+  const levelLabels: Record<string, string> = {
+    BEGINNER: t('filterBeginner'),
+    INTERMEDIATE: t('filterIntermediate'),
+    ADVANCED: t('filterAdvanced'),
+  }
+
   return (
-    <Link href={`/courses/${slug}`} className="group block">
+    <Link href={`/${locale}/courses/${slug}`} className="group block">
       <div
         className={cn(
           'relative overflow-hidden rounded-2xl',
@@ -120,7 +122,7 @@ export default function CourseCard({
                 )}
               >
                 <Sparkles className="h-3 w-3" />
-                เรียนฟรี
+                {tc('free')}
               </span>
             </div>
           )}
@@ -159,7 +161,7 @@ export default function CourseCard({
             )}
             <span className="flex items-center gap-1">
               <BookOpen className="h-3.5 w-3.5" />
-              {lessonCount} บทเรียน
+              {lessonCount} {t('lessons')}
             </span>
           </div>
 
@@ -174,7 +176,7 @@ export default function CourseCard({
                 'group-hover:shadow-blue-500/40 group-hover:brightness-110'
               )}
             >
-              เรียนเลย
+              {tc('learnMore')}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </span>
           </div>

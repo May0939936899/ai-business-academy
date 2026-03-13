@@ -1,5 +1,7 @@
 import { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
+import CredentialsProvider from "next-auth/providers/credentials"
+import bcrypt from "bcryptjs"
 import db from "@/lib/db"
 
 // Admin emails from env — comma separated
@@ -10,6 +12,42 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    CredentialsProvider({
+      id: "admin-credentials",
+      name: "Admin Login",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.username || !credentials?.password) return null
+
+        // Find user by email (username = email for admin)
+        const user = await db.user.findUnique({
+          where: { email: credentials.username.toLowerCase() },
+        })
+
+        if (!user || !user.passwordHash) return null
+        if (user.role !== "ADMIN") return null
+        if (user.status === "SUSPENDED") return null
+
+        const isValid = await bcrypt.compare(credentials.password, user.passwordHash)
+        if (!isValid) return null
+
+        // Update last login
+        await db.user.update({
+          where: { id: user.id },
+          data: { lastLoginAt: new Date() },
+        })
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.fullName,
+          image: user.image,
+        }
+      },
+    }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
