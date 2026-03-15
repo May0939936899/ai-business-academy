@@ -315,7 +315,9 @@
     "summary": "สรุปบทเรียน",
     "learningOutcomes": "ผลลัพธ์การเรียนรู้",
     "keyTakeaways": "ประเด็นสำคัญ",
-    "takeQuiz": "ทำแบบทดสอบ"
+    "takeQuiz": "ทำแบบทดสอบ",
+    "ebookTitle": "E-Book ประกอบบทเรียน",
+    "ebookSubtitle": "ดาวน์โหลดสรุปเนื้อหาฉบับสมบูรณ์เป็น PDF"
   },
   "quiz": {
     "error": "เกิดข้อผิดพลาด",

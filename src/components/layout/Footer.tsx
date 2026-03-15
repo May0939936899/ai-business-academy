@@ -64,13 +64,6 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <Link href={`/${locale}`} className="mb-4 inline-flex items-center gap-3 sm:gap-4">
-              <Image
-                src="/images/brand/spu-bus-logo.svg"
-                alt="SPU BUS Logo"
-                width={120}
-                height={40}
-                className="h-9 w-auto sm:h-10"
-              />
               <div>
                 <div className="flex items-baseline gap-1.5">
                   <span

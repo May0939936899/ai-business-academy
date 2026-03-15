@@ -7,7 +7,7 @@ export default async function CoursesPage() {
     include: {
       _count: { select: { lessons: true, enrollments: true } },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { pathOrder: "asc" },
   });
 
   const serialized = courses.map((c) => ({
@@ -22,6 +22,7 @@ export default async function CoursesPage() {
     isFree: c.isFree,
     thumbnail: c.thumbnail,
     lessonCount: c._count.lessons,
+    pathGroup: c.pathGroup,
   }));
 
   return <CoursesClient courses={serialized} />;

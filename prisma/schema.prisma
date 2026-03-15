@@ -48,18 +48,26 @@ enum CorrectAnswer {
 // ─── Models ──────────────────────────────────────────────────────────────────
 
 model User {
-  id           String     @id @default(cuid())
-  fullName     String
-  email        String     @unique
-  passwordHash String?
-  googleId     String?    @unique
-  image        String?
-  role         Role       @default(STUDENT)
-  profileImage String?
-  status       UserStatus @default(ACTIVE)
-  lastLoginAt  DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id                 String     @id @default(cuid())
+  fullName           String
+  email              String     @unique
+  passwordHash       String?
+  googleId           String?    @unique
+  image              String?
+  role               Role       @default(STUDENT)
+  profileImage       String?
+  status             UserStatus @default(ACTIVE)
+  lastLoginAt        DateTime?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  // Profile fields (optional, collected post-signup)
+  country            String?
+  organization       String?
+  position           String?
+  interestArea       String[]   @default([])
+  learningGoal       String?
+  isProfileCompleted Boolean    @default(false)
 
   // Relations
   courses        Course[]         @relation("InstructorCourses")
@@ -88,6 +96,8 @@ model Course {
   hasCertificate   Boolean      @default(true)
   instructorId     String?
   status           CourseStatus @default(DRAFT)
+  pathGroup        String?      // FOUNDATION, CORE, APPLIED, ADVANCED
+  pathOrder        Int          @default(0)
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 
@@ -105,6 +115,7 @@ model Course {
   @@index([status])
   @@index([instructorId])
   @@index([courseCode])
+  @@index([pathGroup])
 }
 
 model Lesson {
@@ -128,12 +139,35 @@ model Lesson {
   updatedAt        DateTime    @updatedAt
 
   // Relations
-  course         Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessonProgress LessonProgress[]
-  resources      Resource[]
+  course           Course                 @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonProgress   LessonProgress[]
+  resources        Resource[]
+  ebook            LessonEbook?
+  inVideoQuizzes   InVideoQuizQuestion[]
 
   @@index([courseId])
   @@index([courseId, lessonOrder])
+}
+
+model InVideoQuizQuestion {
+  id            String        @id @default(cuid())
+  lessonId      String
+  question      String        @db.Text
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctAnswer CorrectAnswer
+  explanation   String?       @db.Text
+  triggerPercent Int          @default(50) // % of video duration when question pops up (1-99)
+  sortOrder     Int           @default(0)
+  createdAt     DateTime      @default(now())
+
+  // Relations
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([lessonId])
+  @@index([lessonId, sortOrder])
 }
 
 model Enrollment {
@@ -289,6 +323,44 @@ model Resource {
   lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@index([lessonId])
+}
+
+model LessonEbook {
+  id                  String   @id @default(cuid())
+  lessonId            String   @unique
+  title               String?
+  subtitle            String?
+  coverImageUrl       String?
+  introduction        String?  @db.Text
+  keyConcepts         String?  @db.Text
+  businessUseCases    String?  @db.Text
+  toolsAndTechniques  String?  @db.Text
+  practicalExample    String?  @db.Text
+  ebookSummary        String?  @db.Text
+  ebookKeyTakeaways   String?  @db.Text
+  reviewQuestions     String?  @db.Text
+  closingMessage      String?  @db.Text
+  pdfUrl              String?
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([lessonId])
+}
+
+model EbookSettings {
+  id                 String   @id @default("global")
+  watermarkText      String   @default("AI Business Academy | คณะบริหารธุรกิจ ม.ศรีปทุม")
+  watermarkOpacity   Float    @default(0.15)
+  headerText         String   @default("AI Business Academy")
+  footerText         String   @default("คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม")
+  logoUrl            String?
+  isWatermarkEnabled Boolean  @default(true)
+  accentColor        String   @default("#1e40af")
+  updatedAt          DateTime @updatedAt
 }
 
 model WebsiteContent {

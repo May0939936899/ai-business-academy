@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4A148C"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9C27B0" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#9C27B0" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="500" cy="80" r="200" fill="#9C27B0" opacity="0.06"/>
+  <circle cx="100" cy="320" r="150" fill="#9C27B0" opacity="0.04"/>
+  <rect x="0" y="0" width="640" height="6" fill="#9C27B0" opacity="0.8"/>
+  <rect x="40" y="32" width="100" height="28" rx="14" fill="#9C27B0" opacity="0.9"/>
+  <text x="90" y="51" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="12" fill="#fff">Management</text>
+  <text x="40" y="140" font-family="Arial,sans-serif" font-weight="900" font-size="34" fill="#ffffff">AI Digital Organization</text>
+  <text x="40" y="180" font-family="Arial,sans-serif" font-weight="400" font-size="16" fill="#ffffff" opacity="0.6">AI Business Academy</text>
+  <text x="40" y="205" font-family="Arial,sans-serif" font-weight="400" font-size="13" fill="#ffffff" opacity="0.4">คณะบริหารธุรกิจ ม.ศรีปทุม</text>
+  <rect x="40" y="320" width="80" height="4" rx="2" fill="#9C27B0" opacity="0.5"/>
+  <rect x="130" y="320" width="40" height="4" rx="2" fill="#9C27B0" opacity="0.3"/>
+</svg>

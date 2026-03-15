@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
 import Button from '@/components/ui/Button'
@@ -24,16 +24,20 @@ export default function EnrollButton({
   enrollmentStatus,
 }: EnrollButtonProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const t = useTranslations('courseDetail')
   const locale = useLocale()
   const [loading, setLoading] = useState(false)
 
-  const handleEnroll = async () => {
-    if (!isLoggedIn) {
-      router.push(`/${locale}/login?callbackUrl=/${locale}/courses/${courseSlug}`)
-      return
+  // Auto-enroll after login redirect (user came back with ?enroll=1)
+  useEffect(() => {
+    if (isLoggedIn && !isEnrolled && searchParams.get('enroll') === '1') {
+      doEnroll()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn, isEnrolled])
 
+  const doEnroll = async () => {
     setLoading(true)
     try {
       const res = await fetch('/api/enrollments', {
@@ -54,6 +58,17 @@ export default function EnrollButton({
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleEnroll = async () => {
+    if (!isLoggedIn) {
+      // Redirect to login → come back with ?enroll=1 → auto-enroll
+      router.push(
+        `/${locale}/login?callbackUrl=/${locale}/courses/${courseSlug}?enroll=1`
+      )
+      return
+    }
+    await doEnroll()
   }
 
   if (isEnrolled && firstLessonId) {

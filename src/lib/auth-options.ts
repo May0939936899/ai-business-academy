@@ -13,6 +13,39 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
+      id: "user-credentials",
+      name: "Email & Password",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null
+
+        const user = await db.user.findUnique({
+          where: { email: credentials.email.toLowerCase() },
+        })
+
+        if (!user || !user.passwordHash) return null
+        if (user.status === "SUSPENDED") return null
+
+        const isValid = await bcrypt.compare(credentials.password, user.passwordHash)
+        if (!isValid) return null
+
+        await db.user.update({
+          where: { id: user.id },
+          data: { lastLoginAt: new Date() },
+        })
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.fullName,
+          image: user.image,
+        }
+      },
+    }),
+    CredentialsProvider({
       id: "admin-credentials",
       name: "Admin Login",
       credentials: {
@@ -119,6 +152,7 @@ export const authOptions: NextAuthOptions = {
             fullName: true,
             status: true,
             image: true,
+            isProfileCompleted: true,
           },
         })
 
@@ -130,6 +164,7 @@ export const authOptions: NextAuthOptions = {
           token.role = dbUser.role
           token.fullName = dbUser.fullName
           token.picture = dbUser.image
+          token.isProfileCompleted = dbUser.isProfileCompleted
         }
       }
 
@@ -141,6 +176,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string
         session.user.role = token.role as string
         session.user.fullName = token.fullName as string
+        session.user.isProfileCompleted = token.isProfileCompleted as boolean
       }
       return session
     },

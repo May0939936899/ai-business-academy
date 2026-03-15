@@ -302,7 +302,9 @@
     "summary": "课程摘要",
     "learningOutcomes": "学习成果",
     "keyTakeaways": "要点总结",
-    "takeQuiz": "参加测验"
+    "takeQuiz": "参加测验",
+    "ebookTitle": "课程电子书",
+    "ebookSubtitle": "下载完整课程摘要PDF"
   },
   "quiz": {
     "error": "发生错误",

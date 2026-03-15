@@ -9,6 +9,7 @@ const intlMiddleware = createMiddleware(routing)
 const publicPaths = [
   '/',
   '/login',
+  '/signup',
   '/courses',
   '/about',
   '/verify',
@@ -69,6 +70,16 @@ export default async function middleware(req: NextRequest) {
   if (token.error === 'suspended') {
     const locale = pathname.match(new RegExp(`^/(${routing.locales.join('|')})/`))?.[1] || routing.defaultLocale
     return NextResponse.redirect(new URL(`/${locale}/login?error=suspended`, req.url))
+  }
+
+  // Redirect STUDENT with incomplete profile to /complete-profile
+  if (
+    token.role === 'STUDENT' &&
+    !token.isProfileCompleted &&
+    strippedPath !== '/complete-profile'
+  ) {
+    const locale = pathname.match(new RegExp(`^/(${routing.locales.join('|')})/`))?.[1] || routing.defaultLocale
+    return NextResponse.redirect(new URL(`/${locale}/complete-profile`, req.url))
   }
 
   // Admin routes require ADMIN role

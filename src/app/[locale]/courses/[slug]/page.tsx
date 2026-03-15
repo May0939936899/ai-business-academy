@@ -171,11 +171,6 @@ export default async function CourseDetailPage({ params }: Props) {
               </h2>
               <div className="space-y-3">
                 {course.lessons.map((lesson) => {
-                  const lessonLevelColor: Record<string, string> = {
-                    BEGINNER: 'bg-green-500/10 text-green-400 border-green-500/20',
-                    INTERMEDIATE: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-                    ADVANCED: 'bg-red-500/10 text-red-400 border-red-500/20',
-                  }
                   return (
                     <Card key={lesson.id} hover={true} className="p-0">
                       <div className="flex items-start gap-4 p-4">
@@ -197,9 +192,6 @@ export default async function CourseDetailPage({ params }: Props) {
                           <div className="mb-1 flex flex-wrap items-center gap-2">
                             <span className="text-xs font-semibold text-blue-400">
                               {t('lessonPrefix', { order: lesson.lessonOrder })}
-                            </span>
-                            <span className={`rounded border px-2 py-0.5 text-[10px] font-semibold ${lessonLevelColor[lesson.lessonLevel] || lessonLevelColor.BEGINNER}`}>
-                              {levelLabels[lesson.lessonLevel] || lesson.lessonLevel}
                             </span>
                             {lesson.durationText && (
                               <span className="flex items-center gap-1 text-[10px] text-gray-500">
@@ -251,14 +243,28 @@ export default async function CourseDetailPage({ params }: Props) {
           <div className="lg:col-span-1">
             <div className="sticky top-6">
               <Card hover={false} glow={true} className="overflow-hidden">
-                <div className="relative h-48 bg-gradient-to-br from-blue-600 to-cyan-500 p-6">
-                  <div className="absolute inset-0 opacity-20">
-                    <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/20" />
-                    <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-white/10" />
-                  </div>
-                  <div className="relative flex h-full items-center justify-center">
-                    <Sparkles className="h-16 w-16 text-white/80" />
-                  </div>
+                {/* Course Cover Image */}
+                <div className="relative h-48 bg-gradient-to-br from-blue-600 to-cyan-500">
+                  {course.thumbnail ? (
+                    <Image
+                      src={course.thumbnail}
+                      alt={course.title}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <>
+                      <div className="absolute inset-0 opacity-20">
+                        <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/20" />
+                        <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-white/10" />
+                      </div>
+                      <div className="relative flex h-full flex-col items-center justify-center gap-3 p-6">
+                        <Sparkles className="h-10 w-10 text-white/80" />
+                        <p className="text-center text-lg font-bold text-white leading-tight line-clamp-2">{course.title}</p>
+                        <span className="rounded-full bg-white/20 px-3 py-0.5 text-xs font-medium text-white/90">{course.category}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <div className="p-6">

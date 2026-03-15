@@ -53,6 +53,27 @@ function DoubleBorder({ theme }: { theme: CertificateTheme }) {
 }
 
 function SolidBorder({ theme }: { theme: CertificateTheme }) {
+  // Neon dark themes: use neon glow color for visible border
+  if (theme.isDark && theme.neonGlow) {
+    return (
+      <>
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            border: `1px solid ${theme.neonGlow}55`,
+            boxShadow: `inset 0 0 25px ${theme.neonGlow}0A`,
+          }}
+        />
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            inset: '8px',
+            border: `0.5px solid ${theme.neonGlow}28`,
+          }}
+        />
+      </>
+    )
+  }
   return (
     <>
       <div
@@ -72,6 +93,55 @@ function SolidBorder({ theme }: { theme: CertificateTheme }) {
 }
 
 function OrnateBorder({ theme }: { theme: CertificateTheme }) {
+  // Neon dark themes: use neon glow color for visible ornate border
+  if (theme.isDark && theme.neonGlow) {
+    const glow = theme.neonGlow
+    return (
+      <>
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            border: `2px solid ${glow}55`,
+            boxShadow: `inset 0 0 30px ${glow}08`,
+          }}
+        />
+        <div
+          className="absolute pointer-events-none"
+          style={{ inset: '5px', border: `1px solid ${glow}33` }}
+        />
+        <div
+          className="absolute pointer-events-none"
+          style={{ inset: '9px', border: `1px double ${glow}25` }}
+        />
+        <div
+          className="absolute pointer-events-none"
+          style={{ inset: '14px', border: `0.5px solid ${glow}18` }}
+        />
+        {(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const).map((corner) => {
+          const isTop = corner.includes('top')
+          const isLeft = corner.includes('left')
+          return (
+            <div
+              key={corner}
+              className="absolute pointer-events-none"
+              style={{
+                [isTop ? 'top' : 'bottom']: '3px',
+                [isLeft ? 'left' : 'right']: '3px',
+                width: '28px',
+                height: '28px',
+                borderTop: isTop ? `2px solid ${glow}80` : 'none',
+                borderBottom: !isTop ? `2px solid ${glow}80` : 'none',
+                borderLeft: isLeft ? `2px solid ${glow}80` : 'none',
+                borderRight: !isLeft ? `2px solid ${glow}80` : 'none',
+                filter: `drop-shadow(0 0 3px ${glow}60)`,
+              }}
+            />
+          )
+        })}
+      </>
+    )
+  }
+
   return (
     <>
       {/* Outermost border */}
@@ -170,6 +240,9 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
     const theme = getCertificateTheme(themeId)
     const formattedDate = formatDate(issuedDate)
 
+    const isDark = theme.isDark ?? false
+    const neonGlow = theme.neonGlow
+
     return (
       <div
         ref={ref}
@@ -179,6 +252,9 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
           aspectRatio: '1.414 / 1',
           background: theme.bgGradient,
           maxWidth: '1200px',
+          ...(isDark && neonGlow && {
+            boxShadow: `0 0 35px ${neonGlow}28, 0 0 70px ${neonGlow}12`,
+          }),
         }}
       >
         {/* ── Themed Border ── */}
@@ -195,7 +271,7 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
             backgroundImage: `url("${theme.patternSvg}")`,
             backgroundRepeat: 'repeat',
             backgroundSize: '120px 120px',
-            opacity: 0.5,
+            opacity: isDark ? 0.8 : 0.5,
             maskImage: 'linear-gradient(135deg, transparent 10%, black 50%)',
             WebkitMaskImage: 'linear-gradient(135deg, transparent 10%, black 50%)',
           }}
@@ -212,13 +288,13 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
             backgroundImage: `url("${theme.patternSvg}")`,
             backgroundRepeat: 'repeat',
             backgroundSize: '120px 120px',
-            opacity: 0.5,
+            opacity: isDark ? 0.8 : 0.5,
             maskImage: 'linear-gradient(315deg, transparent 10%, black 50%)',
             WebkitMaskImage: 'linear-gradient(315deg, transparent 10%, black 50%)',
           }}
         />
 
-        {/* ── Gold Accent Line (top) ── */}
+        {/* ── Accent Line (top) ── */}
         <div
           className="absolute pointer-events-none"
           style={{
@@ -227,7 +303,7 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
             right: '15%',
             height: '1px',
             background: `linear-gradient(to right, transparent, ${theme.accentColor}, transparent)`,
-            opacity: 0.25,
+            opacity: isDark ? 0.45 : 0.25,
           }}
         />
 
@@ -241,19 +317,38 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
               ════════════════════════════════════════════════════════════════ */}
           <div className="flex flex-col items-center" style={{ flex: '0 0 auto' }}>
             {/* Logo */}
-            <div className="relative shrink-0" style={{ width: '80px', height: '80px' }}>
-              <Image
+            <div
+              className="relative"
+              style={{
+                width: 'clamp(80px, 12vw, 140px)',
+                height: 'clamp(32px, 5vw, 56px)',
+                marginBottom: 'clamp(4px, 0.8vw, 10px)',
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={logoUrl || '/images/brand/spu-bus-logo.svg'}
-                alt="AI Business Academy"
-                fill
-                className="object-contain"
-                unoptimized
+                alt="SPU BUS Logo"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  // Dark neon backgrounds: invert dark logo so it shows as white/light
+                  ...(isDark && !logoUrl && {
+                    filter: 'brightness(0) invert(1)',
+                    opacity: 0.88,
+                  }),
+                  // Custom uploaded logo: preserve colors but boost brightness on dark bg
+                  ...(isDark && logoUrl && {
+                    filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.25))',
+                  }),
+                }}
               />
             </div>
 
             {/* Academy Name */}
             <p
-              className="cert-text-academy text-center mt-2"
+              className="cert-text-academy text-center"
               style={{
                 color: theme.headerColor,
                 fontSize: 'clamp(12px, 1.8vw, 20px)',
@@ -312,7 +407,7 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
                   width: 'clamp(40px, 8vw, 80px)',
                   height: '1px',
                   background: `linear-gradient(to right, transparent, ${theme.accentColor})`,
-                  opacity: 0.4,
+                  opacity: isDark ? 0.65 : 0.4,
                 }}
               />
               <div
@@ -321,8 +416,11 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
                   height: '4px',
                   borderRadius: '50%',
                   background: theme.accentColor,
-                  opacity: 0.5,
+                  opacity: isDark ? 0.8 : 0.5,
                   margin: '0 8px',
+                  ...(isDark && neonGlow && {
+                    boxShadow: `0 0 6px ${neonGlow}`,
+                  }),
                 }}
               />
               <div
@@ -330,7 +428,7 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
                   width: 'clamp(40px, 8vw, 80px)',
                   height: '1px',
                   background: `linear-gradient(to left, transparent, ${theme.accentColor})`,
-                  opacity: 0.4,
+                  opacity: isDark ? 0.65 : 0.4,
                 }}
               />
             </div>
@@ -360,6 +458,9 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
                 borderBottom: `2px solid ${theme.accentColor}`,
                 display: 'inline-block',
                 minWidth: '40%',
+                ...(isDark && neonGlow && {
+                  textShadow: `0 0 20px ${neonGlow}50`,
+                }),
               }}
             >
               {studentName}
@@ -450,8 +551,8 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
                 style={{
                   width: 'clamp(120px, 20vw, 220px)',
                   height: '1px',
-                  background: theme.primaryColor,
-                  opacity: 0.4,
+                  background: isDark ? theme.accentColor : theme.primaryColor,
+                  opacity: isDark ? 0.55 : 0.4,
                 }}
               />
 
@@ -522,6 +623,10 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
                       width: 'clamp(50px, 8vw, 100px)',
                       height: 'clamp(50px, 8vw, 100px)',
                       borderRadius: '4px',
+                      ...(isDark && neonGlow && {
+                        outline: `1px solid ${neonGlow}40`,
+                        outlineOffset: '2px',
+                      }),
                     }}
                   />
                   <span
@@ -541,7 +646,7 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
           </div>
         </div>
 
-        {/* ── Gold Accent Line (bottom) ── */}
+        {/* ── Accent Line (bottom) ── */}
         <div
           className="absolute pointer-events-none"
           style={{
@@ -550,7 +655,7 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
             right: '15%',
             height: '1px',
             background: `linear-gradient(to right, transparent, ${theme.accentColor}, transparent)`,
-            opacity: 0.25,
+            opacity: isDark ? 0.45 : 0.25,
           }}
         />
       </div>

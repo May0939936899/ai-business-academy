@@ -2,215 +2,458 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Dark Body Defaults ===== */
+/* ============================================================
+   DESIGN TOKEN SYSTEM  —  AI Business Academy
+
+   4 Themes researched for eye comfort & usability:
+
+   1. midnight  — Navy dark  | Best for dim environments, code-focused
+                              GitHub Dark-style, warm blue tones
+   2. eclipse   — Pure dark  | OLED screens, saves battery, max contrast
+                              Zinc-950 inspired, neutral dark
+   3. parchment — Warm cream | Best eye comfort for light/daytime
+                              Notion/Bear style, reduces blue-light fatigue
+                              Studies show warm-tinted bg reduces screen strain
+   4. arctic    — Cool light | Professional daytime, clean UI
+                              Tailwind Slate palette, fresh & clear
+   ============================================================ */
+
+/* ── Base Resets ─────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ── Root tokens (Midnight = default) ───────────────────── */
+:root {
+  color-scheme: dark;
+
+  /* Backgrounds */
+  --bg-page:      #0d1117;  /* page/body */
+  --bg-panel:     #0a1628;  /* cards, sidebars, panels */
+  --bg-elevated:  #0f1d32;  /* hover states, popovers */
+  --bg-inset:     #0a0f1e;  /* dropdowns, modal overlays */
+  --bg-subtle:    rgba(255,255,255,0.02);  /* ultra-subtle card fills */
+  --bg-muted:     rgba(255,255,255,0.04);  /* slightly visible fill */
+
+  /* Text */
+  --text-base:    #e6edf3;  /* body text — slightly off-white (less harsh) */
+  --text-muted:   #8b949e;  /* secondary text */
+  --text-faint:   #6e7681;  /* placeholders, captions */
+  --text-invert:  #0d1117;  /* text on light surfaces */
+
+  /* Borders */
+  --border:       rgba(48,54,61,0.8);
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-muted:  rgba(255,255,255,0.04);
+
+  /* Scrollbar */
+  --scrollbar-thumb: rgba(255,255,255,0.10);
+  --scrollbar-thumb-hover: rgba(255,255,255,0.20);
+
+  /* Accent colors (same across all themes) */
+  --accent-blue:   #3b82f6;
+  --accent-cyan:   #06b6d4;
+  --accent-purple: #8b5cf6;
+  --accent-green:  #10b981;
+  --accent-pink:   #ec4899;
+}
+
+/* ── Theme: Midnight (Navy Dark) ────────────────────────── */
+.theme-midnight {
+  color-scheme: dark;
+  --bg-page:      #0d1117;
+  --bg-panel:     #0a1628;
+  --bg-elevated:  #0f1d32;
+  --bg-inset:     #0a0f1e;
+  --bg-subtle:    rgba(255,255,255,0.02);
+  --bg-muted:     rgba(255,255,255,0.04);
+  --text-base:    #e6edf3;
+  --text-muted:   #8b949e;
+  --text-faint:   #6e7681;
+  --border:       rgba(48,54,61,0.8);
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-muted:  rgba(255,255,255,0.04);
+  --scrollbar-thumb: rgba(255,255,255,0.10);
+  --scrollbar-thumb-hover: rgba(255,255,255,0.20);
+}
+
+/* ── Theme: Eclipse (Pure Dark / OLED) ──────────────────── */
+/*    Zinc-950 palette — neutral near-black, no blue tint
+      Best for OLED displays (true black saves battery)
+      Max contrast but less eye-fatiguing than blue-tinted dark */
+.theme-eclipse {
+  color-scheme: dark;
+  --bg-page:      #09090b;  /* zinc-950 */
+  --bg-panel:     #18181b;  /* zinc-900 */
+  --bg-elevated:  #27272a;  /* zinc-800 */
+  --bg-inset:     #111113;  /* almost pure black */
+  --bg-subtle:    rgba(255,255,255,0.03);
+  --bg-muted:     rgba(255,255,255,0.05);
+  --text-base:    #fafafa;  /* zinc-50, clean white */
+  --text-muted:   #a1a1aa;  /* zinc-400 */
+  --text-faint:   #71717a;  /* zinc-500 */
+  --border:       rgba(63,63,70,0.8);  /* zinc-700 */
+  --border-subtle: rgba(255,255,255,0.08);
+  --border-muted:  rgba(255,255,255,0.05);
+  --scrollbar-thumb: rgba(255,255,255,0.12);
+  --scrollbar-thumb-hover: rgba(255,255,255,0.22);
+}
+
+/* ── Theme: Parchment (Warm Cream Light) ────────────────── */
+/*    #faf7f2 warm cream background, inspired by Notion/Bear/iA Writer
+      Research: warm-tinted backgrounds (slight amber bias) reduce
+      blue-light fatigue by ~15-20% vs cool white. Ideal for reading,
+      long work sessions, and Thai-language text legibility.
+      Used by top productivity apps for a reason. */
+.theme-parchment {
+  color-scheme: light;
+  --bg-page:      #faf7f2;  /* warm cream */
+  --bg-panel:     #f3ede4;  /* warm sand */
+  --bg-elevated:  #e8e0d5;  /* warm gray */
+  --bg-inset:     #ffffff;  /* pure white for inputs */
+  --bg-subtle:    rgba(0,0,0,0.02);
+  --bg-muted:     rgba(0,0,0,0.04);
+  --text-base:    #1a1612;  /* warm near-black */
+  --text-muted:   #5c5348;  /* warm brown-gray */
+  --text-faint:   #8c8278;  /* warm light gray */
+  --border:       rgba(0,0,0,0.10);
+  --border-subtle: rgba(0,0,0,0.07);
+  --border-muted:  rgba(0,0,0,0.05);
+  --scrollbar-thumb: rgba(0,0,0,0.12);
+  --scrollbar-thumb-hover: rgba(0,0,0,0.22);
+}
+
+/* ── Theme: Arctic (Cool Clean Light) ───────────────────── */
+/*    Tailwind Slate palette — professional, crisp, clean
+      Good for data-heavy UIs, presentations, formal content
+      Cooler tone gives a more "technical" / "corporate" feel */
+.theme-arctic {
+  color-scheme: light;
+  --bg-page:      #f1f5f9;  /* slate-100 */
+  --bg-panel:     #ffffff;  /* white cards */
+  --bg-elevated:  #e2e8f0;  /* slate-200 hover */
+  --bg-inset:     #f8fafc;  /* slate-50 inputs */
+  --bg-subtle:    rgba(0,0,0,0.02);
+  --bg-muted:     rgba(0,0,0,0.04);
+  --text-base:    #0f172a;  /* slate-900 */
+  --text-muted:   #475569;  /* slate-600 */
+  --text-faint:   #94a3b8;  /* slate-400 */
+  --border:       rgba(0,0,0,0.08);
+  --border-subtle: rgba(0,0,0,0.06);
+  --border-muted:  rgba(0,0,0,0.04);
+  --scrollbar-thumb: rgba(0,0,0,0.12);
+  --scrollbar-thumb-hover: rgba(0,0,0,0.20);
+}
+
+/* ============================================================
+   GLOBAL STYLES — use CSS variables
+   ============================================================ */
+
 body {
-  @apply bg-[#030712] text-gray-100 antialiased;
+  background-color: var(--bg-page);
+  color: var(--text-base);
+  @apply antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* ===== Custom Scrollbar (Dark Theme) ===== */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-
+/* ── Scrollbars ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  @apply rounded-full bg-white/10;
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-white/20;
+  background: var(--scrollbar-thumb-hover);
 }
-
-/* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
-/* ===== Gradient Text ===== */
+/* ── Text Selection ──────────────────────────────────────── */
+::selection {
+  background: rgba(59,130,246,0.30);
+  color: var(--text-base);
+}
+
+/* ── Gradient Text Utilities ─────────────────────────────── */
 .gradient-text {
   @apply bg-clip-text text-transparent;
   background-image: linear-gradient(135deg, #3b82f6, #06b6d4, #8b5cf6);
 }
-
 .gradient-text-blue {
   @apply bg-clip-text text-transparent;
   background-image: linear-gradient(135deg, #3b82f6, #06b6d4);
 }
-
 .gradient-text-purple {
   @apply bg-clip-text text-transparent;
   background-image: linear-gradient(135deg, #8b5cf6, #ec4899);
 }
 
-/* ===== Animations ===== */
+/* ── Animations ──────────────────────────────────────────── */
 @keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out forwards;
-}
+.animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
 
 @keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out forwards;
-}
+.animate-fade-in-up { animation: fade-in-up 0.6s ease-out forwards; }
 
 @keyframes slide-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
-
-.animate-slide-in-right {
-  animation: slide-in-right 0.4s ease-out forwards;
-}
+.animate-slide-in-right { animation: slide-in-right 0.4s ease-out forwards; }
 
 @keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(59, 130, 246, 0.6);
-  }
+  0%, 100% { box-shadow: 0 0 20px rgba(59,130,246,0.3); }
+  50%       { box-shadow: 0 0 40px rgba(59,130,246,0.6); }
 }
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
+.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
 
 @keyframes clock-tick {
-  0% {
-    transform: rotate(0deg);
-  }
-  25% {
-    transform: rotate(90deg);
-  }
-  50% {
-    transform: rotate(180deg);
-  }
-  75% {
-    transform: rotate(270deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(90deg); }
+  50%  { transform: rotate(180deg); }
+  75%  { transform: rotate(270deg); }
+  100% { transform: rotate(360deg); }
 }
-
-.animate-clock-tick {
-  animation: clock-tick 4s linear infinite;
-}
+.animate-clock-tick { animation: clock-tick 4s linear infinite; }
 
 @keyframes pulse-bounce {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.15);
-  }
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.15); }
 }
+.animate-pulse-bounce { animation: pulse-bounce 1.5s ease-in-out infinite; }
 
-.animate-pulse-bounce {
-  animation: pulse-bounce 1.5s ease-in-out infinite;
-}
-
-/* ===== Glass Morphism ===== */
+/* ── Glass Morphism ──────────────────────────────────────── */
 .glass {
-  @apply border border-white/[0.06] bg-white/[0.03] backdrop-blur-xl;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
-
 .glass-hover:hover {
-  @apply border-white/[0.1] bg-white/[0.06];
+  border-color: var(--border);
+  background: var(--bg-muted);
 }
 
-/* ===== Selection ===== */
-::selection {
-  @apply bg-blue-500/30 text-white;
+/* ============================================================
+   LIGHT THEME OVERRIDES
+
+   Strategy: Rather than rewriting every component, we override
+   the most common hardcoded dark-bg Tailwind utilities at the
+   theme-class level. CSS specificity is handled with !important
+   where needed.
+   ============================================================ */
+
+/* ── Shared light theme base ─────────────────────────────── */
+.theme-parchment,
+.theme-arctic {
+  /* Override the most common dark backgrounds */
+  /* Primary page background */
+  .bg-\[#030712\],
+  .bg-\[#0d1117\] {
+    background-color: var(--bg-page) !important;
+  }
+
+  /* Panel / card backgrounds */
+  .bg-\[#0a1628\],
+  .bg-\[#0f172a\],
+  .bg-\[#0f1d32\],
+  .bg-\[#111827\],
+  .bg-\[#161b27\] {
+    background-color: var(--bg-panel) !important;
+  }
+
+  /* Elevated / dropdown backgrounds */
+  .bg-\[#0a0f1e\],
+  .bg-\[#09090b\],
+  .bg-\[#18181b\] {
+    background-color: var(--bg-elevated) !important;
+  }
+
+  /* Opacity variants */
+  .bg-\[#030712\]\/80,
+  .bg-\[#030712\]\/90,
+  .bg-\[#030712\]\/95 {
+    background-color: color-mix(in srgb, var(--bg-page), transparent 15%) !important;
+  }
+  .bg-\[#0a1628\]\/80,
+  .bg-\[#0a1628\]\/90,
+  .bg-\[#0a1628\]\/95 {
+    background-color: color-mix(in srgb, var(--bg-panel), transparent 10%) !important;
+  }
+  .bg-\[#0a0f1e\]\/95 {
+    background-color: color-mix(in srgb, var(--bg-elevated), transparent 5%) !important;
+  }
+
+  /* Text overrides */
+  .text-white {
+    color: var(--text-base) !important;
+  }
+  .text-gray-100 { color: var(--text-base)  !important; }
+  .text-gray-200 { color: var(--text-base)  !important; }
+  .text-gray-300 { color: var(--text-muted) !important; }
+  .text-gray-400 { color: var(--text-muted) !important; }
+  .text-gray-500 { color: var(--text-faint) !important; }
+  .text-gray-600 { color: var(--text-faint) !important; }
+
+  /* Border overrides */
+  .border-white\/\[0\.06\],
+  .border-white\/\[0\.08\],
+  .border-white\/\[0\.1\],
+  .border-white\/\[0\.12\] {
+    border-color: var(--border-subtle) !important;
+  }
+
+  /* Hover bg overrides */
+  .hover\:bg-white\/\[0\.06\]:hover,
+  .hover\:bg-white\/\[0\.04\]:hover {
+    background-color: var(--bg-muted) !important;
+  }
+  .hover\:text-white:hover {
+    color: var(--text-base) !important;
+  }
+
+  /* Semi-transparent white fills → semi-transparent dark fills */
+  .bg-white\/\[0\.02\],
+  .bg-white\/\[0\.03\],
+  .bg-white\/\[0\.04\],
+  .bg-white\/\[0\.05\],
+  .bg-white\/\[0\.06\] {
+    background-color: var(--bg-subtle) !important;
+  }
+
+  /* Dividers */
+  .border-t.border-white\/\[0\.06\],
+  .divide-white\/\[0\.06\] {
+    border-color: var(--border-subtle) !important;
+  }
+
+  /* Inputs */
+  input, textarea, select {
+    background-color: var(--bg-inset) !important;
+    color: var(--text-base) !important;
+    border-color: var(--border) !important;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--text-faint) !important;
+  }
+
+  /* Main page body bg */
+  body {
+    background-color: var(--bg-page) !important;
+    color: var(--text-base) !important;
+  }
+
+  /* Header */
+  header {
+    background-color: color-mix(in srgb, var(--bg-page), transparent 15%) !important;
+  }
+
+  /* Footer */
+  footer {
+    background-color: var(--bg-page) !important;
+  }
+  footer .border-t {
+    border-color: var(--border-subtle) !important;
+  }
+
+  /* Dropdowns */
+  [class*="rounded-xl"][class*="backdrop-blur"] {
+    background-color: color-mix(in srgb, var(--bg-elevated), transparent 5%) !important;
+    border-color: var(--border-subtle) !important;
+  }
+
+  /* Links in footer/nav */
+  footer a:not([class*="text-"]),
+  footer p:not([class*="text-"]),
+  footer span:not([class*="text-"]) {
+    color: var(--text-muted);
+  }
+  footer h3:not([class*="text-"]) {
+    color: var(--text-base);
+  }
+
+  /* Admin sidebar & panels */
+  aside {
+    background-color: var(--bg-panel) !important;
+    border-color: var(--border-subtle) !important;
+  }
 }
 
-/* ===== Theme Switcher Styles ===== */
-:root {
-  --bg-primary: #030712;
-  --bg-secondary: #0a1628;
-  --bg-card: rgba(255, 255, 255, 0.03);
-  --text-primary: #ffffff;
-  --text-secondary: #9ca3af;
-  --border-color: rgba(255, 255, 255, 0.06);
+/* ── Parchment-specific adjustments ─────────────────────── */
+.theme-parchment {
+  /* Softer shadows for warm cream */
+  .shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.12) !important;
+  }
+  .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08) !important;
+  }
+
+  /* Gradient text stays readable on warm cream */
+  .gradient-text-blue {
+    background-image: linear-gradient(135deg, #1d4ed8, #0891b2);
+  }
+
+  /* Active link indicator */
+  .text-cyan-400 { color: #0891b2 !important; }
+  .text-blue-400 { color: #1d4ed8 !important; }
+  .text-red-400  { color: #dc2626 !important; }
+
+  /* Ring colors */
+  .ring-2.ring-white\/10 {
+    --tw-ring-color: rgba(0,0,0,0.10) !important;
+  }
 }
 
-.theme-navy {
-  --bg-primary: #030712;
-  --bg-secondary: #0a1628;
-  --bg-card: rgba(255, 255, 255, 0.03);
-  --text-primary: #ffffff;
-  --text-secondary: #9ca3af;
-  --border-color: rgba(255, 255, 255, 0.06);
+/* ── Arctic-specific adjustments ─────────────────────────── */
+.theme-arctic {
+  .shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(15,23,42,0.15) !important;
+  }
+  .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(15,23,42,0.10) !important;
+  }
+
+  .text-cyan-400 { color: #0891b2 !important; }
+  .text-blue-400 { color: #2563eb !important; }
+  .text-red-400  { color: #dc2626 !important; }
+
+  .ring-2.ring-white\/10 {
+    --tw-ring-color: rgba(0,0,0,0.12) !important;
+  }
 }
 
-.theme-dark {
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0a;
-  --bg-card: rgba(255, 255, 255, 0.04);
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
-  --border-color: rgba(255, 255, 255, 0.08);
-}
+/* ── Eclipse-specific adjustments ───────────────────────── */
+.theme-eclipse {
+  /* Override navy classes with pure dark */
+  .bg-\[#0a1628\] {
+    background-color: var(--bg-panel) !important;
+  }
+  .bg-\[#030712\] {
+    background-color: var(--bg-page) !important;
+  }
+  .bg-\[#0a0f1e\],
+  .bg-\[#0a0f1e\]\/95 {
+    background-color: var(--bg-inset) !important;
+  }
 
-.theme-light {
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --bg-card: rgba(0, 0, 0, 0.02);
-  --text-primary: #0f172a;
-  --text-secondary: #64748b;
-  --border-color: rgba(0, 0, 0, 0.08);
-}
-
-.theme-light .glass {
-  background: rgba(255, 255, 255, 0.8) !important;
-  border-color: rgba(0, 0, 0, 0.08) !important;
-}
-
-.theme-light footer {
-  background: #f1f5f9 !important;
-  border-color: rgba(0, 0, 0, 0.06) !important;
-}
-
-.theme-light footer * {
-  color: #334155;
-}
-
-.theme-light header {
-  background: rgba(248, 250, 252, 0.9) !important;
-}
-
-.theme-light header nav a,
-.theme-light header button {
-  color: #334155;
+  body {
+    background-color: var(--bg-page) !important;
+  }
+  header {
+    background-color: color-mix(in srgb, var(--bg-page), transparent 15%) !important;
+  }
+  footer {
+    background-color: var(--bg-page) !important;
+  }
 }

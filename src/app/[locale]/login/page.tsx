@@ -5,8 +5,10 @@ import { signIn, useSession } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
-import { AlertCircle, Sparkles, Loader2, Mail, ArrowLeft, ShieldCheck } from 'lucide-react'
+import { AlertCircle, Sparkles, Loader2, Mail, ArrowLeft, ShieldCheck, Eye, EyeOff, Lock, KeyRound } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+const REMEMBER_EMAIL_KEY = 'aiba-remember-email'
 
 function LoginContent() {
   const searchParams = useSearchParams()
@@ -22,6 +24,21 @@ function LoginContent() {
   const [step, setStep] = useState<'email' | 'confirm'>('email')
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')
+
+  // Password login
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
+  const [passwordError, setPasswordError] = useState('')
+
+  // Load remembered email on mount
+  useEffect(() => {
+    const saved = typeof window !== 'undefined' ? localStorage.getItem(REMEMBER_EMAIL_KEY) : null
+    if (saved) {
+      setEmail(saved)
+      setRememberMe(true)
+    }
+  }, [])
 
   // If already logged in, redirect based on role
   useEffect(() => {
@@ -59,15 +76,62 @@ function LoginContent() {
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
+    if (rememberMe) {
+      localStorage.setItem(REMEMBER_EMAIL_KEY, email.trim())
+    } else {
+      localStorage.removeItem(REMEMBER_EMAIL_KEY)
+    }
     await signIn('google', {
       callbackUrl: callbackUrl || `/${locale}/dashboard`,
       login_hint: email.trim(),
     })
   }
 
+  const handleDirectGoogleSignIn = async () => {
+    setIsLoading(true)
+    await signIn('google', {
+      callbackUrl: callbackUrl || `/${locale}/dashboard`,
+    })
+  }
+
+  const handlePasswordSignIn = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setPasswordError('')
+
+    if (!password.trim()) {
+      setPasswordError('กรุณากรอกรหัสผ่าน')
+      return
+    }
+
+    setIsLoading(true)
+
+    if (rememberMe) {
+      localStorage.setItem(REMEMBER_EMAIL_KEY, email.trim())
+    } else {
+      localStorage.removeItem(REMEMBER_EMAIL_KEY)
+    }
+
+    const result = await signIn('user-credentials', {
+      email: email.trim(),
+      password: password.trim(),
+      redirect: false,
+    })
+
+    if (result?.error) {
+      setPasswordError('อีเมลหรือรหัสผ่านไม่ถูกต้อง')
+      setIsLoading(false)
+      return
+    }
+
+    router.push(callbackUrl || `/${locale}/dashboard`)
+    router.refresh()
+  }
+
   const handleBack = () => {
     setStep('email')
     setEmailError('')
+    setPasswordError('')
+    setPassword('')
   }
 
   // Show loading while checking session
@@ -122,6 +186,7 @@ function LoginContent() {
 
         {/* Step 1: Email Input */}
         {step === 'email' && (
+          <>
           <form onSubmit={handleEmailSubmit}>
             <div className="mb-4">
               <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-300">
@@ -166,23 +231,157 @@ function LoginContent() {
               {t('continueButton')}
             </button>
           </form>
+
+          {/* Divider */}
+          <div className="my-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-white/[0.08]" />
+            <span className="text-xs text-gray-500">หรือสมัครด้วย</span>
+            <div className="h-px flex-1 bg-white/[0.08]" />
+          </div>
+
+          {/* Google Register / Sign-In Button */}
+          <button
+            onClick={handleDirectGoogleSignIn}
+            disabled={isLoading}
+            className={cn(
+              'flex w-full items-center justify-center gap-3 rounded-xl px-6 py-3.5 text-sm font-semibold transition-all duration-200',
+              'bg-white text-gray-800 hover:bg-gray-100',
+              'disabled:cursor-not-allowed disabled:opacity-50',
+              'shadow-lg shadow-white/10'
+            )}
+          >
+            {isLoading ? (
+              <Loader2 className="h-5 w-5 animate-spin text-gray-600" />
+            ) : (
+              <>
+                <svg className="h-5 w-5" viewBox="0 0 24 24">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                </svg>
+                สมัคร / เข้าสู่ระบบด้วย Gmail
+              </>
+            )}
+          </button>
+          </>
         )}
 
-        {/* Step 2: Confirm Email + Google Sign-In */}
+        {/* Step 2: Password + Google Sign-In */}
         {step === 'confirm' && (
           <div>
             {/* Email confirmation box */}
             <div className="mb-5 rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
-              <div className="mb-2 flex items-center gap-2 text-xs font-medium text-blue-400">
+              <div className="mb-1.5 flex items-center gap-2 text-xs font-medium text-blue-400">
                 <ShieldCheck className="h-4 w-4" />
                 {t('confirmEmailLabel')}
               </div>
-              <p className="break-all text-base font-semibold text-white">
-                {email}
-              </p>
-              <p className="mt-2 text-xs text-gray-400">
-                {t('confirmEmailHint')}
-              </p>
+              <p className="break-all text-sm font-semibold text-white">{email}</p>
+            </div>
+
+            {/* Password Form */}
+            <form onSubmit={handlePasswordSignIn} className="space-y-4">
+              {/* Password field */}
+              <div>
+                <label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-300">
+                  รหัสผ่าน
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value)
+                      if (passwordError) setPasswordError('')
+                    }}
+                    placeholder="กรอกรหัสผ่านของคุณ"
+                    autoFocus
+                    className={cn(
+                      'w-full rounded-xl border bg-white/[0.04] py-3.5 pl-11 pr-12 text-sm text-white placeholder-gray-500 outline-none transition-all',
+                      passwordError
+                        ? 'border-red-500/50 focus:border-red-500'
+                        : 'border-white/[0.08] focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20'
+                    )}
+                  />
+                  {/* Eye icon toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 transition-colors hover:text-gray-300"
+                    tabIndex={-1}
+                    aria-label={showPassword ? 'ซ่อนรหัสผ่าน' : 'แสดงรหัสผ่าน'}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4.5 w-4.5" />
+                    ) : (
+                      <Eye className="h-4.5 w-4.5" />
+                    )}
+                  </button>
+                </div>
+                {passwordError && (
+                  <p className="mt-2 flex items-center gap-1.5 text-xs text-red-400">
+                    <AlertCircle className="h-3.5 w-3.5" />
+                    {passwordError}
+                  </p>
+                )}
+              </div>
+
+              {/* Remember me checkbox */}
+              <label className="flex cursor-pointer items-center gap-2.5 select-none">
+                <div className="relative flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="sr-only"
+                  />
+                  <div
+                    className={cn(
+                      'flex h-4 w-4 items-center justify-center rounded border transition-all',
+                      rememberMe
+                        ? 'border-blue-500 bg-blue-500'
+                        : 'border-white/20 bg-white/[0.04]'
+                    )}
+                  >
+                    {rememberMe && (
+                      <svg className="h-2.5 w-2.5 text-white" fill="none" viewBox="0 0 10 8">
+                        <path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                <span className="text-sm text-gray-400">จำรหัสผ่านในครั้งต่อไป</span>
+              </label>
+
+              {/* Sign in button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={cn(
+                  'flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold transition-all duration-200',
+                  'bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600',
+                  'shadow-lg shadow-blue-500/20',
+                  'disabled:cursor-not-allowed disabled:opacity-50'
+                )}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <KeyRound className="h-4 w-4" />
+                    เข้าสู่ระบบด้วยรหัสผ่าน
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div className="my-5 flex items-center gap-3">
+              <div className="h-px flex-1 bg-white/[0.08]" />
+              <span className="text-xs text-gray-500">หรือ</span>
+              <div className="h-px flex-1 bg-white/[0.08]" />
             </div>
 
             {/* Google Sign-In Button */}
@@ -201,22 +400,10 @@ function LoginContent() {
               ) : (
                 <>
                   <svg className="h-5 w-5" viewBox="0 0 24 24">
-                    <path
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
-                      fill="#4285F4"
-                    />
-                    <path
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                      fill="#34A853"
-                    />
-                    <path
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                      fill="#FBBC05"
-                    />
-                    <path
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                      fill="#EA4335"
-                    />
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                   </svg>
                   {t('googleButton')}
                 </>
@@ -234,8 +421,19 @@ function LoginContent() {
           </div>
         )}
 
+        {/* Signup link */}
+        <div className="mt-6 text-center text-sm text-gray-500">
+          ยังไม่มีบัญชี?{' '}
+          <a
+            href={`/${locale}/signup`}
+            className="font-medium text-blue-400 transition-colors hover:text-blue-300"
+          >
+            สมัครสมาชิก
+          </a>
+        </div>
+
         {/* Divider */}
-        <div className="my-6 flex items-center gap-3">
+        <div className="my-5 flex items-center gap-3">
           <div className="h-px flex-1 bg-white/[0.06]" />
           <span className="text-xs text-gray-600">{t('spuBus')}</span>
           <div className="h-px flex-1 bg-white/[0.06]" />

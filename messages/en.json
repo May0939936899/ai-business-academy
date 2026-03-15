@@ -314,7 +314,9 @@
     "summary": "Lesson Summary",
     "learningOutcomes": "Learning Outcomes",
     "keyTakeaways": "Key Takeaways",
-    "takeQuiz": "Take Quiz"
+    "takeQuiz": "Take Quiz",
+    "ebookTitle": "Lesson E-Book",
+    "ebookSubtitle": "Download the complete lesson summary as PDF"
   },
   "quiz": {
     "error": "An error occurred",

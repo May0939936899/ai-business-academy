@@ -302,7 +302,9 @@
     "summary": "レッスン概要",
     "learningOutcomes": "学習成果",
     "keyTakeaways": "重要ポイント",
-    "takeQuiz": "テストを受ける"
+    "takeQuiz": "テストを受ける",
+    "ebookTitle": "レッスンE-Book",
+    "ebookSubtitle": "完全なレッスン要約をPDFでダウンロード"
   },
   "quiz": {
     "error": "エラーが発生しました",

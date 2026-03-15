@@ -6,6 +6,7 @@ import { Inter, Noto_Sans_Thai, Noto_Sans_SC, Noto_Sans_JP } from 'next/font/goo
 import { routing } from '@/i18n/routing'
 import AuthProvider from '@/components/providers/AuthProvider'
 import LayoutShell from '@/components/layout/LayoutShell'
+import ThemeScript from '@/components/features/ThemeScript'
 import '../../app/globals.css'
 
 const inter = Inter({
@@ -87,7 +88,10 @@ export default async function LocaleLayout({ children, params }: Props) {
       lang={locale}
       className={`${inter.variable} ${notoSansThai.variable} ${notoSansSC.variable} ${notoSansJP.variable}`}
     >
-      <body className="min-h-screen bg-[#030712] font-sans text-gray-100 antialiased">
+      <head>
+        <ThemeScript />
+      </head>
+      <body className="min-h-screen font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
           <AuthProvider>
             <LayoutShell>{children}</LayoutShell>

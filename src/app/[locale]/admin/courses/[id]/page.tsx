@@ -14,7 +14,7 @@ import {
 import db from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 import { formatDate, levelLabels } from '@/lib/utils'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, getLocale } from 'next-intl/server'
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   PUBLISHED: {
@@ -39,6 +39,7 @@ export default async function CourseDetailPage({
 }) {
   await requireAdmin()
   const t = await getTranslations('admin')
+  const locale = await getLocale()
 
   const { id } = await params
 
@@ -47,6 +48,9 @@ export default async function CourseDetailPage({
     include: {
       lessons: {
         orderBy: { lessonOrder: 'asc' },
+        include: {
+          _count: { select: { inVideoQuizzes: true } },
+        },
       },
       quizzes: {
         include: {
@@ -226,6 +230,12 @@ export default async function CourseDetailPage({
                     <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                       {t('colStatus')}
                     </th>
+                    <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                      In-Video Quiz
+                    </th>
+                    <th className="px-5 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                      E-Book
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.04]">
@@ -292,6 +302,22 @@ export default async function CourseDetailPage({
                             {t('disabled')}
                           </span>
                         )}
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-4">
+                        <Link
+                          href={`/${locale}/admin/courses/${id}/in-video-quiz/${lesson.id}`}
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-yellow-500/10 px-3 py-1.5 text-xs font-medium text-yellow-400 transition-colors hover:bg-yellow-500/20 hover:text-yellow-300"
+                        >
+                          💡 {(lesson as typeof lesson & { _count: { inVideoQuizzes: number } })._count.inVideoQuizzes} ข้อ
+                        </Link>
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-4">
+                        <Link
+                          href={`/${locale}/admin/courses/${id}/ebook/${lesson.id}`}
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-blue-500/10 px-3 py-1.5 text-xs font-medium text-blue-400 transition-colors hover:bg-blue-500/20 hover:text-blue-300"
+                        >
+                          📚 Edit E-Book
+                        </Link>
                       </td>
                     </tr>
                   ))}

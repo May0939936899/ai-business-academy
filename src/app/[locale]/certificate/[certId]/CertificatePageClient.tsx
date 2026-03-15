@@ -25,6 +25,7 @@ import CertificatePreview from '@/components/features/CertificatePreview'
 import {
   getCertificateTheme,
   CERTIFICATE_THEMES,
+  type CertificateTheme,
 } from '@/lib/certificate-themes'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -64,6 +65,125 @@ interface Props {
   formattedDate: string
 }
 
+// ─── ThemeCard ────────────────────────────────────────────────────────────────
+
+function ThemeCard({
+  theme,
+  isSelected,
+  onSelect,
+}: {
+  theme: CertificateTheme
+  isSelected: boolean
+  onSelect: (id: string) => void
+}) {
+  return (
+    <button
+      onClick={() => onSelect(theme.id)}
+      className="group relative flex flex-col overflow-hidden rounded-xl transition-all duration-200"
+      style={{
+        ...(isSelected && theme.isDark && theme.neonGlow
+          ? {
+              boxShadow: `0 0 16px ${theme.neonGlow}35`,
+              outline: `2px solid ${theme.neonGlow}70`,
+              outlineOffset: '-2px',
+            }
+          : isSelected
+          ? { outline: '2px solid rgb(96 165 250)', outlineOffset: '-2px' }
+          : {}),
+      }}
+      title={`${theme.name} (${theme.nameEn})`}
+    >
+      {/* Gradient preview panel */}
+      <div
+        className="relative h-20 w-full overflow-hidden"
+        style={{ background: theme.bgGradient }}
+      >
+        {/* Mini cert mockup lines */}
+        <div className="flex h-full flex-col items-center justify-center gap-1 px-2">
+          <div
+            style={{
+              width: '55%',
+              height: '2px',
+              borderRadius: '2px',
+              backgroundColor: theme.headerColor,
+              opacity: 0.8,
+            }}
+          />
+          <div
+            style={{
+              width: '75%',
+              height: '1.5px',
+              borderRadius: '2px',
+              backgroundColor: theme.headerColor,
+              opacity: 0.45,
+            }}
+          />
+          <div
+            style={{
+              width: '40%',
+              height: '1px',
+              borderRadius: '2px',
+              backgroundColor: theme.accentColor,
+              opacity: 0.7,
+              marginTop: '3px',
+            }}
+          />
+          <div
+            style={{
+              width: '60%',
+              height: '1px',
+              borderRadius: '2px',
+              backgroundColor: theme.textColor,
+              opacity: 0.25,
+              marginTop: '2px',
+            }}
+          />
+        </div>
+
+        {/* NEON badge for dark themes */}
+        {theme.isDark && theme.neonGlow && (
+          <div
+            className="absolute right-1.5 top-1.5 rounded-full px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wider"
+            style={{
+              backgroundColor: theme.neonGlow + '22',
+              color: theme.neonGlow,
+              border: `1px solid ${theme.neonGlow}40`,
+            }}
+          >
+            NEON
+          </div>
+        )}
+
+        {/* Selected checkmark */}
+        {isSelected && (
+          <div className="absolute left-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 shadow-lg">
+            <Check className="h-2.5 w-2.5 text-white" />
+          </div>
+        )}
+      </div>
+
+      {/* Info bar */}
+      <div
+        className="border-t border-white/[0.06] px-2 py-1.5"
+        style={{
+          backgroundColor: isSelected
+            ? 'rgba(255,255,255,0.05)'
+            : 'rgba(255,255,255,0.02)',
+        }}
+      >
+        <p className="truncate text-[9px] font-semibold leading-tight text-gray-200">
+          {theme.nameEn}
+        </p>
+        {theme.mood && (
+          <p className="mt-0.5 truncate text-[8px] text-gray-500">
+            {theme.mood}
+          </p>
+        )}
+      </div>
+    </button>
+  )
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function CertificatePageClient({
@@ -97,6 +217,8 @@ export default function CertificatePageClient({
   const availableThemes = CERTIFICATE_THEMES.filter((t) =>
     settings.enabledThemes.includes(t.id)
   )
+  const classicThemes = availableThemes.filter((t) => !t.isDark)
+  const neonThemes = availableThemes.filter((t) => t.isDark)
 
   // ── Handlers ────────────────────────────────────────────────────────────────
 
@@ -224,7 +346,7 @@ export default function CertificatePageClient({
           ref={themeSectionRef}
           className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-sm"
         >
-          <div className="mb-4 flex items-center gap-2">
+          <div className="mb-5 flex items-center gap-2">
             <Palette className="h-5 w-5 text-blue-400" />
             <h2 className="text-sm font-semibold text-white">
               {t('selectTheme')}
@@ -237,53 +359,51 @@ export default function CertificatePageClient({
             )}
           </div>
 
-          <div className="grid grid-cols-4 gap-3 sm:grid-cols-7">
-            {availableThemes.map((theme) => {
-              const isSelected = theme.id === selectedThemeId
-              return (
-                <button
-                  key={theme.id}
-                  onClick={() => handleThemeSelect(theme.id)}
-                  className="group relative flex flex-col items-center gap-2"
-                  title={`${theme.name} (${theme.nameEn})`}
-                >
-                  {/* Color swatch */}
-                  <div
-                    className={`relative h-12 w-full rounded-xl transition-all ${
-                      isSelected
-                        ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-[#030712] scale-105'
-                        : 'ring-1 ring-white/10 group-hover:ring-white/30 group-hover:scale-105'
-                    }`}
-                    style={{
-                      background: `linear-gradient(135deg, ${theme.primaryColor}, ${theme.secondaryColor})`,
-                    }}
-                  >
-                    {/* Accent stripe */}
-                    <div
-                      className="absolute bottom-0 left-0 right-0 h-1.5 rounded-b-xl"
-                      style={{ backgroundColor: theme.accentColor }}
+          {/* Classic Themes */}
+          {classicThemes.length > 0 && (
+            <div className="mb-6">
+              <div className="mb-3 flex items-center gap-2">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Classic</span>
+                <div className="h-px flex-1 bg-white/[0.06]" />
+              </div>
+              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+                {classicThemes.map((theme) => {
+                  const isSelected = theme.id === selectedThemeId
+                  return (
+                    <ThemeCard
+                      key={theme.id}
+                      theme={theme}
+                      isSelected={isSelected}
+                      onSelect={handleThemeSelect}
                     />
-                    {/* Checkmark */}
-                    {isSelected && (
-                      <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 shadow-lg shadow-blue-500/40">
-                        <Check className="h-3 w-3 text-white" />
-                      </div>
-                    )}
-                  </div>
-                  {/* Theme name */}
-                  <span
-                    className={`text-[10px] leading-tight transition-colors ${
-                      isSelected
-                        ? 'text-blue-400 font-medium'
-                        : 'text-gray-500 group-hover:text-gray-300'
-                    }`}
-                  >
-                    {theme.nameEn}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Neon Dark Themes */}
+          {neonThemes.length > 0 && (
+            <div>
+              <div className="mb-3 flex items-center gap-2">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-500/80">✦ Neon Dark</span>
+                <div className="h-px flex-1 bg-white/[0.06]" />
+              </div>
+              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+                {neonThemes.map((theme) => {
+                  const isSelected = theme.id === selectedThemeId
+                  return (
+                    <ThemeCard
+                      key={theme.id}
+                      theme={theme}
+                      isSelected={isSelected}
+                      onSelect={handleThemeSelect}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── Certificate Preview ── */}

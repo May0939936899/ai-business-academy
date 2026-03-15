@@ -1,10 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 140">
-  <!-- SPU Text -->
-  <text x="0" y="105" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="110" fill="#1a1a1a" letter-spacing="-4">SPU</text>
-  <!-- Pink underline bar -->
-  <rect x="0" y="115" width="55" height="8" rx="1" fill="#E91E8C"/>
-  <!-- BUS Text - gradient blue -->
-  <text x="195" y="105" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="110" letter-spacing="-4">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 155">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700;900&amp;display=swap');
+    .main { font-family: Inter, 'Arial Black', 'Helvetica Neue', Arial, sans-serif; font-weight: 900; }
+    .sub  { font-family: Inter, Arial, Helvetica, sans-serif; font-weight: 700; }
+  </style>
+  <!-- SPU Text — white -->
+  <text x="2" y="92" class="main" font-size="98" fill="#ffffff" letter-spacing="-4">SPU</text>
+  <!-- Pink underline bar beneath SPU -->
+  <rect x="2" y="102" width="57" height="8" rx="2" fill="#E91E8C"/>
+  <!-- BUS Text — blue gradient letters -->
+  <text x="185" y="92" class="main" font-size="98" letter-spacing="-4">
     <tspan fill="#4FC3F7">B</tspan><tspan fill="#2196F3">U</tspan><tspan fill="#42A5F5">S</tspan>
   </text>
+  <!-- SCHOOL OF BUSINESS ADMINISTRATION -->
+  <text x="187" y="122" class="sub" font-size="17" fill="#ffffff" letter-spacing="0.5" opacity="0.9">SCHOOL OF</text>
+  <text x="187" y="145" class="sub" font-size="17" fill="#ffffff" letter-spacing="0.5" opacity="0.9">BUSINESS ADMINISTRATION</text>
 </svg>
