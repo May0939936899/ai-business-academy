@@ -35,22 +35,21 @@ interface Props {
 }
 
 const FIELDS: Array<{ key: keyof Omit<EbookFormData, 'isActive'>; label: string; icon: string; rows: number }> = [
-  { key: 'title', label: '\u0E0A\u0E37\u0E48\u0E2D E-Book', icon: '\u{1F4CC}', rows: 1 },
-  { key: 'subtitle', label: '\u0E04\u0E33\u0E1A\u0E23\u0E23\u0E22\u0E32\u0E22 (Subtitle)', icon: '\u{1F4DD}', rows: 2 },
-  { key: 'introduction', label: '\u0E1A\u0E17\u0E19\u0E33 (Introduction)', icon: '\u{1F4D6}', rows: 6 },
-  { key: 'keyConcepts', label: '\u0E41\u0E19\u0E27\u0E04\u0E34\u0E14\u0E2B\u0E25\u0E31\u0E01 (Key Concepts)', icon: '\u{1F4A1}', rows: 8 },
-  { key: 'businessUseCases', label: '\u0E01\u0E32\u0E23\u0E1B\u0E23\u0E30\u0E22\u0E38\u0E01\u0E15\u0E4C\u0E43\u0E0A\u0E49\u0E43\u0E19\u0E18\u0E38\u0E23\u0E01\u0E34\u0E08 (Business Use Cases)', icon: '\u{1F3E2}', rows: 8 },
-  { key: 'toolsAndTechniques', label: '\u0E40\u0E04\u0E23\u0E37\u0E48\u0E2D\u0E07\u0E21\u0E37\u0E2D\u0E41\u0E25\u0E30\u0E40\u0E17\u0E04\u0E19\u0E34\u0E04 (Tools & Techniques)', icon: '\u{1F527}', rows: 8 },
-  { key: 'practicalExample', label: '\u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E1B\u0E0F\u0E34\u0E1A\u0E31\u0E15\u0E34 (Practical Example)', icon: '\u26A1', rows: 8 },
-  { key: 'ebookSummary', label: '\u0E1A\u0E17\u0E2A\u0E23\u0E38\u0E1B (Summary)', icon: '\u{1F4CB}', rows: 6 },
-  { key: 'ebookKeyTakeaways', label: '\u0E2A\u0E34\u0E48\u0E07\u0E17\u0E35\u0E48\u0E04\u0E27\u0E23\u0E08\u0E14\u0E08\u0E33 (Key Takeaways)', icon: '\u{1F3AF}', rows: 6 },
-  { key: 'reviewQuestions', label: '\u0E04\u0E33\u0E16\u0E32\u0E21\u0E17\u0E1A\u0E17\u0E27\u0E19 (Review Questions)', icon: '\u2753', rows: 8 },
-  { key: 'closingMessage', label: '\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E1B\u0E34\u0E14\u0E17\u0E49\u0E32\u0E22 (Closing Message)', icon: '\u2728', rows: 4 },
+  { key: 'title', label: 'ชื่อ E-Book', icon: '📌', rows: 1 },
+  { key: 'subtitle', label: 'คำบรรยาย (Subtitle)', icon: '📝', rows: 2 },
+  { key: 'introduction', label: 'บทนำ (Introduction)', icon: '📖', rows: 6 },
+  { key: 'keyConcepts', label: 'แนวคิดหลัก (Key Concepts)', icon: '💡', rows: 8 },
+  { key: 'businessUseCases', label: 'การประยุกต์ใช้ในธุรกิจ (Business Use Cases)', icon: '🏢', rows: 8 },
+  { key: 'toolsAndTechniques', label: 'เครื่องมือและเทคนิค (Tools & Techniques)', icon: '🔧', rows: 8 },
+  { key: 'practicalExample', label: 'ตัวอย่างปฏิบัติ (Practical Example)', icon: '⚡', rows: 8 },
+  { key: 'ebookSummary', label: 'บทสรุป (Summary)', icon: '📋', rows: 6 },
+  { key: 'ebookKeyTakeaways', label: 'สิ่งที่ควรจดจำ (Key Takeaways)', icon: '🎯', rows: 6 },
+  { key: 'reviewQuestions', label: 'คำถามทบทวน (Review Questions)', icon: '❓', rows: 8 },
+  { key: 'closingMessage', label: 'ข้อความปิดท้าย (Closing Message)', icon: '✨', rows: 4 },
 ]
 
 function countWords(text: string): number {
   if (!text) return 0
-  // Count Thai + English words
   const thaiWords = text.match(/[\u0E00-\u0E7F]+/g)?.length || 0
   const engWords = text.match(/[a-zA-Z]+/g)?.length || 0
   return thaiWords + engWords
@@ -76,18 +75,17 @@ export default function EbookEditorClient({
   const [isCustom, setIsCustom] = useState(!!initialData)
   const [showPreview, setShowPreview] = useState(false)
 
-  // Calculate word count and page estimate
   const allContent = [
     form.introduction, form.keyConcepts, form.businessUseCases,
     form.toolsAndTechniques, form.practicalExample, form.ebookSummary,
     form.ebookKeyTakeaways, form.reviewQuestions, form.closingMessage,
   ].join(' ')
   const totalWords = countWords(allContent)
-  const estimatedPages = 2 + Math.max(1, Math.ceil(allContent.length / 800)) + 1 // cover + TOC + content + closing
+  const estimatedPages = 2 + Math.max(1, Math.ceil(allContent.length / 800)) + 1
   const meetsMinimum = totalWords >= 2500
 
   const handleChange = (key: keyof EbookFormData, value: string | boolean) => {
-    setForm((prev) => ({ ...prev, [key]: value }))
+    setForm(prev => ({ ...prev, [key]: value }))
     setSaved(false)
   }
 
@@ -112,7 +110,7 @@ export default function EbookEditorClient({
   }
 
   const handleDelete = async () => {
-    if (!confirm('\u0E15\u0E49\u0E2D\u0E07\u0E01\u0E32\u0E23\u0E25\u0E1A\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25 E-Book \u0E17\u0E35\u0E48\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E40\u0E2D\u0E07\u0E41\u0E25\u0E30\u0E43\u0E0A\u0E49\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E2D\u0E31\u0E15\u0E42\u0E19\u0E21\u0E31\u0E15\u0E34\u0E41\u0E17\u0E19\u0E43\u0E0A\u0E48\u0E44\u0E2B\u0E21?')) return
+    if (!confirm('ต้องการลบข้อมูล E-Book ที่กำหนดเองและใช้ข้อมูลอัตโนมัติแทนใช่ไหม?')) return
     setDeleting(true)
     try {
       await fetch(`/api/admin/ebooks/${lessonId}`, { method: 'DELETE' })
@@ -127,155 +125,38 @@ export default function EbookEditorClient({
   }
 
   const handleReset = () => {
-    if (!confirm('\u0E15\u0E49\u0E2D\u0E07\u0E01\u0E32\u0E23\u0E23\u0E35\u0E40\u0E0B\u0E47\u0E15\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E08\u0E32\u0E01 Auto-Generate?')) return
+    if (!confirm('ต้องการรีเซ็ตข้อมูลจาก Auto-Generate?')) return
     setForm(autoGenerated)
     setSaved(false)
   }
 
-  const handlePreview = () => {
-    setShowPreview(true)
-  }
-
-  const handleDownload = async () => {
-    // Trigger PDF download using current form data
-    try {
-      const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
-        import('jspdf'),
-        import('html2canvas'),
-      ])
-      const { buildCoverPage, buildTOCPage, buildContentPage, buildClosingPage } = await import('@/lib/ebook-pages')
-
-      const accent = '#1e40af'
-      const lesson = { title: lessonTitle, lessonOrder, lessonLevel, courseName, courseCategory }
-      const ebook = { title: form.title, subtitle: form.subtitle }
-      const settings = {
-        watermarkText: 'AI Business Academy | \u0E04\u0E13\u0E30\u0E1A\u0E23\u0E34\u0E2B\u0E32\u0E23\u0E18\u0E38\u0E23\u0E01\u0E34\u0E08 \u0E21.\u0E28\u0E23\u0E35\u0E1B\u0E17\u0E38\u0E21',
-        watermarkOpacity: 0.15,
-        headerText: 'AI Business Academy',
-        footerText: '\u0E04\u0E13\u0E30\u0E1A\u0E23\u0E34\u0E2B\u0E32\u0E23\u0E18\u0E38\u0E23\u0E01\u0E34\u0E08 \u0E21\u0E2B\u0E32\u0E27\u0E34\u0E17\u0E22\u0E32\u0E25\u0E31\u0E22\u0E28\u0E23\u0E35\u0E1B\u0E17\u0E38\u0E21',
-        isWatermarkEnabled: true,
-        accentColor: accent,
-      }
-
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-      const pageWidth = 210
-      const pageHeight = 297
-
-      const renderPage = async (html: string): Promise<string> => {
-        const container = document.createElement('div')
-        container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;overflow:hidden;'
-        const fontLink = document.createElement('link')
-        fontLink.rel = 'stylesheet'
-        fontLink.href = 'https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap'
-        if (!document.head.querySelector('link[href*="Sarabun"]')) {
-          document.head.appendChild(fontLink)
-          await new Promise((r) => setTimeout(r, 600))
-        }
-        container.innerHTML = html
-        document.body.appendChild(container)
-        await new Promise((r) => setTimeout(r, 200))
-        const canvas = await html2canvas(container, {
-          scale: 2, useCORS: true, allowTaint: true, backgroundColor: null,
-          width: 794, height: 1123, logging: false,
-        })
-        document.body.removeChild(container)
-        return canvas.toDataURL('image/jpeg', 0.92)
-      }
-
-      const tocSections = [
-        '\u0E1A\u0E17\u0E19\u0E33 (Introduction)', '\u0E41\u0E19\u0E27\u0E04\u0E34\u0E14\u0E2B\u0E25\u0E31\u0E01 (Key Concepts)',
-        '\u0E01\u0E32\u0E23\u0E1B\u0E23\u0E30\u0E22\u0E38\u0E01\u0E15\u0E4C\u0E43\u0E0A\u0E49\u0E43\u0E19\u0E18\u0E38\u0E23\u0E01\u0E34\u0E08 (Business Use Cases)',
-        '\u0E40\u0E04\u0E23\u0E37\u0E48\u0E2D\u0E07\u0E21\u0E37\u0E2D\u0E41\u0E25\u0E30\u0E40\u0E17\u0E04\u0E19\u0E34\u0E04 (Tools & Techniques)',
-        '\u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E1B\u0E0F\u0E34\u0E1A\u0E31\u0E15\u0E34 (Practical Example)',
-        '\u0E1A\u0E17\u0E2A\u0E23\u0E38\u0E1B (Summary)',
-        '\u0E2A\u0E34\u0E48\u0E07\u0E17\u0E35\u0E48\u0E04\u0E27\u0E23\u0E08\u0E14\u0E08\u0E33 (Key Takeaways)',
-        '\u0E04\u0E33\u0E16\u0E32\u0E21\u0E17\u0E1A\u0E17\u0E27\u0E19 (Review Questions)',
-      ]
-
-      const sections: Array<{ title: string; icon: string; content: string }> = [
-        { title: '\u0E1A\u0E17\u0E19\u0E33', icon: '\u{1F4D6}', content: form.introduction },
-        { title: '\u0E41\u0E19\u0E27\u0E04\u0E34\u0E14\u0E2B\u0E25\u0E31\u0E01', icon: '\u{1F4A1}', content: form.keyConcepts },
-        { title: '\u0E01\u0E32\u0E23\u0E1B\u0E23\u0E30\u0E22\u0E38\u0E01\u0E15\u0E4C\u0E43\u0E0A\u0E49\u0E43\u0E19\u0E18\u0E38\u0E23\u0E01\u0E34\u0E08', icon: '\u{1F3E2}', content: form.businessUseCases },
-        { title: '\u0E40\u0E04\u0E23\u0E37\u0E48\u0E2D\u0E07\u0E21\u0E37\u0E2D\u0E41\u0E25\u0E30\u0E40\u0E17\u0E04\u0E19\u0E34\u0E04', icon: '\u{1F527}', content: form.toolsAndTechniques },
-        { title: '\u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E1B\u0E0F\u0E34\u0E1A\u0E31\u0E15\u0E34', icon: '\u26A1', content: form.practicalExample },
-        { title: '\u0E1A\u0E17\u0E2A\u0E23\u0E38\u0E1B', icon: '\u{1F4CB}', content: form.ebookSummary },
-        { title: '\u0E2A\u0E34\u0E48\u0E07\u0E17\u0E35\u0E48\u0E04\u0E27\u0E23\u0E08\u0E14\u0E08\u0E33', icon: '\u{1F3AF}', content: form.ebookKeyTakeaways },
-        { title: '\u0E04\u0E33\u0E16\u0E32\u0E21\u0E17\u0E1A\u0E17\u0E27\u0E19', icon: '\u2753', content: form.reviewQuestions },
-      ].filter((s) => s.content)
-
-      const coverImg = await renderPage(buildCoverPage(lesson, ebook, accent))
-      pdf.addImage(coverImg, 'JPEG', 0, 0, pageWidth, pageHeight)
-
-      const tocImg = await renderPage(buildTOCPage(tocSections, accent))
-      pdf.addPage()
-      pdf.addImage(tocImg, 'JPEG', 0, 0, pageWidth, pageHeight)
-
-      for (let i = 0; i < sections.length; i++) {
-        const sec = sections[i]
-        if (!sec.content) continue
-        const img = await renderPage(buildContentPage(i + 1, sec.title, sec.icon, sec.content, i + 3, accent, settings))
-        pdf.addPage()
-        pdf.addImage(img, 'JPEG', 0, 0, pageWidth, pageHeight)
-      }
-
-      const closingImg = await renderPage(buildClosingPage(form.closingMessage || '\u0E02\u0E2D\u0E1A\u0E04\u0E38\u0E13\u0E17\u0E35\u0E48\u0E28\u0E36\u0E01\u0E29\u0E32\u0E1A\u0E17\u0E40\u0E23\u0E35\u0E22\u0E19\u0E19\u0E35\u0E49', accent))
-      pdf.addPage()
-      pdf.addImage(closingImg, 'JPEG', 0, 0, pageWidth, pageHeight)
-
-      pdf.save(`ebook-${form.title.replace(/[^a-zA-Z0-9\u0E01-\u0E39]/g, '-').slice(0, 40)}.pdf`)
-    } catch (err) {
-      console.error('PDF generation error:', err)
-      alert('\u0E40\u0E01\u0E34\u0E14\u0E02\u0E49\u0E2D\u0E1C\u0E34\u0E14\u0E1E\u0E25\u0E32\u0E14\u0E43\u0E19\u0E01\u0E32\u0E23\u0E2A\u0E23\u0E49\u0E32\u0E07 PDF')
-    }
-  }
-
-  // Build preview data from form
   const previewLesson = {
-    id: lessonId,
-    title: lessonTitle,
-    subtitle: form.subtitle || null,
-    lessonOrder,
-    lessonLevel,
-    courseName,
-    courseCategory,
+    id: lessonId, title: lessonTitle, subtitle: form.subtitle || null,
+    lessonOrder, lessonLevel, courseName, courseCategory,
   }
 
   const previewEbook = {
-    title: form.title,
-    subtitle: form.subtitle || null,
-    coverImageUrl: null,
-    introduction: form.introduction || null,
-    keyConcepts: form.keyConcepts || null,
-    businessUseCases: form.businessUseCases || null,
-    toolsAndTechniques: form.toolsAndTechniques || null,
-    practicalExample: form.practicalExample || null,
-    ebookSummary: form.ebookSummary || null,
-    ebookKeyTakeaways: form.ebookKeyTakeaways || null,
-    reviewQuestions: form.reviewQuestions || null,
-    closingMessage: form.closingMessage || null,
-    isActive: form.isActive,
+    title: form.title, subtitle: form.subtitle || null, coverImageUrl: null,
+    introduction: form.introduction || null, keyConcepts: form.keyConcepts || null,
+    businessUseCases: form.businessUseCases || null, toolsAndTechniques: form.toolsAndTechniques || null,
+    practicalExample: form.practicalExample || null, ebookSummary: form.ebookSummary || null,
+    ebookKeyTakeaways: form.ebookKeyTakeaways || null, reviewQuestions: form.reviewQuestions || null,
+    closingMessage: form.closingMessage || null, isActive: form.isActive,
   }
 
   const previewSettings = {
-    watermarkText: 'AI Business Academy | \u0E04\u0E13\u0E30\u0E1A\u0E23\u0E34\u0E2B\u0E32\u0E23\u0E18\u0E38\u0E23\u0E01\u0E34\u0E08 \u0E21.\u0E28\u0E23\u0E35\u0E1B\u0E17\u0E38\u0E21',
-    watermarkOpacity: 0.15,
-    headerText: 'AI Business Academy',
-    footerText: '\u0E04\u0E13\u0E30\u0E1A\u0E23\u0E34\u0E2B\u0E32\u0E23\u0E18\u0E38\u0E23\u0E01\u0E34\u0E08 \u0E21\u0E2B\u0E32\u0E27\u0E34\u0E17\u0E22\u0E32\u0E25\u0E31\u0E22\u0E28\u0E23\u0E35\u0E1B\u0E17\u0E38\u0E21',
-    logoUrl: null,
-    isWatermarkEnabled: true,
-    accentColor: '#1e40af',
+    watermarkText: 'AI Business Academy | คณะบริหารธุรกิจ ม.ศรีปทุม',
+    watermarkOpacity: 0.15, headerText: 'AI Business Academy',
+    footerText: 'คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม',
+    logoUrl: null, isWatermarkEnabled: true, accentColor: '#1e40af',
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <a
-          href={backHref}
-          className="inline-flex items-center gap-1.5 text-sm text-gray-400 transition-colors hover:text-white"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          \u0E01\u0E25\u0E31\u0E1A
+        <a href={backHref} className="inline-flex items-center gap-1.5 text-sm text-gray-400 transition-colors hover:text-white">
+          <ArrowLeft className="h-4 w-4" /> กลับ
         </a>
 
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -284,175 +165,98 @@ export default function EbookEditorClient({
               <BookOpen className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl font-bold text-white">
-                  Edit E-Book \u2014 \u0E1A\u0E17\u0E17\u0E35\u0E48 {lessonOrder}
-                </h1>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-xl font-bold text-white">Edit E-Book — บทที่ {lessonOrder}</h1>
                 {isCustom ? (
-                  <span className="rounded-full bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-400 ring-1 ring-green-500/20">
-                    Custom
-                  </span>
+                  <span className="rounded-full bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-400 ring-1 ring-green-500/20">Custom</span>
                 ) : (
-                  <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-400 ring-1 ring-blue-500/20">
-                    Auto-Generated
-                  </span>
+                  <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-400 ring-1 ring-blue-500/20">Auto-Generated</span>
                 )}
               </div>
               <p className="mt-0.5 text-sm text-gray-500">{lessonTitle}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handlePreview}
-              className="text-blue-400 hover:text-blue-300"
-            >
-              <Eye className="h-4 w-4" />
-              Preview
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setShowPreview(true)} className="text-blue-400 hover:text-blue-300">
+              <Eye className="h-4 w-4" /> Preview
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleDownload}
-              className="text-cyan-400 hover:text-cyan-300"
-            >
-              <Download className="h-4 w-4" />
-              Download PDF
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleReset}
-              className="text-gray-400 hover:text-white"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Regenerate
+            <Button variant="ghost" size="sm" onClick={handleReset} className="text-gray-400 hover:text-white">
+              <RotateCcw className="h-4 w-4" /> Regenerate
             </Button>
             {isCustom && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleDelete}
-                disabled={deleting}
-                className="text-red-400 hover:text-red-300"
-              >
+              <Button variant="ghost" size="sm" onClick={handleDelete} disabled={deleting} className="text-red-400 hover:text-red-300">
                 {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                \u0E25\u0E1A Custom
+                ลบ Custom
               </Button>
             )}
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleSave}
-              disabled={saving}
-            >
-              {saving ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : saved ? (
-                '\u2713 \u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E41\u0E25\u0E49\u0E27'
-              ) : (
-                <>
-                  <Save className="h-4 w-4" />
-                  \u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01
-                </>
-              )}
+            <Button variant="primary" size="sm" onClick={handleSave} disabled={saving}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : saved ? '✓ บันทึกแล้ว' : <><Save className="h-4 w-4" /> บันทึก</>}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Content stats */}
+      {/* Stats */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-white/[0.06] bg-[#0a1628]/50 px-5 py-4">
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <BarChart3 className="h-4 w-4" />
-            \u0E08\u0E33\u0E19\u0E27\u0E19\u0E04\u0E33
-          </div>
-          <p className={`mt-1 text-2xl font-bold ${meetsMinimum ? 'text-green-400' : 'text-yellow-400'}`}>
-            {totalWords.toLocaleString()}
-          </p>
-          <p className="mt-0.5 text-[10px] text-gray-500">
-            {meetsMinimum ? '\u2713 \u0E1C\u0E48\u0E32\u0E19\u0E40\u0E01\u0E13\u0E11\u0E4C\u0E02\u0E31\u0E49\u0E19\u0E15\u0E48\u0E33 (2,500 \u0E04\u0E33)' : `\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E16\u0E36\u0E07 2,500 \u0E04\u0E33 (\u0E02\u0E32\u0E14\u0E2D\u0E35\u0E01 ${(2500 - totalWords).toLocaleString()} \u0E04\u0E33)`}
-          </p>
+          <div className="flex items-center gap-2 text-sm text-gray-400"><BarChart3 className="h-4 w-4" /> จำนวนคำ</div>
+          <p className={`mt-1 text-2xl font-bold ${meetsMinimum ? 'text-green-400' : 'text-yellow-400'}`}>{totalWords.toLocaleString()}</p>
+          <p className="mt-0.5 text-[10px] text-gray-500">{meetsMinimum ? '✓ ผ่านเกณฑ์ขั้นต่ำ (2,500 คำ)' : `ยังไม่ถึง 2,500 คำ (ขาดอีก ${(2500 - totalWords).toLocaleString()} คำ)`}</p>
         </div>
         <div className="rounded-xl border border-white/[0.06] bg-[#0a1628]/50 px-5 py-4">
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <BookOpen className="h-4 w-4" />
-            \u0E08\u0E33\u0E19\u0E27\u0E19\u0E2B\u0E19\u0E49\u0E32 (PDF)
-          </div>
-          <p className={`mt-1 text-2xl font-bold ${estimatedPages >= 7 ? 'text-green-400' : 'text-yellow-400'}`}>
-            ~{estimatedPages}
-          </p>
-          <p className="mt-0.5 text-[10px] text-gray-500">
-            {estimatedPages >= 7 ? '\u2713 \u0E1C\u0E48\u0E32\u0E19\u0E40\u0E01\u0E13\u0E11\u0E4C\u0E02\u0E31\u0E49\u0E19\u0E15\u0E48\u0E33 (7 \u0E2B\u0E19\u0E49\u0E32)' : '\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E16\u0E36\u0E07 7 \u0E2B\u0E19\u0E49\u0E32'}
-          </p>
+          <div className="flex items-center gap-2 text-sm text-gray-400"><BookOpen className="h-4 w-4" /> จำนวนหน้า (PDF)</div>
+          <p className={`mt-1 text-2xl font-bold ${estimatedPages >= 7 ? 'text-green-400' : 'text-yellow-400'}`}>~{estimatedPages}</p>
+          <p className="mt-0.5 text-[10px] text-gray-500">{estimatedPages >= 7 ? '✓ ผ่านเกณฑ์ขั้นต่ำ (7 หน้า)' : 'ยังไม่ถึง 7 หน้า'}</p>
         </div>
         <div className="rounded-xl border border-white/[0.06] bg-[#0a1628]/50 px-5 py-4">
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <RefreshCw className="h-4 w-4" />
-            \u0E2A\u0E16\u0E32\u0E19\u0E30
-          </div>
-          <p className="mt-1 text-2xl font-bold text-white">
-            {isCustom ? 'Custom' : 'Auto'}
-          </p>
-          <p className="mt-0.5 text-[10px] text-gray-500">
-            {isCustom ? '\u0E41\u0E01\u0E49\u0E44\u0E02\u0E14\u0E49\u0E27\u0E22\u0E15\u0E19\u0E40\u0E2D\u0E07' : '\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E2D\u0E31\u0E15\u0E42\u0E19\u0E21\u0E31\u0E15\u0E34\u0E08\u0E32\u0E01\u0E1A\u0E17\u0E40\u0E23\u0E35\u0E22\u0E19'}
-          </p>
+          <div className="flex items-center gap-2 text-sm text-gray-400"><RefreshCw className="h-4 w-4" /> สถานะ</div>
+          <p className="mt-1 text-2xl font-bold text-white">{isCustom ? 'Custom' : 'Auto'}</p>
+          <p className="mt-0.5 text-[10px] text-gray-500">{isCustom ? 'แก้ไขด้วยตนเอง' : 'สร้างอัตโนมัติจากบทเรียน'}</p>
         </div>
       </div>
 
       {/* Status toggle */}
       <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-[#0a1628]/50 px-5 py-4">
         <div>
-          <p className="text-sm font-medium text-gray-200">\u0E2A\u0E16\u0E32\u0E19\u0E30 E-Book</p>
-          <p className="mt-0.5 text-xs text-gray-500">\u0E40\u0E21\u0E37\u0E48\u0E2D\u0E1B\u0E34\u0E14 \u0E19\u0E31\u0E01\u0E40\u0E23\u0E35\u0E22\u0E19\u0E08\u0E30\u0E44\u0E21\u0E48\u0E40\u0E2B\u0E47\u0E19\u0E1B\u0E38\u0E48\u0E21\u0E14\u0E32\u0E27\u0E19\u0E4C\u0E42\u0E2B\u0E25\u0E14 E-Book</p>
+          <p className="text-sm font-medium text-gray-200">สถานะ E-Book</p>
+          <p className="mt-0.5 text-xs text-gray-500">เมื่อปิด นักเรียนจะไม่เห็นปุ่มดาวน์โหลด E-Book</p>
         </div>
         <button
           onClick={() => handleChange('isActive', !form.isActive)}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-            form.isActive ? 'bg-blue-600' : 'bg-gray-600'
-          }`}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${form.isActive ? 'bg-blue-600' : 'bg-gray-600'}`}
         >
-          <span
-            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-              form.isActive ? 'translate-x-6' : 'translate-x-1'
-            }`}
-          />
+          <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${form.isActive ? 'translate-x-6' : 'translate-x-1'}`} />
         </button>
       </div>
 
       {/* Form fields */}
       <div className="space-y-5">
-        {FIELDS.map((field) => {
+        {FIELDS.map(field => {
           const fieldWords = countWords(form[field.key] as string)
           return (
             <div key={field.key} className="rounded-xl border border-white/[0.06] bg-[#0a1628]/50 p-5">
               <div className="mb-2 flex items-center justify-between">
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
-                  <span>{field.icon}</span>
-                  {field.label}
+                  <span>{field.icon}</span> {field.label}
                 </label>
-                {field.rows > 1 && (
-                  <span className="text-[10px] text-gray-500">{fieldWords} \u0E04\u0E33</span>
-                )}
+                {field.rows > 1 && <span className="text-[10px] text-gray-500">{fieldWords} คำ</span>}
               </div>
               {field.rows === 1 ? (
                 <input
                   type="text"
                   value={form[field.key] as string}
-                  onChange={(e) => handleChange(field.key, e.target.value)}
+                  onChange={e => handleChange(field.key, e.target.value)}
                   className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-2.5 text-sm text-gray-200 outline-none transition-colors placeholder:text-gray-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
-                  placeholder={`\u0E01\u0E23\u0E2D\u0E01${field.label}...`}
+                  placeholder={`กรอก${field.label}...`}
                 />
               ) : (
                 <textarea
                   value={form[field.key] as string}
-                  onChange={(e) => handleChange(field.key, e.target.value)}
+                  onChange={e => handleChange(field.key, e.target.value)}
                   rows={field.rows}
                   className="w-full resize-y rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-2.5 text-sm text-gray-200 outline-none transition-colors placeholder:text-gray-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
-                  placeholder={`\u0E01\u0E23\u0E2D\u0E01${field.label}... (\u0E43\u0E0A\u0E49 Enter \u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E02\u0E36\u0E49\u0E19\u0E1A\u0E23\u0E23\u0E17\u0E31\u0E14\u0E43\u0E2B\u0E21\u0E48)`}
+                  placeholder={`กรอก${field.label}... (ใช้ Enter เพื่อขึ้นบรรทัดใหม่)`}
                 />
               )}
             </div>
@@ -460,35 +264,13 @@ export default function EbookEditorClient({
         })}
       </div>
 
-      {/* Save button at bottom */}
+      {/* Bottom */}
       <div className="flex justify-end gap-3 border-t border-white/[0.06] pt-4 pb-8">
-        <Button
-          variant="ghost"
-          size="lg"
-          onClick={handlePreview}
-        >
-          <Eye className="h-5 w-5" />
-          Preview PDF
+        <Button variant="ghost" size="lg" onClick={() => setShowPreview(true)}>
+          <Eye className="h-5 w-5" /> Preview PDF
         </Button>
-        <Button
-          variant="primary"
-          size="lg"
-          onClick={handleSave}
-          disabled={saving}
-        >
-          {saving ? (
-            <>
-              <Loader2 className="h-5 w-5 animate-spin" />
-              \u0E01\u0E33\u0E25\u0E31\u0E07\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01...
-            </>
-          ) : saved ? (
-            '\u2713 \u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E40\u0E23\u0E35\u0E22\u0E1A\u0E23\u0E49\u0E2D\u0E22'
-          ) : (
-            <>
-              <Save className="h-5 w-5" />
-              \u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01 E-Book
-            </>
-          )}
+        <Button variant="primary" size="lg" onClick={handleSave} disabled={saving}>
+          {saving ? <><Loader2 className="h-5 w-5 animate-spin" /> กำลังบันทึก...</> : saved ? '✓ บันทึกเรียบร้อย' : <><Save className="h-5 w-5" /> บันทึก E-Book</>}
         </Button>
       </div>
 
