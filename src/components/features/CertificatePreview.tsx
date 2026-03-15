@@ -318,11 +318,17 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
           <div className="flex flex-col items-center" style={{ flex: '0 0 auto' }}>
             {/* Logo — SBS School of Business Administration */}
             <div
-              className="relative"
+              className="relative flex items-center justify-center"
               style={{
-                width: 'clamp(120px, 18vw, 220px)',
-                height: 'clamp(45px, 7vw, 85px)',
+                width: 'clamp(140px, 20vw, 240px)',
+                height: 'clamp(50px, 8vw, 90px)',
                 marginBottom: 'clamp(4px, 0.8vw, 10px)',
+                background: isDark ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.85)',
+                borderRadius: 'clamp(6px, 0.8vw, 10px)',
+                padding: 'clamp(4px, 0.6vw, 8px) clamp(8px, 1.2vw, 16px)',
+                boxShadow: isDark
+                  ? '0 2px 12px rgba(0,0,0,0.3)'
+                  : '0 1px 4px rgba(0,0,0,0.08)',
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -330,13 +336,9 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
                 src={logoUrl || '/images/brand/spu-bus-full.png'}
                 alt="SBS School of Business Administration - Sripatum University"
                 style={{
-                  width: '100%',
-                  height: '100%',
+                  maxWidth: '100%',
+                  maxHeight: '100%',
                   objectFit: 'contain',
-                  // Dark/neon backgrounds: boost brightness so logo is visible
-                  ...(isDark && {
-                    filter: 'brightness(1.3) drop-shadow(0 0 8px rgba(255,255,255,0.3))',
-                  }),
                 }}
               />
             </div>
