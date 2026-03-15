@@ -20,7 +20,6 @@ import {
   Youtube,
 } from 'lucide-react'
 import Button from '@/components/ui/Button'
-import EbookSection from '@/components/features/EbookSection'
 import EbookDownloadButton from '@/components/features/EbookDownloadButton'
 import InVideoQuizOverlay from '@/components/features/InVideoQuizOverlay'
 import QuizTimelineMarkers from '@/components/features/QuizTimelineMarkers'
@@ -461,13 +460,6 @@ export default function LearnClient({
               <p className="mt-1 text-sm text-gray-400">{currentLesson.subtitle}</p>
             )}
           </div>
-
-          {/* E-Book Section — before video */}
-          <EbookSection
-            lessonId={currentLessonId}
-            lessonTitle={currentLesson.title}
-            lessonOrder={currentLesson.lessonOrder}
-          />
 
           {/* Video Player (YouTube IFrame API) */}
           <div className="relative mb-4 aspect-video w-full overflow-hidden rounded-xl border border-white/[0.06] bg-[#0a1628]">
