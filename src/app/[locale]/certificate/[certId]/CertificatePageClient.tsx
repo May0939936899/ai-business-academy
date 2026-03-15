@@ -366,7 +366,7 @@ export default function CertificatePageClient({
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Classic</span>
                 <div className="h-px flex-1 bg-white/[0.06]" />
               </div>
-              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
                 {classicThemes.map((theme) => {
                   const isSelected = theme.id === selectedThemeId
                   return (

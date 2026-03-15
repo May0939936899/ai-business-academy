@@ -93,11 +93,11 @@ export default function Footer() {
             {/* Contact Info */}
             <div className="mb-5 space-y-3">
               <div className="flex items-start gap-2.5 text-sm text-gray-500">
-                <Phone className="mt-0.5 h-4 w-4 shrink-0 text-gray-600" />
+                <Phone className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
                 <span>{t('phone')}</span>
               </div>
               <div className="flex items-start gap-2.5 text-sm text-gray-500">
-                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-gray-600" />
+                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
                 <a
                   href="mailto:direct.sbs@spu.ac.th"
                   className="transition-colors hover:text-gray-300"
@@ -106,7 +106,7 @@ export default function Footer() {
                 </a>
               </div>
               <div className="flex items-start gap-2.5 text-sm text-gray-500">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-600" />
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
                 <span>{t('address')}</span>
               </div>
             </div>
@@ -157,7 +157,7 @@ export default function Footer() {
 
         {/* ── Bottom Bar ── */}
         <div className="border-t border-white/[0.06] py-6">
-          <p className="text-center text-xs text-gray-600">
+          <p className="text-center text-xs text-gray-500">
             &copy; {new Date().getFullYear()} {t('copyright')}
           </p>
         </div>

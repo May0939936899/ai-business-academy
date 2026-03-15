@@ -356,7 +356,7 @@ export default async function DashboardPage() {
                           >
                             {enrollment.course.category}
                           </span>
-                          <h3 className="mt-2 text-lg font-bold leading-tight text-white">
+                          <h3 className="mt-2 text-lg font-bold leading-tight text-white line-clamp-2">
                             {enrollment.course.title}
                           </h3>
                         </div>

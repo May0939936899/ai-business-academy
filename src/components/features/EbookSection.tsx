@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { BookOpen, Download, Eye, Loader2, FileText, ChevronDown, ChevronUp } from 'lucide-react'
+import { BookOpen, Download, Eye, Loader2, FileText, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react'
 import EbookPreviewModal from './EbookPreviewModal'
 
 interface Props {
@@ -52,7 +52,7 @@ interface FetchedData {
 }
 
 function estimatePageCount(ebook: EbookData): number {
-  let pages = 2 // cover + TOC
+  let pages = 2
   const sections = [
     ebook.introduction, ebook.keyConcepts, ebook.businessUseCases,
     ebook.toolsAndTechniques, ebook.practicalExample, ebook.ebookSummary,
@@ -61,7 +61,7 @@ function estimatePageCount(ebook: EbookData): number {
   for (const s of sections) {
     if (s && s.trim()) pages += Math.max(1, Math.ceil(s.length / 800))
   }
-  return pages + 1 // + closing
+  return pages + 1
 }
 
 export default function EbookSection({ lessonId, lessonTitle, lessonOrder }: Props) {
@@ -70,17 +70,37 @@ export default function EbookSection({ lessonId, lessonTitle, lessonOrder }: Pro
   const [showPreview, setShowPreview] = useState(false)
   const [ebookData, setEbookData] = useState<FetchedData | null>(null)
   const [expanded, setExpanded] = useState(false)
+  const [error, setError] = useState(false)
 
   // Reset when lesson changes
   useEffect(() => {
     setEbookData(null)
     setExpanded(false)
     setShowPreview(false)
+    setError(false)
+  }, [lessonId])
+
+  // Auto-fetch on mount to show page count
+  useEffect(() => {
+    let cancelled = false
+    const prefetch = async () => {
+      try {
+        const res = await fetch(`/api/ebooks/${lessonId}`)
+        if (!res.ok) throw new Error('Failed')
+        const data: FetchedData = await res.json()
+        if (!cancelled) setEbookData(data)
+      } catch {
+        if (!cancelled) setError(true)
+      }
+    }
+    prefetch()
+    return () => { cancelled = true }
   }, [lessonId])
 
   const fetchData = useCallback(async (): Promise<FetchedData | null> => {
     if (ebookData && ebookData.lesson.id === lessonId) return ebookData
     setLoading(true)
+    setError(false)
     try {
       const res = await fetch(`/api/ebooks/${lessonId}`)
       if (!res.ok) throw new Error('Failed to fetch')
@@ -89,6 +109,7 @@ export default function EbookSection({ lessonId, lessonTitle, lessonOrder }: Pro
       return data
     } catch (err) {
       console.error('Error fetching ebook:', err)
+      setError(true)
       return null
     } finally {
       setLoading(false)
@@ -180,10 +201,7 @@ export default function EbookSection({ lessonId, lessonTitle, lessonOrder }: Pro
     }
   }
 
-  const handleExpand = async () => {
-    if (!ebookData) await fetchData()
-    setExpanded(prev => !prev)
-  }
+  const handleExpand = () => setExpanded(prev => !prev)
 
   const pageCount = ebookData ? estimatePageCount(ebookData.ebook) : null
 
@@ -195,72 +213,85 @@ export default function EbookSection({ lessonId, lessonTitle, lessonOrder }: Pro
           <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 ring-1 ring-blue-500/30">
             <BookOpen className="h-6 w-6 text-blue-400" />
           </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-base font-bold text-white">
-                📚 E-Book ประกอบบทเรียน
+                E-Book ประกอบบทเรียน
               </h3>
               {pageCount && (
                 <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold text-blue-400 ring-1 ring-blue-500/20">
-                  {pageCount} หน้า
+                  ~{pageCount} หน้า
                 </span>
               )}
             </div>
             <p className="mt-1 text-xs leading-relaxed text-gray-400">
-              เอกสารประกอบบทเรียนฉบับเต็มสำหรับบทนี้
-              สรุปแนวคิด เครื่องมือ และตัวอย่างการใช้งานจริง
-              สามารถอ่านออนไลน์หรือดาวน์โหลดเป็น PDF ได้
+              เอกสารประกอบบทเรียนฉบับเต็มสำหรับบทนี้ สรุปแนวคิด เครื่องมือ และตัวอย่างการใช้งานจริง
             </p>
           </div>
         </div>
+
+        {/* Error state */}
+        {error && (
+          <div className="flex items-center gap-2 border-t border-red-500/10 bg-red-500/5 px-5 py-3 text-xs text-red-400">
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            <span>ไม่สามารถโหลด E-Book ได้</span>
+            <button onClick={() => fetchData()} className="ml-auto text-red-300 underline hover:text-red-200">ลองอีกครั้ง</button>
+          </div>
+        )}
 
         {/* Buttons */}
-        <div className="flex items-center gap-3 border-t border-blue-500/10 bg-blue-500/[0.03] px-5 py-3.5">
-          <button
-            onClick={handlePreview}
-            disabled={loading}
-            className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-blue-500/30 bg-blue-500/10 px-4 py-2.5 text-sm font-medium text-blue-300 transition-all hover:bg-blue-500/20 hover:text-blue-200 disabled:opacity-50"
-          >
-            {loading && !downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
-            Preview E-Book
-          </button>
-          <button
-            onClick={handleDownload}
-            disabled={downloading}
-            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 px-4 py-2.5 text-sm font-medium text-white transition-all hover:from-blue-500 hover:to-cyan-500 disabled:opacity-50"
-          >
-            {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-            {downloading ? 'กำลังสร้าง PDF...' : 'Download PDF'}
-          </button>
-        </div>
+        {!error && (
+          <div className="flex items-center gap-3 border-t border-blue-500/10 bg-blue-500/[0.03] px-5 py-3.5">
+            <button
+              onClick={handlePreview}
+              disabled={loading}
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-blue-500/30 bg-blue-500/10 px-4 py-2.5 text-sm font-medium text-blue-300 transition-all hover:bg-blue-500/20 hover:text-blue-200 disabled:opacity-50"
+            >
+              {loading && !downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
+              Preview E-Book
+            </button>
+            <button
+              onClick={handleDownload}
+              disabled={downloading || loading}
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 px-4 py-2.5 text-sm font-medium text-white transition-all hover:from-blue-500 hover:to-cyan-500 disabled:opacity-50"
+            >
+              {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              {downloading ? 'กำลังสร้าง PDF...' : 'Download PDF'}
+            </button>
+          </div>
+        )}
 
         {/* Expandable summary */}
-        <button
-          onClick={handleExpand}
-          className="flex w-full items-center justify-between border-t border-blue-500/10 px-5 py-2.5 text-xs text-gray-500 transition-colors hover:bg-white/[0.02] hover:text-gray-400"
-        >
-          <span className="flex items-center gap-1.5">
-            <FileText className="h-3 w-3" />
-            {expanded ? 'ซ่อนสรุปเนื้อหา' : 'ดูสรุปเนื้อหา E-Book'}
-          </span>
-          {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-        </button>
+        {ebookData && (
+          <>
+            <button
+              onClick={handleExpand}
+              className="flex w-full items-center justify-between border-t border-blue-500/10 px-5 py-2.5 text-xs text-gray-500 transition-colors hover:bg-white/[0.02] hover:text-gray-400"
+            >
+              <span className="flex items-center gap-1.5">
+                <FileText className="h-3 w-3" />
+                {expanded ? 'ซ่อนสรุปเนื้อหา' : 'ดูสรุปเนื้อหา E-Book'}
+              </span>
+              {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+            </button>
 
-        {expanded && ebookData && (
-          <div className="border-t border-blue-500/10 px-5 py-3">
-            <p className="text-xs leading-relaxed text-gray-400">
-              {ebookData.ebook.ebookSummary
-                ? ebookData.ebook.ebookSummary.split('\n').filter(l => l.trim()).slice(0, 3).join(' ').slice(0, 200) + '...'
-                : `เอกสารประกอบบทเรียนฉบับเต็มสำหรับบทนี้ สรุปแนวคิด เครื่องมือ และตัวอย่างการใช้งานจริงเกี่ยวกับ ${lessonTitle}`
-              }
-            </p>
-            {pageCount && (
-              <div className="mt-2 flex items-center gap-3 text-[10px] text-gray-500">
-                <span>จำนวนหน้า: ~{pageCount} หน้า</span>
-                <span>โครงสร้าง: Cover, สารบัญ, 8 หัวข้อ, สรุป</span>
+            {expanded && (
+              <div className="border-t border-blue-500/10 px-5 py-3">
+                <p className="text-xs leading-relaxed text-gray-400">
+                  {ebookData.ebook.ebookSummary
+                    ? ebookData.ebook.ebookSummary.split('\n').filter(l => l.trim()).slice(0, 3).join(' ').slice(0, 200) + '...'
+                    : `เอกสารประกอบบทเรียนฉบับเต็มสำหรับบทนี้ สรุปแนวคิด เครื่องมือ และตัวอย่างการใช้งานจริงเกี่ยวกับ ${lessonTitle}`
+                  }
+                </p>
+                {pageCount && (
+                  <div className="mt-2 flex items-center gap-3 text-[10px] text-gray-500">
+                    <span>จำนวนหน้า: ~{pageCount} หน้า</span>
+                    <span>โครงสร้าง: Cover, สารบัญ, 8 หัวข้อ, สรุป</span>
+                  </div>
+                )}
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
 

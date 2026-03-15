@@ -20,6 +20,7 @@ import {
   Youtube,
 } from 'lucide-react'
 import Button from '@/components/ui/Button'
+import EbookSection from '@/components/features/EbookSection'
 import EbookDownloadButton from '@/components/features/EbookDownloadButton'
 import InVideoQuizOverlay from '@/components/features/InVideoQuizOverlay'
 import QuizTimelineMarkers from '@/components/features/QuizTimelineMarkers'
@@ -596,7 +597,12 @@ export default function LearnClient({
             </div>
           )}
 
-          {/* E-Book section removed — now in sidebar */}
+          {/* 📚 E-Book ประกอบบทเรียน */}
+          <EbookSection
+            lessonId={currentLessonId}
+            lessonTitle={currentLesson.title}
+            lessonOrder={currentLesson.lessonOrder}
+          />
 
           {/* Resources */}
           {currentLesson.resources.length > 0 && (
@@ -667,7 +673,7 @@ export default function LearnClient({
                       ) : isActive ? (
                         <Play className="h-5 w-5 text-blue-400" />
                       ) : (
-                        <Circle className="h-5 w-5 text-gray-600" />
+                        <Circle className="h-5 w-5 text-gray-500" />
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -682,14 +688,14 @@ export default function LearnClient({
                         </span>
                       </div>
                       <p
-                        className={`text-sm font-medium leading-snug ${
+                        className={`text-sm font-medium leading-snug line-clamp-2 ${
                           isActive ? 'text-white' : isCompleted ? 'text-gray-400' : 'text-gray-300'
                         }`}
                       >
                         {lesson.title}
                       </p>
                       {lesson.durationText && (
-                        <p className="mt-0.5 text-[10px] text-gray-600">{lesson.durationText}</p>
+                        <p className="mt-0.5 text-[10px] text-gray-500">{lesson.durationText}</p>
                       )}
                     </div>
                     {isActive && <ChevronRight className="h-4 w-4 flex-shrink-0 text-blue-400" />}

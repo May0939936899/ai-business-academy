@@ -80,7 +80,7 @@ export default function InVideoQuizOverlay({
                   disabled={isAnswered}
                   onClick={() => onAnswer(letter)}
                   className={`flex w-full items-start gap-3 rounded-xl border p-3.5 text-left transition-all ${borderBg} ${
-                    isAnswered ? 'cursor-default' : 'cursor-pointer'
+                    isAnswered ? 'cursor-default opacity-80' : 'cursor-pointer hover:border-white/20'
                   }`}
                 >
                   <span
