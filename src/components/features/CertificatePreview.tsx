@@ -316,31 +316,26 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
               TOP ZONE — Logo + Academy Name + Certificate Title
               ════════════════════════════════════════════════════════════════ */}
           <div className="flex flex-col items-center" style={{ flex: '0 0 auto' }}>
-            {/* Logo */}
+            {/* Logo — SBS School of Business Administration */}
             <div
               className="relative"
               style={{
-                width: 'clamp(80px, 12vw, 140px)',
-                height: 'clamp(32px, 5vw, 56px)',
+                width: 'clamp(120px, 18vw, 220px)',
+                height: 'clamp(45px, 7vw, 85px)',
                 marginBottom: 'clamp(4px, 0.8vw, 10px)',
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={logoUrl || '/images/brand/spu-bus-logo.svg'}
-                alt="SPU BUS Logo"
+                src={logoUrl || '/images/brand/spu-bus-full.png'}
+                alt="SBS School of Business Administration - Sripatum University"
                 style={{
                   width: '100%',
                   height: '100%',
                   objectFit: 'contain',
-                  // Dark neon backgrounds: invert dark logo so it shows as white/light
-                  ...(isDark && !logoUrl && {
-                    filter: 'brightness(0) invert(1)',
-                    opacity: 0.88,
-                  }),
-                  // Custom uploaded logo: preserve colors but boost brightness on dark bg
-                  ...(isDark && logoUrl && {
-                    filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.25))',
+                  // Dark/neon backgrounds: boost brightness so logo is visible
+                  ...(isDark && {
+                    filter: 'brightness(1.3) drop-shadow(0 0 8px rgba(255,255,255,0.3))',
                   }),
                 }}
               />
