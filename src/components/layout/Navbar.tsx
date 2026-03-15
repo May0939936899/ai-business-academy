@@ -59,7 +59,7 @@ export default function Navbar() {
     <header
       className={cn(
         'sticky top-0 z-50 w-full',
-        'bg-[#030712]/80 backdrop-blur-xl',
+        'bg-[#030712] backdrop-blur-xl',
         'border-b border-transparent'
       )}
       style={{
@@ -229,7 +229,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="border-t border-white/[0.06] bg-[#030712]/95 backdrop-blur-xl md:hidden">
+        <div className="border-t border-white/[0.06] bg-[#030712] backdrop-blur-xl md:hidden">
           <div className="space-y-1 px-4 pb-4 pt-3">
             {navLinks.map((link) => (
               <Link
