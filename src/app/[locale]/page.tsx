@@ -78,6 +78,33 @@ const animatedStyles = `
   background-size: 200% 100%;
   animation: shimmer 3s ease-in-out infinite;
 }
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 8px 30px rgba(59,130,246,0.3), 0 0 0 0 rgba(59,130,246,0.15); }
+  50% { box-shadow: 0 8px 30px rgba(59,130,246,0.4), 0 0 0 6px rgba(59,130,246,0.05); }
+}
+.cta-primary {
+  background: linear-gradient(135deg, #3B82F6, #60A5FA, #2563EB, #1D4ED8);
+  background-size: 200% 200%;
+  animation: gradientMove 6s ease infinite, ctaPulse 3s ease-in-out infinite;
+}
+.cta-primary:hover {
+  box-shadow: 0 14px 40px rgba(59,130,246,0.5), 0 0 60px rgba(59,130,246,0.15);
+  background: linear-gradient(135deg, #60A5FA, #93C5FD, #3B82F6, #2563EB);
+  background-size: 200% 200%;
+  animation: gradientMove 4s ease infinite;
+}
+.cta-primary:active {
+  transform: scale(0.97) !important;
+}
+.cta-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.35), 0 8px 30px rgba(59,130,246,0.3);
+}
 `;
 
 /* ── Static Data ─────────────────────────────────────────── */
@@ -342,32 +369,36 @@ export default async function HomePage() {
                 ))}
               </div>
 
-              {/* CTAs */}
-              <div className="mt-10 flex flex-wrap gap-4">
+              {/* CTAs — AI startup premium style */}
+              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                 <Link
                   href={`/${locale}/courses`}
                   className={cn(
-                    "group inline-flex items-center gap-2.5 rounded-full px-8 py-4",
-                    "bg-gradient-to-r from-[#2196F3] to-[#4FC3F7]",
+                    "cta-primary group relative inline-flex items-center justify-center gap-3 rounded-2xl px-10 py-4",
                     "text-base font-bold text-white",
-                    "shadow-2xl shadow-[#2196F3]/25",
-                    "transition-all duration-300 hover:shadow-[#2196F3]/40 hover:brightness-110 hover:scale-[1.02]"
+                    "transition-all duration-250 ease-out",
+                    "hover:-translate-y-[3px]",
+                    "active:scale-[0.97]"
                   )}
                 >
-                  <Rocket className="h-5 w-5" />
+                  <Rocket className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5" />
                   {t('ctaStart')}
-                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
                 <Link
                   href={`/${locale}/courses`}
                   className={cn(
-                    "inline-flex items-center gap-2.5 rounded-full px-8 py-4",
-                    "border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm",
+                    "group inline-flex items-center justify-center gap-3 rounded-2xl px-10 py-4",
+                    "border border-white/[0.18] bg-white/[0.04] backdrop-blur-sm",
                     "text-base font-semibold text-gray-300",
-                    "transition-all duration-300 hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white"
+                    "transition-all duration-250 ease-out",
+                    "hover:bg-white/[0.08] hover:border-white/[0.25] hover:text-white hover:-translate-y-[2px]",
+                    "hover:shadow-[0_6px_20px_rgba(0,0,0,0.35)]",
+                    "active:scale-[0.97]",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/35 focus-visible:ring-offset-0"
                   )}
                 >
-                  <Play className="h-5 w-5" />
+                  <Play className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-0.5" />
                   {t('ctaViewCourses')}
                 </Link>
               </div>
