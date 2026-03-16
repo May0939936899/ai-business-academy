@@ -97,6 +97,21 @@ export default async function LocaleLayout({ children, params }: Props) {
     >
       <head>
         <ThemeScript />
+        {/* Prevent homepage flash: CSS cover runs before any paint */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function(){
+            var p=window.location.pathname.replace(/\\/$/,'');
+            var L=['th','en','zh','ja'];
+            var s=p.split('/').filter(Boolean);
+            if(s.length===0||(s.length===1&&L.indexOf(s[0])!==-1)){
+              document.documentElement.setAttribute('data-splash','1');
+            }
+          })();
+        `}} />
+        <style dangerouslySetInnerHTML={{ __html: `
+          html[data-splash="1"] body::before{content:'';position:fixed;inset:0;z-index:9998;background:#030712;pointer-events:none;transition:opacity .5s ease-out}
+          html[data-splash="0"] body::before{opacity:0;pointer-events:none}
+        `}} />
       </head>
       <body className="min-h-screen font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
