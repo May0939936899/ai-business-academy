@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import ThemeSwitcher from '@/components/features/ThemeSwitcher'
+// ThemeSwitcher removed
 import PixelLandingPage from '@/components/features/PixelLandingPage'
 
 const LOCALES = ['th', 'en', 'zh', 'ja']
@@ -34,7 +34,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
     <>
       {isHomePage && <PixelLandingPage />}
       <Navbar />
-      <ThemeSwitcher />
+
       <main className="min-h-[calc(100vh-4rem)]">{children}</main>
       <Footer />
     </>
