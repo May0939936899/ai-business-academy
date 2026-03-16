@@ -4,94 +4,125 @@ import { useState, useEffect } from 'react'
 
 export default function PixelLandingPage() {
   const [phase, setPhase] = useState<'splash' | 'fadeout' | 'done'>('splash')
-  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
-    const showTimer = setTimeout(() => setPhase('fadeout'), 2500)
-    const doneTimer = setTimeout(() => setPhase('done'), 3100)
+    const showTimer = setTimeout(() => setPhase('fadeout'), 2800)
+    const doneTimer = setTimeout(() => setPhase('done'), 3500)
     return () => {
       clearTimeout(showTimer)
       clearTimeout(doneTimer)
     }
   }, [])
 
-  if (!mounted || phase === 'done') return null
+  if (phase === 'done') return null
 
+  // SSR + initial render: always show the splash overlay (prevents homepage flash)
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center"
       style={{
-        background: 'linear-gradient(135deg, #020818 0%, #0a0520 50%, #020818 100%)',
+        background: '#030712',
         opacity: phase === 'fadeout' ? 0 : 1,
-        transition: 'opacity 0.6s ease-out',
+        transition: 'opacity 0.7s ease-out',
         pointerEvents: phase === 'fadeout' ? 'none' : 'auto',
       }}
     >
-      {/* Background grid */}
+      {/* Subtle grid background */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(33,150,243,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(33,150,243,0.04) 1px, transparent 1px)',
+          backgroundSize: '48px 48px',
+        }}
+      />
+
+      {/* Floating particles in CI colors */}
       <div className="absolute inset-0 overflow-hidden">
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage:
-              'linear-gradient(rgba(0,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.03) 1px, transparent 1px)',
-            backgroundSize: '40px 40px',
-          }}
-        />
-        {Array.from({ length: 20 }).map((_, i) => (
+        {Array.from({ length: 15 }).map((_, i) => (
           <div
             key={i}
-            className="neon-particle"
+            className="ci-particle"
             style={{
               position: 'absolute',
               left: `${(i * 47.3 + 11.7) % 100}%`,
               top: `${(i * 31.9 + 23.1) % 100}%`,
-              animationDelay: `${(i * 0.3) % 2}s`,
-              background: i % 3 === 0 ? '#ff2d95' : i % 3 === 1 ? '#00e5ff' : '#b44dff',
-              width: 3,
-              height: 3,
+              animationDelay: `${(i * 0.4) % 2.5}s`,
+              background: i % 3 === 0 ? '#2196F3' : i % 3 === 1 ? '#4FC3F7' : '#E91E8C',
+              width: i % 4 === 0 ? 4 : 3,
+              height: i % 4 === 0 ? 4 : 3,
               borderRadius: '50%',
             }}
           />
         ))}
       </div>
 
-      {/* Center content */}
-      <div className="relative text-center px-4">
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full blur-[100px]"
-          style={{
-            background: 'radial-gradient(circle, rgba(0,229,255,0.15), rgba(255,45,149,0.1), transparent)',
-          }}
-        />
+      {/* Ambient glow orbs matching hero section */}
+      <div
+        className="absolute top-1/4 left-1/4 w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] rounded-full blur-[80px] sm:blur-[120px]"
+        style={{ background: 'rgba(33,150,243,0.12)' }}
+      />
+      <div
+        className="absolute bottom-1/4 right-1/4 w-[150px] h-[150px] sm:w-[250px] sm:h-[250px] rounded-full blur-[80px] sm:blur-[100px]"
+        style={{ background: 'rgba(233,30,140,0.08)' }}
+      />
 
+      {/* Center content */}
+      <div className="relative text-center px-6 w-full max-w-lg mx-auto">
+        {/* SPU BUS Logo mark (pixel squares) */}
+        <div className="flex justify-center gap-1.5 sm:gap-2 mb-6 sm:mb-8">
+          {['#2196F3', '#4FC3F7', '#E91E8C', '#4FC3F7', '#2196F3'].map((color, i) => (
+            <div
+              key={i}
+              className="ci-block"
+              style={{
+                width: 'clamp(8px, 2vw, 12px)',
+                height: 'clamp(8px, 2vw, 12px)',
+                background: color,
+                borderRadius: 2,
+                animationDelay: `${i * 0.12}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Main title */}
         <h1
           className="relative"
           style={{ fontFamily: 'var(--font-pixel), "Press Start 2P", monospace' }}
         >
-          <span className="block neon-line neon-line-1 text-[clamp(0.9rem,3.5vw,1.8rem)] tracking-wider text-white">
+          <span className="block ci-text ci-text-1 text-[clamp(0.75rem,3.2vw,1.6rem)] tracking-widest leading-relaxed">
             AI BUSINESS
           </span>
-          <span className="block neon-line neon-line-2 text-[clamp(0.9rem,3.5vw,1.8rem)] tracking-wider text-white mt-3">
+          <span className="block ci-text ci-text-2 text-[clamp(0.75rem,3.2vw,1.6rem)] tracking-widest leading-relaxed mt-2 sm:mt-3">
             ACADEMY
           </span>
         </h1>
 
-        <div className="relative mt-8 mx-auto w-48 h-1 rounded-full overflow-hidden bg-white/10">
-          <div className="neon-loader h-full rounded-full" />
+        {/* Subtitle */}
+        <p
+          className="ci-subtitle text-[clamp(0.55rem,1.5vw,0.75rem)] tracking-[0.2em] sm:tracking-[0.3em] mt-4 sm:mt-6 uppercase"
+          style={{ color: 'rgba(79,195,247,0.6)' }}
+        >
+          School of Business Administration
+        </p>
+
+        {/* Loading bar */}
+        <div className="mt-6 sm:mt-8 mx-auto w-32 sm:w-48 h-[3px] rounded-full overflow-hidden bg-white/5">
+          <div className="ci-loader h-full rounded-full" />
         </div>
 
-        <div className="relative mt-6 flex justify-center gap-2">
-          {[0, 1, 2, 3, 4].map((i) => (
+        {/* Animated dots */}
+        <div className="mt-4 sm:mt-6 flex justify-center gap-1.5 sm:gap-2">
+          {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="neon-dot"
+              className="ci-dot"
               style={{
-                animationDelay: `${i * 0.15}s`,
-                background: i % 2 === 0 ? '#00e5ff' : '#ff2d95',
-                width: 8,
-                height: 8,
+                animationDelay: `${i * 0.2}s`,
+                background: i === 0 ? '#2196F3' : i === 1 ? '#E91E8C' : '#4FC3F7',
+                width: 'clamp(5px, 1.5vw, 8px)',
+                height: 'clamp(5px, 1.5vw, 8px)',
                 borderRadius: 2,
               }}
             />
@@ -100,47 +131,68 @@ export default function PixelLandingPage() {
       </div>
 
       <style jsx>{`
-        .neon-particle {
-          animation: floatParticle 3s ease-in-out infinite;
-          opacity: 0.6;
+        .ci-particle {
+          animation: particleFloat 4s ease-in-out infinite;
         }
-        @keyframes floatParticle {
-          0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
-          50% { transform: translateY(-20px) scale(1.5); opacity: 0.8; }
+        @keyframes particleFloat {
+          0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
+          50% { transform: translateY(-15px) scale(1.3); opacity: 0.5; }
         }
-        .neon-line {
+
+        .ci-block {
           opacity: 0;
-          transform: translateX(-30px);
-          animation: slideIn 0.6s ease-out forwards;
+          transform: scale(0);
+          animation: blockPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
-        .neon-line-1 {
-          animation-delay: 0.2s;
-          text-shadow: 0 0 10px #00e5ff, 0 0 30px #00e5ff, 0 0 60px #ff2d95, 0 0 100px #ff2d95;
+        @keyframes blockPop {
+          0% { opacity: 0; transform: scale(0); }
+          100% { opacity: 1; transform: scale(1); }
         }
-        .neon-line-2 {
-          animation-delay: 0.5s;
-          text-shadow: 0 0 10px #ff2d95, 0 0 30px #ff2d95, 0 0 60px #b44dff, 0 0 100px #00e5ff;
+
+        .ci-text {
+          opacity: 0;
+          color: #ffffff;
+          transform: translateY(15px);
+          animation: textReveal 0.7s ease-out forwards;
         }
-        @keyframes slideIn {
-          0% { opacity: 0; transform: translateX(-30px); }
-          100% { opacity: 1; transform: translateX(0); }
+        .ci-text-1 {
+          animation-delay: 0.4s;
+          text-shadow: 0 0 20px rgba(33,150,243,0.4), 0 0 40px rgba(33,150,243,0.15);
         }
-        .neon-loader {
-          background: linear-gradient(90deg, #00e5ff, #ff2d95, #b44dff, #00e5ff);
-          background-size: 200% 100%;
-          animation: loaderSlide 2s ease-in-out forwards;
+        .ci-text-2 {
+          animation-delay: 0.7s;
+          text-shadow: 0 0 20px rgba(233,30,140,0.35), 0 0 40px rgba(79,195,247,0.15);
+        }
+        @keyframes textReveal {
+          0% { opacity: 0; transform: translateY(15px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .ci-subtitle {
+          opacity: 0;
+          animation: fadeIn 0.6s ease-out 1.0s forwards;
+        }
+        @keyframes fadeIn {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
+        }
+
+        .ci-loader {
+          background: linear-gradient(90deg, #2196F3, #4FC3F7, #E91E8C, #4FC3F7);
+          animation: loaderFill 2.2s ease-in-out forwards;
           width: 0%;
         }
-        @keyframes loaderSlide {
+        @keyframes loaderFill {
           0% { width: 0%; }
           100% { width: 100%; }
         }
-        .neon-dot {
-          animation: dotPulse 0.8s ease-in-out infinite alternate;
+
+        .ci-dot {
+          animation: dotBounce 1s ease-in-out infinite alternate;
         }
-        @keyframes dotPulse {
-          0% { opacity: 0.3; transform: scale(0.8); }
-          100% { opacity: 1; transform: scale(1.2); }
+        @keyframes dotBounce {
+          0% { opacity: 0.3; transform: scale(0.7); }
+          100% { opacity: 1; transform: scale(1.1); }
         }
       `}</style>
     </div>
