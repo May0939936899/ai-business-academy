@@ -2,126 +2,47 @@
 
 import { useState, useEffect } from 'react'
 
-/* ── Pixel art letter patterns (7 rows × variable cols) ── */
-const LETTERS: Record<string, number[][]> = {
-  A: [
-    [0,1,1,1,0],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,1,1,1,1],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-  ],
-  I: [
-    [1,1,1],
-    [0,1,0],
-    [0,1,0],
-    [0,1,0],
-    [0,1,0],
-    [0,1,0],
-    [1,1,1],
-  ],
-  B: [
-    [1,1,1,1,0],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,1,1,1,0],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,1,1,1,0],
-  ],
-  U: [
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [0,1,1,1,0],
-  ],
-  S: [
-    [0,1,1,1,0],
-    [1,0,0,0,1],
-    [1,0,0,0,0],
-    [0,1,1,1,0],
-    [0,0,0,0,1],
-    [1,0,0,0,1],
-    [0,1,1,1,0],
-  ],
-}
+/* ── CI Colors ── */
+const CI_BLUE = '#2196F3'
+const CI_LTBLUE = '#4FC3F7'
+const CI_PINK = '#E91E8C'
 
-/* ── CI Color palette from SPU BUS logo ── */
-const CI_BLUE    = '#2196F3'
-const CI_LTBLUE  = '#4FC3F7'
-const CI_MEDBLUE = '#42A5F5'
-const CI_PINK    = '#E91E8C'
+/* ── Orbiting satellite icons (business / AI themed) ── */
+const ORBIT_ICONS = [
+  { // Analytics — bar chart
+    angle: 0, color: CI_LTBLUE, label: 'Analytics',
+    svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>`,
+  },
+  { // AI Brain
+    angle: 60, color: '#a78bfa', label: 'AI',
+    svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.2 6H8.2C6.3 13.7 5 11.5 5 9a7 7 0 0 1 7-7z"/><path d="M9 22h6"/><path d="M10 18h4"/><circle cx="10" cy="9" r="1" fill="currentColor"/><circle cx="14" cy="9" r="1" fill="currentColor"/><path d="M10 12.5s1 1 2 1 2-1 2-1"/></svg>`,
+  },
+  { // Strategy — target
+    angle: 120, color: '#f59e0b', label: 'Strategy',
+    svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/><path d="M12 3v2m0 14v2M3 12h2m14 0h2"/></svg>`,
+  },
+  { // Marketing — megaphone
+    angle: 180, color: CI_PINK, label: 'Marketing',
+    svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`,
+  },
+  { // Finance — trending up
+    angle: 240, color: '#34d399', label: 'Finance',
+    svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
+  },
+  { // Dashboard — grid
+    angle: 300, color: '#fb923c', label: 'Dashboard',
+    svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="4" rx="1.5"/><rect x="3" y="14" width="7" height="4" rx="1.5"/><rect x="14" y="11" width="7" height="7" rx="1.5"/></svg>`,
+  },
+]
 
-/* Lerp between two hex colors */
-function lerpColor(a: string, b: string, t: number): string {
-  const pa = [parseInt(a.slice(1,3),16), parseInt(a.slice(3,5),16), parseInt(a.slice(5,7),16)]
-  const pb = [parseInt(b.slice(1,3),16), parseInt(b.slice(3,5),16), parseInt(b.slice(5,7),16)]
-  const r = Math.round(pa[0] + (pb[0] - pa[0]) * t)
-  const g = Math.round(pa[1] + (pb[1] - pa[1]) * t)
-  const bl = Math.round(pa[2] + (pb[2] - pa[2]) * t)
-  return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${bl.toString(16).padStart(2,'0')}`
-}
-
-/* Build all pixel positions for "AI BUS" — first pass to get geometry */
-function buildPixels() {
-  const word1 = ['A', 'I']        // "AI"
-  const word2 = ['B', 'U', 'S']   // "BUS"
-  const GAP_LETTER = 1
-  const GAP_WORD = 3
-  const raw: { x: number; y: number; idx: number }[] = []
-
-  let cursorX = 0
-  let idx = 0
-
-  const addLetter = (letter: string) => {
-    const grid = LETTERS[letter]
-    if (!grid) return
-    for (let r = 0; r < grid.length; r++) {
-      for (let c = 0; c < grid[r].length; c++) {
-        if (grid[r][c]) {
-          raw.push({ x: cursorX + c, y: r, idx: idx++ })
-        }
-      }
-    }
-    cursorX += grid[0].length + GAP_LETTER
-  }
-
-  word1.forEach((l) => addLetter(l))
-  cursorX += GAP_WORD - GAP_LETTER
-  word2.forEach((l) => addLetter(l))
-
-  const totalCols = cursorX - GAP_LETTER
-
-  // Apply gradient: blue → light blue → pink based on x position (left→right)
-  const pixels = raw.map((p) => {
-    const t = totalCols > 1 ? p.x / (totalCols - 1) : 0 // 0=left(blue), 1=right(pink)
-    let color: string
-    if (t <= 0.5) {
-      color = lerpColor(CI_BLUE, CI_LTBLUE, t * 2)       // blue → light blue
-    } else {
-      color = lerpColor(CI_LTBLUE, CI_PINK, (t - 0.5) * 2) // light blue → pink
-    }
-    return { ...p, color }
-  })
-
-  return { pixels, totalCols, totalRows: 7 }
-}
-
-const { pixels, totalCols, totalRows } = buildPixels()
-
-/* ── Floating particles (deterministic positions) ── */
-const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+/* ── Tiny floating particles ── */
+const PARTICLES = Array.from({ length: 14 }, (_, i) => ({
   x: (i * 41.7 + 13.3) % 100,
   y: (i * 29.3 + 7.1) % 100,
-  size: i % 4 === 0 ? 4 : i % 3 === 0 ? 3 : 2,
+  size: i % 3 === 0 ? 3 : 2,
   color: i % 3 === 0 ? CI_BLUE : i % 3 === 1 ? CI_LTBLUE : CI_PINK,
-  delay: (i * 0.37) % 3,
-  duration: 3 + (i % 3),
+  delay: (i * 0.4) % 3,
+  dur: 3 + (i % 3),
 }))
 
 export default function PixelLandingPage() {
@@ -129,11 +50,11 @@ export default function PixelLandingPage() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-splash', '0')
-    const t1 = setTimeout(() => setPhase('fadeout'), 3500)
+    const t1 = setTimeout(() => setPhase('fadeout'), 3800)
     const t2 = setTimeout(() => {
       setPhase('done')
       document.documentElement.removeAttribute('data-splash')
-    }, 4200)
+    }, 4500)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [])
 
@@ -141,177 +62,221 @@ export default function PixelLandingPage() {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
       style={{
-        background: 'linear-gradient(135deg, #030712 0%, #0a1628 50%, #030712 100%)',
+        background: 'radial-gradient(ellipse at center, #0c1a30 0%, #060d1a 50%, #030712 100%)',
         opacity: phase === 'fadeout' ? 0 : 1,
         transition: 'opacity 0.7s ease-out',
         pointerEvents: phase === 'fadeout' ? 'none' : 'auto',
       }}
     >
-      {/* Grid background */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(33,150,243,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(33,150,243,0.03) 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
-        }}
-      />
+      {/* Subtle grid */}
+      <div className="absolute inset-0" style={{
+        backgroundImage: 'linear-gradient(rgba(33,150,243,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(33,150,243,0.02) 1px, transparent 1px)',
+        backgroundSize: '48px 48px',
+      }} />
 
-      {/* Floating particles */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* Particles */}
+      <div className="absolute inset-0">
         {PARTICLES.map((p, i) => (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: `${p.x}%`,
-              top: `${p.y}%`,
-              width: p.size,
-              height: p.size,
-              borderRadius: p.size > 3 ? 2 : '50%',
-              background: p.color,
-              opacity: 0,
-              animation: `pxFloat ${p.duration}s ease-in-out ${p.delay}s infinite`,
-            }}
-          />
+          <div key={i} style={{
+            position: 'absolute', left: `${p.x}%`, top: `${p.y}%`,
+            width: p.size, height: p.size, borderRadius: '50%', background: p.color,
+            opacity: 0, animation: `splFloat ${p.dur}s ease-in-out ${p.delay}s infinite`,
+          }} />
         ))}
       </div>
 
       {/* Ambient glow */}
-      <div style={{ position: 'absolute', top: '20%', left: '15%', width: 'min(350px, 60vw)', height: 'min(350px, 60vw)', background: 'rgba(33,150,243,0.08)', filter: 'blur(120px)', borderRadius: '50%' }} />
-      <div style={{ position: 'absolute', bottom: '20%', right: '15%', width: 'min(280px, 45vw)', height: 'min(280px, 45vw)', background: 'rgba(233,30,140,0.06)', filter: 'blur(100px)', borderRadius: '50%' }} />
+      <div className="absolute" style={{ top: '30%', left: '50%', transform: 'translate(-50%,-50%)', width: 'min(500px,80vw)', height: 'min(500px,80vw)', background: 'radial-gradient(circle, rgba(33,150,243,0.08), transparent 70%)', borderRadius: '50%' }} />
+      <div className="absolute" style={{ top: '60%', left: '55%', transform: 'translate(-50%,-50%)', width: 'min(350px,55vw)', height: 'min(350px,55vw)', background: 'radial-gradient(circle, rgba(233,30,140,0.05), transparent 70%)', borderRadius: '50%' }} />
 
-      {/* Center content — absolute center to avoid flex interference */}
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', width: 'min(600px, 92vw)', padding: '0 16px' }}>
-        {/* ── Pixel Art "AI BUS" ── */}
-        <div
-          className="mx-auto mb-4 sm:mb-6"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${totalCols}, 1fr)`,
-            gridTemplateRows: `repeat(${totalRows}, 1fr)`,
-            gap: 'clamp(1px, 0.35vw, 3px)',
-            width: 'clamp(180px, 48vw, 400px)',
-            maxWidth: '85vw',
-            aspectRatio: `${totalCols} / ${totalRows}`,
-          }}
-        >
-          {/* Empty grid cells filled by positioned blocks */}
-          {pixels.map((p, i) => (
+      {/* ── Center Hub ── */}
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+
+        {/* Orbit rings */}
+        <div className="splOrbitRing" style={{ width: 'min(320px, 72vw)', height: 'min(320px, 72vw)', border: '1px dashed rgba(33,150,243,0.12)', borderRadius: '50%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', animation: 'splSpin 40s linear infinite' }} />
+        <div className="splOrbitRing" style={{ width: 'min(220px, 50vw)', height: 'min(220px, 50vw)', border: '1px dashed rgba(79,195,247,0.08)', borderRadius: '50%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', animation: 'splSpin 30s linear infinite reverse' }} />
+
+        {/* Orbiting icons */}
+        {ORBIT_ICONS.map((icon, i) => (
+          <div
+            key={i}
+            className="splSatellite"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              width: 'min(320px, 72vw)',
+              height: 'min(320px, 72vw)',
+              marginLeft: 'calc(min(320px, 72vw) / -2)',
+              marginTop: 'calc(min(320px, 72vw) / -2)',
+              animation: `splSpin 40s linear infinite`,
+              // Each satellite starts at a different angle
+            }}
+          >
             <div
-              key={i}
               style={{
-                gridColumn: p.x + 1,
-                gridRow: p.y + 1,
-                background: p.color,
-                borderRadius: 'clamp(1px, 0.2vw, 2px)',
+                position: 'absolute',
+                // Place icon on the ring at the correct angle
+                left: `${50 + 50 * Math.cos((icon.angle * Math.PI) / 180)}%`,
+                top: `${50 + 50 * Math.sin((icon.angle * Math.PI) / 180)}%`,
+                transform: 'translate(-50%,-50%)',
                 opacity: 0,
-                transform: 'scale(0) rotate(180deg)',
-                animation: `pxBlockIn 0.35s cubic-bezier(0.34,1.56,0.64,1) ${0.3 + p.idx * 0.012}s forwards`,
-                boxShadow: `0 0 clamp(2px, 0.5vw, 6px) ${p.color}40`,
+                animation: `splIconIn 0.5s ease-out ${0.6 + i * 0.15}s forwards`,
               }}
-            />
-          ))}
-        </div>
+            >
+              {/* Counter-rotate so icons stay upright */}
+              <div style={{ animation: 'splSpin 40s linear infinite reverse' }}>
+                <div style={{
+                  width: 'clamp(32px, 8vw, 44px)',
+                  height: 'clamp(32px, 8vw, 44px)',
+                  borderRadius: 'clamp(8px, 2vw, 12px)',
+                  background: 'rgba(255,255,255,0.04)',
+                  backdropFilter: 'blur(8px)',
+                  border: `1px solid ${icon.color}25`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: icon.color,
+                  boxShadow: `0 0 20px ${icon.color}10`,
+                  transition: 'transform 0.3s',
+                }}>
+                  <div style={{ width: 'clamp(16px, 4vw, 22px)', height: 'clamp(16px, 4vw, 22px)' }}
+                    dangerouslySetInnerHTML={{ __html: icon.svg }}
+                  />
+                </div>
+                <p style={{
+                  fontSize: 'clamp(6px, 1.5vw, 9px)',
+                  color: 'rgba(255,255,255,0.35)',
+                  textAlign: 'center',
+                  marginTop: 3,
+                  letterSpacing: '0.05em',
+                  whiteSpace: 'nowrap',
+                }}>{icon.label}</p>
+              </div>
+            </div>
+          </div>
+        ))}
 
-        {/* "ACADEMY" in pixel font */}
-        <div
-          style={{
-            fontFamily: 'var(--font-pixel), "Press Start 2P", monospace',
-            fontSize: 'clamp(0.55rem, 2vw, 1.1rem)',
-            letterSpacing: '0.2em',
-            color: '#fff',
-            opacity: 0,
-            transform: 'translateY(8px)',
-            animation: 'pxTextIn 0.6s ease-out 1.8s forwards',
-            textShadow: '0 0 20px rgba(33,150,243,0.25)',
-          }}
-        >
-          ACADEMY
+        {/* Center icon — AI Business Hub */}
+        <div style={{
+          position: 'absolute',
+          top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+          opacity: 0,
+          animation: 'splCenterIn 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s forwards',
+        }}>
+          <div style={{
+            width: 'clamp(64px, 16vw, 88px)',
+            height: 'clamp(64px, 16vw, 88px)',
+            borderRadius: 'clamp(16px, 4vw, 22px)',
+            background: 'linear-gradient(135deg, #2196F3 0%, #4FC3F7 50%, #42A5F5 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 8px 40px rgba(33,150,243,0.3), 0 0 80px rgba(33,150,243,0.1)',
+            position: 'relative',
+          }}>
+            {/* Briefcase + AI spark icon */}
+            <svg viewBox="0 0 48 48" fill="none" style={{ width: '60%', height: '60%' }}>
+              {/* Briefcase */}
+              <rect x="6" y="16" width="36" height="24" rx="4" stroke="white" strokeWidth="2.2" fill="none" />
+              <path d="M16 16V12a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v4" stroke="white" strokeWidth="2.2" fill="none" />
+              <path d="M6 26h36" stroke="white" strokeWidth="1.5" opacity="0.5" />
+              {/* AI sparkle */}
+              <circle cx="24" cy="26" r="3" fill="white" opacity="0.9" />
+              <path d="M24 20v-2M24 34v-2M18 26h-2M32 26h-2" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
+              <path d="M20.5 22.5l-1-1M28.5 30.5l-1-1M27.5 22.5l1-1M19.5 30.5l1-1" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+            </svg>
+            {/* Pulse ring */}
+            <div style={{
+              position: 'absolute', inset: -6, borderRadius: 'clamp(20px, 5vw, 28px)',
+              border: '1.5px solid rgba(33,150,243,0.2)',
+              animation: 'splPulse 2.5s ease-out infinite',
+            }} />
+          </div>
+          <p style={{
+            textAlign: 'center',
+            marginTop: 'clamp(6px, 1.5vw, 10px)',
+            fontSize: 'clamp(7px, 1.8vw, 10px)',
+            fontWeight: 600,
+            letterSpacing: '0.08em',
+            color: 'rgba(255,255,255,0.6)',
+          }}>AI Business</p>
         </div>
+      </div>
 
-        {/* Subtitle */}
-        <p
-          style={{
-            fontSize: 'clamp(0.45rem, 1.1vw, 0.65rem)',
-            letterSpacing: '0.25em',
-            marginTop: 'clamp(8px, 1.5vw, 16px)',
-            color: 'rgba(79,195,247,0.5)',
-            textTransform: 'uppercase',
-            opacity: 0,
-            animation: 'pxFadeIn 0.5s ease-out 2.2s forwards',
-          }}
-        >
+      {/* Bottom text */}
+      <div style={{
+        position: 'absolute',
+        bottom: 'clamp(40px, 8vh, 80px)',
+        left: '50%', transform: 'translateX(-50%)',
+        textAlign: 'center',
+        opacity: 0,
+        animation: 'splFadeUp 0.6s ease-out 1.6s forwards',
+      }}>
+        <h1 style={{
+          fontFamily: 'var(--font-pixel), "Press Start 2P", monospace',
+          fontSize: 'clamp(0.6rem, 2.2vw, 1.15rem)',
+          letterSpacing: '0.15em',
+          color: '#fff',
+          textShadow: '0 0 30px rgba(33,150,243,0.2)',
+        }}>
+          AI BUSINESS ACADEMY
+        </h1>
+        <p style={{
+          fontSize: 'clamp(0.55rem, 1.3vw, 0.7rem)',
+          letterSpacing: '0.2em',
+          marginTop: 'clamp(6px, 1vw, 10px)',
+          color: 'rgba(79,195,247,0.4)',
+          textTransform: 'uppercase',
+        }}>
           School of Business Administration · SPU
         </p>
 
         {/* Loading bar */}
-        <div
-          style={{
-            marginTop: 'clamp(14px, 2.5vw, 24px)',
-            marginInline: 'auto',
-            width: 'clamp(80px, 25vw, 160px)',
-            height: 'clamp(2px, 0.4vw, 3px)',
-            borderRadius: 4,
-            overflow: 'hidden',
-            background: 'rgba(255,255,255,0.04)',
-          }}
-        >
-          <div
-            style={{
-              height: '100%',
-              borderRadius: 4,
-              background: `linear-gradient(90deg, ${CI_BLUE}, ${CI_LTBLUE}, ${CI_PINK}, ${CI_MEDBLUE})`,
-              width: '0%',
-              animation: 'pxLoaderFill 2.8s ease-in-out 0.5s forwards',
-            }}
-          />
-        </div>
-
-        {/* Bouncing dots */}
-        <div className="flex justify-center gap-1.5" style={{ marginTop: 'clamp(10px, 1.5vw, 16px)' }}>
-          {[CI_BLUE, CI_PINK, CI_LTBLUE].map((c, i) => (
-            <div
-              key={i}
-              style={{
-                width: 'clamp(3px, 0.8vw, 6px)',
-                height: 'clamp(3px, 0.8vw, 6px)',
-                borderRadius: 1,
-                background: c,
-                animation: `pxDot 0.7s ease-in-out ${i * 0.12}s infinite alternate`,
-              }}
-            />
-          ))}
+        <div style={{
+          marginTop: 'clamp(12px, 2vw, 18px)',
+          marginInline: 'auto',
+          width: 'clamp(100px, 20vw, 180px)',
+          height: 2, borderRadius: 2,
+          overflow: 'hidden',
+          background: 'rgba(255,255,255,0.04)',
+        }}>
+          <div style={{
+            height: '100%', borderRadius: 2,
+            background: `linear-gradient(90deg, ${CI_BLUE}, ${CI_LTBLUE}, ${CI_PINK})`,
+            width: '0%',
+            animation: 'splLoader 3s ease-in-out 0.5s forwards',
+          }} />
         </div>
       </div>
 
       <style jsx global>{`
-        @keyframes pxFloat {
-          0%, 100% { transform: translateY(0) scale(1); opacity: 0.1; }
-          50% { transform: translateY(-18px) scale(1.4); opacity: 0.45; }
+        @keyframes splFloat {
+          0%, 100% { transform: translateY(0); opacity: 0.08; }
+          50% { transform: translateY(-15px); opacity: 0.3; }
         }
-        @keyframes pxBlockIn {
-          0% { opacity: 0; transform: scale(0) rotate(180deg); }
-          60% { opacity: 1; transform: scale(1.15) rotate(0deg); }
-          100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        @keyframes splSpin {
+          from { transform: translate(-50%,-50%) rotate(0deg); }
+          to { transform: translate(-50%,-50%) rotate(360deg); }
         }
-        @keyframes pxTextIn {
-          0% { opacity: 0; transform: translateY(8px); }
-          100% { opacity: 1; transform: translateY(0); }
+        .splSatellite { pointer-events: none; }
+        @keyframes splIconIn {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0); }
+          100% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
         }
-        @keyframes pxFadeIn {
-          0% { opacity: 0; }
-          100% { opacity: 1; }
+        @keyframes splCenterIn {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+          100% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
         }
-        @keyframes pxLoaderFill {
+        @keyframes splPulse {
+          0% { transform: scale(1); opacity: 0.4; }
+          100% { transform: scale(1.5); opacity: 0; }
+        }
+        @keyframes splFadeUp {
+          0% { opacity: 0; transform: translateX(-50%) translateY(12px); }
+          100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        @keyframes splLoader {
           0% { width: 0%; }
           100% { width: 100%; }
-        }
-        @keyframes pxDot {
-          0% { opacity: 0.25; transform: scale(0.6); }
-          100% { opacity: 1; transform: scale(1.2); }
         }
       `}</style>
     </div>
