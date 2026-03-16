@@ -1,17 +1,44 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
+import db from "@/lib/db";
 
 export async function GET() {
   try {
-    const user = await getCurrentUser();
+    const session = await getServerSession(authOptions);
 
-    if (!user) {
+    if (!session?.user?.id) {
       return NextResponse.json(
         {
           success: false,
           error: "ไม่ได้เข้าสู่ระบบ",
         },
         { status: 401 }
+      );
+    }
+
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        fullNameForCertificate: true,
+        country: true,
+        position: true,
+        image: true,
+        role: true,
+        isProfileCompleted: true,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "ไม่พบข้อมูลผู้ใช้",
+        },
+        { status: 404 }
       );
     }
 

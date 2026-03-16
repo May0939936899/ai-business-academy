@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const certificate = await db.certificate.findUnique({
     where: { certificateCode: certId },
     include: {
-      user: { select: { fullName: true } },
+      user: { select: { fullName: true, fullNameForCertificate: true } },
       course: { select: { title: true } },
     },
   })
@@ -41,8 +41,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
-  const title = `${t('title')} - ${certificate.user.fullName} | AI Business Academy`
-  const description = `${certificate.user.fullName} — ${certificate.course.title} | AI Business Academy`
+  const displayName = certificate.user.fullNameForCertificate || certificate.user.fullName
+  const title = `${t('title')} - ${displayName} | AI Business Academy`
+  const description = `${displayName} — ${certificate.course.title} | AI Business Academy`
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://ai-academy-lime.vercel.app'
   const verifyUrl = `${baseUrl}/verify/${certificate.certificateCode}`
 
@@ -75,7 +76,7 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
   const certificate = await db.certificate.findUnique({
     where: { certificateCode: certId },
     include: {
-      user: { select: { fullName: true } },
+      user: { select: { fullName: true, fullNameForCertificate: true } },
       course: {
         select: {
           title: true,
@@ -138,6 +139,7 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
 
   // ── Certificate Found ─────────────────────────────────────────────────────
 
+  const certDisplayName = certificate.user.fullNameForCertificate || certificate.user.fullName
   const template = certificate.course.certificateTemplate
   const completionDate = formatDate(certificate.completionDate)
   const signerName =
@@ -222,7 +224,7 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
               <div className="mb-10 text-center">
                 <p className="mb-2 text-sm text-gray-400">{tc('presentedTo')}</p>
                 <h2 className="mb-6 bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl">
-                  {certificate.user.fullName}
+                  {certDisplayName}
                 </h2>
 
                 {/* Course Title */}
@@ -246,7 +248,7 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
                     <User className="mx-auto mb-2 h-5 w-5 text-gray-500" />
                     <p className="text-xs text-gray-500">{t('student')}</p>
                     <p className="mt-1 text-sm font-medium text-gray-200">
-                      {certificate.user.fullName}
+                      {certDisplayName}
                     </p>
                   </div>
                   <div className="col-span-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 sm:col-span-1">

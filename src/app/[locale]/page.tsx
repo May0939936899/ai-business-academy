@@ -8,7 +8,6 @@ import {
   Award,
   Users,
   Zap,
-  Bot,
   Sparkles,
   Star,
   Globe,
@@ -24,13 +23,9 @@ import {
   Rocket,
   TrendingUp,
   Target,
-  Workflow,
-  LayoutDashboard,
   BrainCircuit,
-  MessageSquareText,
-  FileSearch,
-  PieChart,
 } from "lucide-react";
+import AIOrbitSystem from "@/components/features/AIOrbitSystem";
 import { cn } from "@/lib/utils";
 import db from "@/lib/db";
 import CourseCard from "@/components/features/CourseCard";
@@ -378,95 +373,9 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Right: AI Tools Hub — floating tool icons around central hub */}
+            {/* Right: AI Orbit System — animated orbital hub */}
             <div className="relative z-10 flex items-center justify-center">
-              <div className="relative h-[400px] w-[400px] sm:h-[480px] sm:w-[480px]">
-                {/* Outer decorative rings */}
-                <div className="absolute inset-0 rounded-full border border-white/[0.03]" />
-                <div className="absolute inset-8 rounded-full border border-dashed border-white/[0.05]" />
-                <div className="absolute inset-16 rounded-full border border-white/[0.06]" />
-
-                {/* Central hub — AI Tools core */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative">
-                    <div className="orb-1 absolute -inset-10 rounded-full bg-gradient-to-br from-[#2196F3]/20 to-[#4FC3F7]/15 blur-3xl" />
-                    <div className="relative flex h-28 w-28 items-center justify-center rounded-3xl border border-white/[0.1] bg-gradient-to-br from-[#2196F3]/90 to-[#4FC3F7]/80 shadow-2xl shadow-[#2196F3]/30 sm:h-32 sm:w-32">
-                      <BrainCircuit className="h-14 w-14 text-white sm:h-16 sm:w-16" />
-                    </div>
-                    {/* Hub label */}
-                    <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-white/[0.08] bg-[#0a0f1e]/80 px-3.5 py-1 text-[11px] font-semibold text-[#4FC3F7] backdrop-blur-md">
-                      AI Tools Hub
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating tool cards — orbit positions */}
-                {/* Top-left: Automation */}
-                <div className="orb-2 absolute left-2 top-10 sm:left-4 sm:top-14">
-                  <div className="group flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-md transition-all hover:border-cyan-500/30 hover:bg-cyan-500/10 sm:h-16 sm:w-16">
-                    <Workflow className="h-6 w-6 text-cyan-400 sm:h-7 sm:w-7" />
-                  </div>
-                  <span className="mt-1 block text-center text-[10px] font-medium text-gray-600">Automation</span>
-                </div>
-
-                {/* Top-right: Dashboard */}
-                <div className="orb-3 absolute right-2 top-16 sm:right-4 sm:top-20">
-                  <div className="group flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-md transition-all hover:border-green-500/30 hover:bg-green-500/10 sm:h-16 sm:w-16">
-                    <LayoutDashboard className="h-6 w-6 text-green-400 sm:h-7 sm:w-7" />
-                  </div>
-                  <span className="mt-1 block text-center text-[10px] font-medium text-gray-600">Dashboard</span>
-                </div>
-
-                {/* Left-center: Chatbot */}
-                <div className="orb-1 absolute -left-2 top-1/2 -translate-y-1/2 sm:left-0">
-                  <div className="group flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-md transition-all hover:border-purple-500/30 hover:bg-purple-500/10 sm:h-14 sm:w-14">
-                    <MessageSquareText className="h-5 w-5 text-purple-400 sm:h-6 sm:w-6" />
-                  </div>
-                </div>
-
-                {/* Right-center: Analytics */}
-                <div className="orb-2 absolute -right-2 top-1/2 -translate-y-1/2 sm:right-0">
-                  <div className="group flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-md transition-all hover:border-yellow-500/30 hover:bg-yellow-500/10 sm:h-14 sm:w-14">
-                    <PieChart className="h-5 w-5 text-yellow-400 sm:h-6 sm:w-6" />
-                  </div>
-                </div>
-
-                {/* Bottom-left: AI Bot */}
-                <div className="orb-3 absolute bottom-12 left-4 sm:bottom-16 sm:left-8">
-                  <div className="group flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-md transition-all hover:border-pink-500/30 hover:bg-pink-500/10 sm:h-16 sm:w-16">
-                    <Bot className="h-6 w-6 text-pink-400 sm:h-7 sm:w-7" />
-                  </div>
-                  <span className="mt-1 block text-center text-[10px] font-medium text-gray-600">AI Bot</span>
-                </div>
-
-                {/* Bottom-right: Document AI */}
-                <div className="orb-1 absolute bottom-8 right-6 sm:bottom-12 sm:right-10">
-                  <div className="group flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-md transition-all hover:border-orange-500/30 hover:bg-orange-500/10 sm:h-16 sm:w-16">
-                    <FileSearch className="h-6 w-6 text-orange-400 sm:h-7 sm:w-7" />
-                  </div>
-                  <span className="mt-1 block text-center text-[10px] font-medium text-gray-600">Doc AI</span>
-                </div>
-
-                {/* Tiny accent dots */}
-                <div className="orb-3 absolute left-1/4 top-6 h-2.5 w-2.5 rounded-full bg-[#2196F3]/50" />
-                <div className="orb-1 absolute right-1/4 top-10 h-2 w-2 rounded-full bg-[#E91E8C]/50" />
-                <div className="orb-2 absolute bottom-10 left-1/3 h-2 w-2 rounded-full bg-[#4FC3F7]/50" />
-                <div className="orb-3 absolute bottom-20 right-1/4 h-1.5 w-1.5 rounded-full bg-purple-400/50" />
-
-                {/* Connection lines (subtle) */}
-                <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 480 480" fill="none">
-                  <line x1="180" y1="180" x2="100" y2="100" stroke="url(#line-grad)" strokeWidth="0.5" strokeDasharray="4 4" opacity="0.3" />
-                  <line x1="300" y1="180" x2="380" y2="120" stroke="url(#line-grad)" strokeWidth="0.5" strokeDasharray="4 4" opacity="0.3" />
-                  <line x1="180" y1="300" x2="100" y2="370" stroke="url(#line-grad)" strokeWidth="0.5" strokeDasharray="4 4" opacity="0.3" />
-                  <line x1="300" y1="300" x2="380" y2="370" stroke="url(#line-grad)" strokeWidth="0.5" strokeDasharray="4 4" opacity="0.3" />
-                  <defs>
-                    <linearGradient id="line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#2196F3" />
-                      <stop offset="100%" stopColor="#4FC3F7" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
+              <AIOrbitSystem />
             </div>
           </div>
 

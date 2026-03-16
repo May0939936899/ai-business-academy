@@ -409,6 +409,9 @@ export default function CertificatePageClient({
         {/* ── Certificate Preview ── */}
         <div className="mb-8 overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 backdrop-blur-sm sm:p-6">
           <div className="mx-auto" style={{ maxWidth: '900px' }}>
+            <p className="mb-2 text-center text-xs text-gray-500">
+              Theme: {getCertificateTheme(selectedThemeId).nameEn}
+            </p>
             <CertificatePreview
               ref={certRef}
               studentName={certificate.user.fullName}

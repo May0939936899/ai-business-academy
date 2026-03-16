@@ -12,11 +12,12 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { country, organization, position, interestArea, learningGoal } = body
+    const { fullNameForCertificate, country, organization, position, interestArea, learningGoal } = body
 
     await db.user.update({
       where: { id: session.user.id },
       data: {
+        fullNameForCertificate: fullNameForCertificate?.trim() || null,
         country: country?.trim() || null,
         organization: organization?.trim() || null,
         position: position?.trim() || null,

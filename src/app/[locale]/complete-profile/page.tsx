@@ -403,6 +403,7 @@ export default function CompleteProfilePage() {
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState('')
 
+  const [fullNameForCertificate, setFullNameForCertificate] = useState('')
   const [country, setCountry] = useState('')
   const [position, setPosition] = useState('')
   const [interestArea, setInterestArea] = useState<string[]>([])
@@ -414,6 +415,13 @@ export default function CompleteProfilePage() {
       router.push(`/${locale}/login`)
     }
   }, [status, router, locale])
+
+  // Pre-fill certificate name from session
+  useEffect(() => {
+    if (session?.user?.name) {
+      setFullNameForCertificate(session.user.name)
+    }
+  }, [session?.user?.name])
 
   const toggleInterest = (id: string) => {
     setInterestArea((prev) =>
@@ -429,7 +437,7 @@ export default function CompleteProfilePage() {
       const res = await fetch('/api/auth/complete-profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ country, position, interestArea, learningGoal }),
+        body: JSON.stringify({ fullNameForCertificate, country, position, interestArea, learningGoal }),
       })
 
       const data = await res.json()
@@ -499,6 +507,30 @@ export default function CompleteProfilePage() {
           )}
 
           <div className="space-y-5">
+            {/* Full Name for Certificate */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-300">
+                ชื่อ – นามสกุล (สำหรับใบประกาศ)
+              </label>
+              <input
+                type="text"
+                value={fullNameForCertificate}
+                onChange={(e) => setFullNameForCertificate(e.target.value)}
+                placeholder="กรอกชื่อ-นามสกุลที่ต้องการให้แสดงบนใบประกาศ"
+                minLength={2}
+                maxLength={100}
+                required
+                className={cn(
+                  'w-full rounded-xl border py-3.5 pl-4 pr-4 text-sm transition-all',
+                  'border-white/[0.08] bg-white/[0.04] text-white placeholder-gray-500',
+                  'focus:border-blue-500/50 focus:bg-white/[0.06] focus:ring-1 focus:ring-blue-500/20 focus:outline-none'
+                )}
+              />
+              <p className="mt-1.5 text-xs text-gray-500">
+                ชื่อนี้จะถูกนำไปใช้บนใบประกาศนียบัตร
+              </p>
+            </div>
+
             {/* Country */}
             <SearchableDropdown
               label="ประเทศ"

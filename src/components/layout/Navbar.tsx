@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import { useTranslations, useLocale } from 'next-intl'
-import { Menu, X, LogIn, LogOut, LayoutDashboard, Award, ChevronDown } from 'lucide-react'
+import { Menu, X, LogIn, LogOut, LayoutDashboard, Award, ChevronDown, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Button from '@/components/ui/Button'
 import SpuBusLogo from '@/components/ui/SpuBusLogo'
@@ -177,6 +177,13 @@ export default function Navbar() {
                       <Award className="h-4 w-4" />
                       {t('certificates')}
                     </Link>
+                    <Link
+                      href={`/${locale}/profile`}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 transition-colors hover:bg-white/[0.06] hover:text-white"
+                    >
+                      <User className="h-4 w-4" />
+                      โปรไฟล์
+                    </Link>
                     {session.user.role === 'ADMIN' && (
                       <Link
                         href={`/${locale}/admin`}
@@ -254,6 +261,13 @@ export default function Navbar() {
                   >
                     <LayoutDashboard className="h-4 w-4" />
                     {t('dashboard')}
+                  </Link>
+                  <Link
+                    href={`/${locale}/profile`}
+                    className="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-gray-300 hover:bg-white/[0.06] hover:text-white"
+                  >
+                    <User className="h-4 w-4" />
+                    โปรไฟล์
                   </Link>
                   {session.user.role === 'ADMIN' && (
                     <Link

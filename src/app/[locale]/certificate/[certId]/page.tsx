@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       ],
     },
     include: {
-      user: { select: { fullName: true } },
+      user: { select: { fullName: true, fullNameForCertificate: true } },
       course: { select: { title: true } },
     },
   })
@@ -31,8 +31,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: 'Certificate Not Found | AI Business Academy' }
   }
 
-  const title = `Certificate - ${certificate.user.fullName} | AI Business Academy`
-  const description = `${certificate.user.fullName} ได้รับ Certificate จากหลักสูตร "${certificate.course.title}" โดย AI Business Academy คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม`
+  const displayName = certificate.user.fullNameForCertificate || certificate.user.fullName
+  const title = `Certificate - ${displayName} | AI Business Academy`
+  const description = `${displayName} ได้รับ Certificate จากหลักสูตร "${certificate.course.title}" โดย AI Business Academy คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม`
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://ai-academy-lime.vercel.app'
   const verifyUrl = `${baseUrl}/verify/${certificate.certificateCode}`
 
@@ -71,7 +72,7 @@ export default async function CertificatePage({ params }: PageProps) {
       userId: user.id,
     },
     include: {
-      user: { select: { id: true, fullName: true, email: true } },
+      user: { select: { id: true, fullName: true, fullNameForCertificate: true, email: true } },
       course: {
         select: {
           id: true,
@@ -112,7 +113,10 @@ export default async function CertificatePage({ params }: PageProps) {
     themeId: certificate.themeId,
     issuedAt: certificate.issuedAt.toISOString(),
     completionDate: certificate.completionDate.toISOString(),
-    user: certificate.user,
+    user: {
+      ...certificate.user,
+      fullName: certificate.user.fullNameForCertificate || certificate.user.fullName,
+    },
     course: certificate.course,
   }
 

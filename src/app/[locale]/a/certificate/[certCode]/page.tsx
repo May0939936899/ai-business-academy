@@ -26,7 +26,7 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
   const certificate = await db.certificate.findUnique({
     where: { certificateCode: params.certCode },
     include: {
-      user: { select: { fullName: true } },
+      user: { select: { fullName: true, fullNameForCertificate: true } },
       course: {
         select: {
           title: true,
@@ -62,6 +62,7 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
 
   const template = certificate.course.certificateTemplate
   const issuedDate = formatDate(certificate.issuedAt)
+  const certDisplayName = certificate.user.fullNameForCertificate || certificate.user.fullName
 
   return (
     <div className="min-h-screen bg-[#030712]">
@@ -105,7 +106,7 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
               <div className="mb-10 text-center">
                 <p className="mb-2 text-sm text-gray-400">{tc('presentedTo')}</p>
                 <h2 className="mb-6 bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl">
-                  {certificate.user.fullName}
+                  {certDisplayName}
                 </h2>
                 <p className="mb-2 text-sm text-gray-400">{t('completedCourse')}</p>
                 <h3 className="mb-8 text-xl font-semibold text-white sm:text-2xl">
@@ -122,7 +123,7 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
                     <User className="mx-auto mb-2 h-5 w-5 text-gray-500" />
                     <p className="text-xs text-gray-500">{t('student')}</p>
                     <p className="mt-1 text-sm font-medium text-gray-200">
-                      {certificate.user.fullName}
+                      {certDisplayName}
                     </p>
                   </div>
                   <div className="col-span-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 sm:col-span-1">
