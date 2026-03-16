@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 // ─── Pixel font data for each character (5x7 grid) ────────────────────────
 const PIXEL_FONT: Record<string, number[]> = {
@@ -33,7 +33,6 @@ const PIXEL_FONT: Record<string, number[]> = {
   ' ': [0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000],
 }
 
-// ─── Build pixel grid for a word ───────────────────────────────────────────
 function buildPixelGrid(text: string): boolean[][] {
   const chars = text.toUpperCase().split('')
   const rows: boolean[][] = []
@@ -44,7 +43,6 @@ function buildPixelGrid(text: string): boolean[][] {
       for (let col = 4; col >= 0; col--) {
         line.push((glyph[row] & (1 << col)) !== 0)
       }
-      // 1px gap between chars (except last)
       if (ci < chars.length - 1) line.push(false)
     })
     rows.push(line)
@@ -52,30 +50,48 @@ function buildPixelGrid(text: string): boolean[][] {
   return rows
 }
 
-// ─── Colors ────────────────────────────────────────────────────────────────
 const COLORS = {
-  primary: '#5BB7D5',    // SBS light blue
-  secondary: '#1A4B8C',  // SBS dark blue
-  accent: '#2E9ACC',     // SBS vivid blue
-  glow: '#7DD3FC',       // glow highlight
+  primary: '#5BB7D5',
+  secondary: '#1A4B8C',
+  accent: '#2E9ACC',
+  glow: '#7DD3FC',
 }
+
+// Fixed pixel size in px — we scale the whole container to fit viewport
+const PX = 10
+const GAP = 2
 
 export default function SplashScreen({ children }: { children: React.ReactNode }) {
   const [phase, setPhase] = useState<'splash' | 'fadeOut' | 'done'>('splash')
   const [revealProgress, setRevealProgress] = useState(0)
   const [showSubtitle, setShowSubtitle] = useState(false)
   const [glitchFrame, setGlitchFrame] = useState(0)
+  const [scale, setScale] = useState(1)
   const [particles, setParticles] = useState<Array<{ x: number; y: number; delay: number; size: number }>>([])
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  // Build grids for two lines
   const line1 = buildPixelGrid('AI BUSINESS')
   const line2 = buildPixelGrid('ACADEMY')
-
   const totalPixelsLine1 = line1[0]?.length || 0
   const totalPixelsLine2 = line2[0]?.length || 0
   const maxCols = Math.max(totalPixelsLine1, totalPixelsLine2)
 
-  // Generate particles once
+  // Calculate natural width of the widest line (line1)
+  const naturalWidth = totalPixelsLine1 * PX + (totalPixelsLine1 - 1) * GAP
+
+  // Auto-scale to fit viewport
+  useEffect(() => {
+    function calcScale() {
+      const vw = window.innerWidth
+      const maxW = vw * 0.88 // 88% of viewport
+      const s = Math.min(maxW / naturalWidth, 1.2) // cap at 1.2x
+      setScale(s)
+    }
+    calcScale()
+    window.addEventListener('resize', calcScale)
+    return () => window.removeEventListener('resize', calcScale)
+  }, [naturalWidth])
+
   useEffect(() => {
     const pts = Array.from({ length: 40 }, () => ({
       x: Math.random() * 100,
@@ -88,7 +104,6 @@ export default function SplashScreen({ children }: { children: React.ReactNode }
 
   // Animation sequence
   useEffect(() => {
-    // Pixel reveal: each column lights up progressively
     const revealInterval = setInterval(() => {
       setRevealProgress(p => {
         if (p >= maxCols) {
@@ -99,13 +114,8 @@ export default function SplashScreen({ children }: { children: React.ReactNode }
       })
     }, 25)
 
-    // Subtitle appears after pixels
     const subtitleTimer = setTimeout(() => setShowSubtitle(true), maxCols * 25 + 400)
-
-    // Start fade out
     const fadeTimer = setTimeout(() => setPhase('fadeOut'), maxCols * 25 + 1600)
-
-    // Done
     const doneTimer = setTimeout(() => setPhase('done'), maxCols * 25 + 2400)
 
     return () => {
@@ -116,7 +126,6 @@ export default function SplashScreen({ children }: { children: React.ReactNode }
     }
   }, [maxCols])
 
-  // Glitch effect on completed text
   const doGlitch = useCallback(() => {
     setGlitchFrame(f => f + 1)
   }, [])
@@ -190,8 +199,17 @@ export default function SplashScreen({ children }: { children: React.ReactNode }
           }}
         />
 
-        {/* ─── Pixel Text: Line 1 — "AI BUSINESS" ─── */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px' }}>
+        {/* ─── Scaled Pixel Text Container ─── */}
+        <div
+          ref={containerRef}
+          style={{
+            transform: `scale(${scale})`,
+            transformOrigin: 'center center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
           <PixelTextBlock
             grid={line1}
             revealProgress={revealProgress}
@@ -199,9 +217,7 @@ export default function SplashScreen({ children }: { children: React.ReactNode }
             maxCols={maxCols}
             totalCols={totalPixelsLine1}
           />
-
-          {/* ─── Pixel Text: Line 2 — "ACADEMY" ─── */}
-          <div style={{ marginTop: 'clamp(6px, 1.5vw, 14px)' }}>
+          <div style={{ marginTop: '12px' }}>
             <PixelTextBlock
               grid={line2}
               revealProgress={Math.max(0, revealProgress - 4)}
@@ -215,7 +231,7 @@ export default function SplashScreen({ children }: { children: React.ReactNode }
         {/* Glow bar under text */}
         <div
           style={{
-            marginTop: 'clamp(12px, 2vw, 24px)',
+            marginTop: '20px',
             width: `${Math.min(revealProgress / maxCols, 1) * 60}%`,
             maxWidth: '400px',
             height: '2px',
@@ -229,15 +245,17 @@ export default function SplashScreen({ children }: { children: React.ReactNode }
         {/* Subtitle */}
         <p
           style={{
-            marginTop: 'clamp(14px, 2.5vw, 28px)',
+            marginTop: '24px',
             color: COLORS.glow,
-            fontSize: 'clamp(10px, 1.4vw, 16px)',
+            fontSize: 'clamp(9px, 1.4vw, 16px)',
             fontFamily: '"Inter", sans-serif',
-            letterSpacing: '0.35em',
+            letterSpacing: '0.3em',
             textTransform: 'uppercase',
             opacity: showSubtitle ? 0.7 : 0,
             transform: showSubtitle ? 'translateY(0)' : 'translateY(10px)',
             transition: 'opacity 0.6s ease, transform 0.6s ease',
+            textAlign: 'center',
+            padding: '0 16px',
           }}
         >
           School of Business Administration &bull; Sripatum University
@@ -247,7 +265,7 @@ export default function SplashScreen({ children }: { children: React.ReactNode }
         <div
           style={{
             position: 'absolute',
-            bottom: 'clamp(24px, 4vw, 48px)',
+            bottom: '32px',
             display: 'flex',
             gap: '8px',
             opacity: phase === 'fadeOut' ? 0 : 0.6,
@@ -269,7 +287,6 @@ export default function SplashScreen({ children }: { children: React.ReactNode }
           ))}
         </div>
 
-        {/* CSS animations */}
         <style>{`
           @keyframes splash-float {
             0%, 100% { transform: translateY(0px) scale(1); }
@@ -283,14 +300,10 @@ export default function SplashScreen({ children }: { children: React.ReactNode }
             0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
             40% { opacity: 1; transform: scale(1.3); }
           }
-          @keyframes splash-pixel-glow {
-            0%, 100% { filter: brightness(1) drop-shadow(0 0 2px currentColor); }
-            50% { filter: brightness(1.4) drop-shadow(0 0 6px currentColor); }
-          }
         `}</style>
       </div>
 
-      {/* Pre-render children behind splash so app is ready */}
+      {/* Pre-render children behind splash */}
       <div style={{ opacity: phase === 'fadeOut' ? 1 : 0, transition: 'opacity 0.8s ease-in' }}>
         {children}
       </div>
@@ -298,7 +311,7 @@ export default function SplashScreen({ children }: { children: React.ReactNode }
   )
 }
 
-// ─── Pixel Text Block ─────────────────────────────────────────────────────
+// ─── Pixel Text Block (fixed px size, parent scales) ──────────────────────
 
 function PixelTextBlock({
   grid,
@@ -313,45 +326,36 @@ function PixelTextBlock({
   maxCols: number
   totalCols: number
 }) {
-  const pixelSize = 'clamp(6px, 1.1vw, 11px)'
-  const gap = 'clamp(1.5px, 0.25vw, 3px)'
-
   return (
     <div
       style={{
         display: 'grid',
-        gridTemplateRows: `repeat(7, ${pixelSize})`,
-        gridTemplateColumns: `repeat(${totalCols}, ${pixelSize})`,
-        gap,
+        gridTemplateRows: `repeat(7, ${PX}px)`,
+        gridTemplateColumns: `repeat(${totalCols}, ${PX}px)`,
+        gap: `${GAP}px`,
       }}
     >
       {grid.flatMap((row, ri) =>
         row.map((on, ci) => {
           const revealed = ci <= revealProgress
           const isFullyRevealed = revealProgress >= maxCols
-          // Glitch: randomly flicker some pixels
           const glitchOff = isFullyRevealed && on && Math.sin(glitchFrame * 7.3 + ri * 13 + ci * 37) > 0.92
           const glitchOn = isFullyRevealed && !on && Math.sin(glitchFrame * 5.1 + ri * 17 + ci * 43) > 0.97
 
           const active = revealed && ((on && !glitchOff) || glitchOn)
-          const brightness = active ? 1 : 0
-
-          // Color varies by position for gradient effect
-          const hue = 195 + (ci / totalCols) * 25 // blue range
-          const sat = on ? '80%' : '60%'
-          const lit = active ? '65%' : '8%'
+          const hue = 195 + (ci / totalCols) * 25
 
           return (
             <div
               key={`${ri}-${ci}`}
               style={{
-                width: pixelSize,
-                height: pixelSize,
-                borderRadius: '1px',
+                width: `${PX}px`,
+                height: `${PX}px`,
+                borderRadius: '1.5px',
                 background: active
-                  ? `hsl(${hue}, ${sat}, ${lit})`
+                  ? `hsl(${hue}, 80%, 65%)`
                   : 'rgba(255,255,255,0.02)',
-                opacity: brightness,
+                opacity: active ? 1 : 0,
                 boxShadow: active
                   ? `0 0 ${glitchOn ? '8px' : '4px'} hsl(${hue}, 90%, 70%)`
                   : 'none',
