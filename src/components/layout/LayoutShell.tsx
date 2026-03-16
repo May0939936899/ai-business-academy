@@ -25,11 +25,6 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
     return <>{children}</>
   }
 
-  // Tool routes: render children only (custom full-screen layout)
-  if (strippedPath.startsWith('/image-to-content') || strippedPath.startsWith('/poster-generator')) {
-    return <>{children}</>
-  }
-
   // Home page: show splash overlay + normal layout underneath
   const segments = pathname.split('/').filter(Boolean)
   const isHomePage = segments.length === 0 || (segments.length === 1 && LOCALES.includes(segments[0]))

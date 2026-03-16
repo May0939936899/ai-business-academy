@@ -20,8 +20,6 @@ const publicPaths = [
   '/instructor',
   '/a/certificate',
   '/admin/login',
-  '/image-to-content',
-  '/poster-generator',
 ]
 
 function isPublicPath(pathname: string): boolean {
