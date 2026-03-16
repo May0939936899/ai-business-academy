@@ -57,52 +57,58 @@ const CI_LTBLUE  = '#4FC3F7'
 const CI_MEDBLUE = '#42A5F5'
 const CI_PINK    = '#E91E8C'
 
-/* Build all pixel positions for "AI BUS" */
+/* Lerp between two hex colors */
+function lerpColor(a: string, b: string, t: number): string {
+  const pa = [parseInt(a.slice(1,3),16), parseInt(a.slice(3,5),16), parseInt(a.slice(5,7),16)]
+  const pb = [parseInt(b.slice(1,3),16), parseInt(b.slice(3,5),16), parseInt(b.slice(5,7),16)]
+  const r = Math.round(pa[0] + (pb[0] - pa[0]) * t)
+  const g = Math.round(pa[1] + (pb[1] - pa[1]) * t)
+  const bl = Math.round(pa[2] + (pb[2] - pa[2]) * t)
+  return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${bl.toString(16).padStart(2,'0')}`
+}
+
+/* Build all pixel positions for "AI BUS" — first pass to get geometry */
 function buildPixels() {
   const word1 = ['A', 'I']        // "AI"
   const word2 = ['B', 'U', 'S']   // "BUS"
   const GAP_LETTER = 1
   const GAP_WORD = 3
-  const pixels: { x: number; y: number; color: string; idx: number }[] = []
+  const raw: { x: number; y: number; idx: number }[] = []
 
   let cursorX = 0
   let idx = 0
 
-  // Helper to add a letter
-  const addLetter = (letter: string, colorFn: (r: number, c: number) => string) => {
+  const addLetter = (letter: string) => {
     const grid = LETTERS[letter]
     if (!grid) return
     for (let r = 0; r < grid.length; r++) {
       for (let c = 0; c < grid[r].length; c++) {
         if (grid[r][c]) {
-          pixels.push({ x: cursorX + c, y: r, color: colorFn(r, c), idx: idx++ })
+          raw.push({ x: cursorX + c, y: r, idx: idx++ })
         }
       }
     }
     cursorX += grid[0].length + GAP_LETTER
   }
 
-  // "AI" in blue tones
-  word1.forEach((l) => addLetter(l, (r, c) => {
-    const v = (r + c) % 3
-    return v === 0 ? CI_BLUE : v === 1 ? CI_LTBLUE : CI_MEDBLUE
-  }))
+  word1.forEach((l) => addLetter(l))
+  cursorX += GAP_WORD - GAP_LETTER
+  word2.forEach((l) => addLetter(l))
 
-  cursorX += GAP_WORD - GAP_LETTER // extra space between words
+  const totalCols = cursorX - GAP_LETTER
 
-  // "BUS" in blue + pink accent
-  word2.forEach((l, li) => addLetter(l, (r, c) => {
-    if (li === 0) { // B — blue dominant with pink hints
-      return (r + c) % 4 === 0 ? CI_PINK : (r + c) % 2 === 0 ? CI_BLUE : CI_LTBLUE
+  // Apply gradient: blue → light blue → pink based on x position (left→right)
+  const pixels = raw.map((p) => {
+    const t = totalCols > 1 ? p.x / (totalCols - 1) : 0 // 0=left(blue), 1=right(pink)
+    let color: string
+    if (t <= 0.5) {
+      color = lerpColor(CI_BLUE, CI_LTBLUE, t * 2)       // blue → light blue
+    } else {
+      color = lerpColor(CI_LTBLUE, CI_PINK, (t - 0.5) * 2) // light blue → pink
     }
-    if (li === 1) { // U — mixed
-      return (r + c) % 3 === 0 ? CI_PINK : (r + c) % 2 === 0 ? CI_MEDBLUE : CI_LTBLUE
-    }
-    // S — pink dominant
-    return (r + c) % 3 === 0 ? CI_BLUE : (r + c) % 2 === 0 ? CI_PINK : CI_LTBLUE
-  }))
+    return { ...p, color }
+  })
 
-  const totalCols = cursorX - GAP_LETTER // remove trailing gap
   return { pixels, totalCols, totalRows: 7 }
 }
 
