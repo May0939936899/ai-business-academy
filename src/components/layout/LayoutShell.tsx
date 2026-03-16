@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import ThemeSwitcher from '@/components/features/ThemeSwitcher'
+import SplashScreen from '@/components/features/SplashScreen'
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -14,7 +15,11 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
     return <>{children}</>
   }
 
-  return (
+  // Check if this is the home page (root locale path)
+  const segments = pathname.split('/').filter(Boolean)
+  const isHomePage = segments.length <= 1 // e.g. "/" or "/th"
+
+  const content = (
     <>
       <Navbar />
       <ThemeSwitcher />
@@ -22,4 +27,11 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
       <Footer />
     </>
   )
+
+  // Splash screen only on home page
+  if (isHomePage) {
+    return <SplashScreen>{content}</SplashScreen>
+  }
+
+  return content
 }
