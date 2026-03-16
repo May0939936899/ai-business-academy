@@ -97,16 +97,16 @@ export default function SplashScreen({ children }: { children: React.ReactNode }
         }
         return p + 1
       })
-    }, 35)
+    }, 25)
 
     // Subtitle appears after pixels
-    const subtitleTimer = setTimeout(() => setShowSubtitle(true), maxCols * 35 + 400)
+    const subtitleTimer = setTimeout(() => setShowSubtitle(true), maxCols * 25 + 400)
 
     // Start fade out
-    const fadeTimer = setTimeout(() => setPhase('fadeOut'), maxCols * 35 + 1800)
+    const fadeTimer = setTimeout(() => setPhase('fadeOut'), maxCols * 25 + 1600)
 
     // Done
-    const doneTimer = setTimeout(() => setPhase('done'), maxCols * 35 + 2600)
+    const doneTimer = setTimeout(() => setPhase('done'), maxCols * 25 + 2400)
 
     return () => {
       clearInterval(revealInterval)
@@ -313,8 +313,8 @@ function PixelTextBlock({
   maxCols: number
   totalCols: number
 }) {
-  const pixelSize = 'clamp(3px, 0.55vw, 6px)'
-  const gap = 'clamp(1px, 0.15vw, 2px)'
+  const pixelSize = 'clamp(6px, 1.1vw, 11px)'
+  const gap = 'clamp(1.5px, 0.25vw, 3px)'
 
   return (
     <div
