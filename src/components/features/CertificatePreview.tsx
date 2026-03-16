@@ -333,7 +333,7 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={logoUrl || '/images/brand/spu-bus-full.png'}
+                src={logoUrl || '/images/sbs-logo.png'}
                 alt="SBS School of Business Administration - Sripatum University"
                 style={{
                   maxWidth: '100%',
