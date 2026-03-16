@@ -90,15 +90,21 @@ export default function PixelLandingPage() {
 
   // Home animations
   const [homeReady, setHomeReady] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
-  const [stars] = useState(() =>
-    Array.from({ length: 50 }, () => ({
-      x: Math.random() * 100, y: Math.random() * 55,
-      s: Math.random() * 2.5 + 1, d: Math.random() * 4,
-      c: ['#5BB7D5', '#7DD3FC', '#fff', '#FBBF24', '#A78BFA'][Math.floor(Math.random() * 5)],
+  const starsRef = useRef<Array<{ x: number; y: number; s: number; d: number; c: string }>>([])
+  if (starsRef.current.length === 0) {
+    starsRef.current = Array.from({ length: 50 }, (_, i) => ({
+      x: (i * 37.7 + 13.3) % 100,
+      y: (i * 23.1 + 7.7) % 55,
+      s: 1 + (i % 5) * 0.5,
+      d: (i % 8) * 0.5,
+      c: ['#5BB7D5', '#7DD3FC', '#fff', '#FBBF24', '#A78BFA'][i % 5],
     }))
-  )
-  const [icons] = useState(() => [
+  }
+  const stars = starsRef.current
+
+  const icons = [
     { x: 6, y: 10, i: '🤖', d: 0, sp: 3.5 },
     { x: 88, y: 16, i: '📊', d: 1, sp: 4 },
     { x: 12, y: 40, i: '💡', d: 0.5, sp: 3 },
@@ -107,7 +113,10 @@ export default function PixelLandingPage() {
     { x: 4, y: 55, i: '📈', d: 0.8, sp: 3.2 },
     { x: 50, y: 5, i: '🧠', d: 1.2, sp: 3.6 },
     { x: 74, y: 50, i: '💼', d: 2.5, sp: 4.5 },
-  ])
+  ]
+
+  // Mount flag (avoids hydration mismatch for dynamic content)
+  useEffect(() => { setMounted(true) }, [])
 
   // Init windows
   useEffect(() => {
@@ -147,16 +156,33 @@ export default function PixelLandingPage() {
     setPhase('transition')
     setTimeout(() => {
       setPhase('home')
-      setTimeout(() => setHomeReady(true), 100)
     }, 600)
   }, [])
+
+  // Trigger card reveal animation after home phase renders
+  useEffect(() => {
+    if (phase === 'home') {
+      const t = setTimeout(() => setHomeReady(true), 50)
+      return () => clearTimeout(t)
+    }
+  }, [phase])
 
   const navigateTo = (path: string) => {
     router.push(`/${locale}${path}`)
   }
 
   const sprite = frame === 0 ? ROBOT_A : ROBOT_B
-  const charPx = typeof window !== 'undefined' ? (window.innerWidth < 500 ? 3 : window.innerWidth < 800 ? 4 : 5) : 4
+  const charPx = mounted ? (window.innerWidth < 500 ? 3 : window.innerWidth < 800 ? 4 : 5) : 4
+
+  // SSR placeholder — prevents hydration mismatch from random/dynamic values
+  if (!mounted) {
+    return (
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 99999,
+        background: 'linear-gradient(180deg, #020818 0%, #0a1628 30%, #0d1f3c 60%, #112a4a 100%)',
+      }} />
+    )
+  }
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 99999, overflow: 'hidden' }}>
@@ -392,22 +418,22 @@ export default function PixelLandingPage() {
               fontSize: 'clamp(16px, 3vw, 32px)',
               color: '#5BB7D5', letterSpacing: '0.1em',
               margin: 0, lineHeight: 1.3,
-              textShadow: '0 0 20px #5BB7D540, 0 0 40px #2E9ACC20',
+              textShadow: '0 0 20px #5BB7D580, 0 0 40px #2E9ACC50, 0 0 60px #5BB7D530',
             }}>
               AI BUSINESS ACADEMY
             </h1>
           </div>
 
           <p className={`px-home-sub ${homeReady ? 'px-revealed' : ''}`} style={{
-            color: '#94A3B8', fontSize: 'clamp(14px, 1.8vw, 20px)',
-            textAlign: 'center', marginBottom: '8px', opacity: 0.8,
+            color: '#CBD5E1', fontSize: 'clamp(14px, 1.8vw, 20px)',
+            textAlign: 'center', marginBottom: '8px',
             maxWidth: '600px', lineHeight: 1.6,
           }}>
             แพลตฟอร์มเรียนรู้ AI สำหรับธุรกิจยุคใหม่
           </p>
           <p className={`px-home-sub ${homeReady ? 'px-revealed' : ''}`} style={{
-            color: '#64748B', fontSize: 'clamp(11px, 1.2vw, 14px)',
-            textAlign: 'center', marginBottom: '48px', opacity: 0.6,
+            color: '#94A3B8', fontSize: 'clamp(11px, 1.2vw, 14px)',
+            textAlign: 'center', marginBottom: '48px',
           }}>
             เลือกเครื่องมือที่ต้องการใช้งาน
           </p>
@@ -424,7 +450,7 @@ export default function PixelLandingPage() {
             <div
               className={`px-tool-card ${homeReady ? 'px-revealed' : ''}`}
               onClick={() => navigateTo('/image-to-content')}
-              style={{ animationDelay: '0.1s' }}
+              style={{ transitionDelay: '0.1s' }}
             >
               <div className="px-card-icon-wrap" style={{ background: 'linear-gradient(135deg, #5BB7D520, #2E9ACC15)' }}>
                 <ImageIcon size={32} color="#5BB7D5" />
@@ -442,7 +468,7 @@ export default function PixelLandingPage() {
             <div
               className={`px-tool-card ${homeReady ? 'px-revealed' : ''}`}
               onClick={() => navigateTo('/poster-generator')}
-              style={{ animationDelay: '0.25s' }}
+              style={{ transitionDelay: '0.25s' }}
             >
               <div className="px-card-icon-wrap" style={{ background: 'linear-gradient(135deg, #A78BFA20, #8B5CF615)' }}>
                 <Palette size={32} color="#A78BFA" />
@@ -554,32 +580,35 @@ export default function PixelLandingPage() {
 
         /* ── Tool Cards ── */
         .px-tool-card {
-          background: linear-gradient(145deg, rgba(15, 40, 71, 0.8), rgba(10, 30, 61, 0.6));
-          border: 1px solid rgba(91, 183, 213, 0.15);
+          background: linear-gradient(145deg, rgba(30, 60, 110, 0.95), rgba(20, 50, 95, 0.9));
+          border: 1px solid rgba(91, 183, 213, 0.4);
           border-radius: 16px;
           padding: 32px 28px;
           cursor: pointer;
-          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
           opacity: 0; transform: translateY(30px);
+          transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                      border-color 0.3s ease,
+                      box-shadow 0.3s ease;
           position: relative; overflow: hidden;
           backdrop-filter: blur(10px);
+          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4), 0 0 40px rgba(91, 183, 213, 0.08), inset 0 1px 0 rgba(255,255,255,0.08);
         }
         .px-tool-card::before {
           content: '';
           position: absolute; inset: 0;
-          background: radial-gradient(circle at 50% 0%, rgba(91,183,213,0.06) 0%, transparent 60%);
+          background: radial-gradient(circle at 50% 0%, rgba(91,183,213,0.08) 0%, transparent 60%);
           pointer-events: none;
         }
         .px-tool-card.px-revealed {
           opacity: 1; transform: translateY(0);
-          transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .px-tool-card:hover {
-          transform: translateY(-6px) !important;
+        .px-tool-card.px-revealed:hover {
+          transform: translateY(-6px);
           border-color: rgba(91, 183, 213, 0.35);
           box-shadow: 0 8px 40px rgba(91, 183, 213, 0.15), 0 0 60px rgba(91, 183, 213, 0.05);
         }
-        .px-tool-card:active { transform: translateY(-2px) !important; }
+        .px-tool-card.px-revealed:active { transform: translateY(-2px); }
 
         .px-card-icon-wrap {
           width: 60px; height: 60px; border-radius: 14px;
@@ -589,11 +618,11 @@ export default function PixelLandingPage() {
         }
         .px-card-title {
           font-size: clamp(18px, 2.2vw, 22px); font-weight: 700;
-          color: #E2E8F0; margin: 0 0 12px; letter-spacing: -0.01em;
+          color: #fff; margin: 0 0 12px; letter-spacing: -0.01em;
         }
         .px-card-desc {
-          color: #94A3B8; font-size: clamp(13px, 1.4vw, 15px);
-          line-height: 1.7; margin: 0 0 24px; opacity: 0.85;
+          color: #CBD5E1; font-size: clamp(13px, 1.4vw, 15px);
+          line-height: 1.7; margin: 0 0 24px;
         }
 
         /* ── Card Buttons ── */
