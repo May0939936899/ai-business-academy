@@ -30,17 +30,14 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
     return <>{children}</>
   }
 
-  // Home page: show pixel landing page with intro → tool selection
+  // Home page: show splash overlay + normal layout underneath
   const segments = pathname.split('/').filter(Boolean)
   const isHomePage = segments.length === 0 || (segments.length === 1 && LOCALES.includes(segments[0]))
 
-  if (isHomePage) {
-    return <PixelLandingPage />
-  }
-
-  // All other pages: standard layout with Navbar + Footer
+  // All pages (except admin/tools): standard layout with Navbar + Footer
   return (
     <>
+      {isHomePage && <PixelLandingPage />}
       <Navbar />
       <ThemeSwitcher />
       <main className="min-h-[calc(100vh-4rem)]">{children}</main>
