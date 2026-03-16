@@ -11,6 +11,7 @@ const publicPaths = [
   '/login',
   '/signup',
   '/courses',
+  '/learn',
   '/about',
   '/contact',
   '/learning-path',

@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
-import { Inter, Noto_Sans_Thai, Noto_Sans_SC, Noto_Sans_JP } from 'next/font/google'
+import { Inter, Noto_Sans_Thai, Noto_Sans_SC, Noto_Sans_JP, Press_Start_2P } from 'next/font/google'
 import { routing } from '@/i18n/routing'
 import AuthProvider from '@/components/providers/AuthProvider'
 import LayoutShell from '@/components/layout/LayoutShell'
@@ -33,6 +33,13 @@ const notoSansJP = Noto_Sans_JP({
   variable: '--font-noto-sans-jp',
   display: 'swap',
   weight: ['400', '500', '700'],
+})
+
+const pressStart2P = Press_Start_2P({
+  subsets: ['latin'],
+  variable: '--font-pixel',
+  display: 'swap',
+  weight: '400',
 })
 
 type Props = {
@@ -86,7 +93,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html
       lang={locale}
-      className={`${inter.variable} ${notoSansThai.variable} ${notoSansSC.variable} ${notoSansJP.variable}`}
+      className={`${inter.variable} ${notoSansThai.variable} ${notoSansSC.variable} ${notoSansJP.variable} ${pressStart2P.variable}`}
     >
       <head>
         <ThemeScript />

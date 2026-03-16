@@ -4,22 +4,27 @@ import { usePathname } from 'next/navigation'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import ThemeSwitcher from '@/components/features/ThemeSwitcher'
-import SplashScreen from '@/components/features/SplashScreen'
+import PixelLandingPage from '@/components/features/PixelLandingPage'
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isAdminRoute = pathname.startsWith('/admin')
 
   if (isAdminRoute) {
-    // Admin has its own layout — no Navbar/Footer
     return <>{children}</>
   }
 
-  // Check if this is the home page (root locale path)
+  // Home page: show pixel landing page (full-screen, user clicks to proceed)
+  // Only match exact root "/" or locale-only paths "/th", "/en", "/zh", "/ja"
+  const LOCALES = ['th', 'en', 'zh', 'ja']
   const segments = pathname.split('/').filter(Boolean)
-  const isHomePage = segments.length <= 1 // e.g. "/" or "/th"
+  const isHomePage = segments.length === 0 || (segments.length === 1 && LOCALES.includes(segments[0]))
 
-  const content = (
+  if (isHomePage) {
+    return <PixelLandingPage />
+  }
+
+  return (
     <>
       <Navbar />
       <ThemeSwitcher />
@@ -27,11 +32,4 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
       <Footer />
     </>
   )
-
-  // Splash screen only on home page
-  if (isHomePage) {
-    return <SplashScreen>{content}</SplashScreen>
-  }
-
-  return content
 }
