@@ -43,7 +43,7 @@ export default function ContactPage() {
             ติดต่อเรา
           </div>
           <h1 className="mb-4 text-3xl font-bold text-white sm:text-4xl">
-            ติดต่อ AI Business Academy
+            ติดต่อ AI SPUBUS Academy
           </h1>
           <p className="mx-auto max-w-2xl text-base leading-relaxed text-gray-400">
             มีคำถามเกี่ยวกับหลักสูตร หรือต้องการข้อมูลเพิ่มเติม สามารถติดต่อเราได้ตามช่องทางด้านล่าง

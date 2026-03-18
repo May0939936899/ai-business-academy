@@ -58,7 +58,7 @@ export default function AdminLoginPage() {
             </div>
             <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
             <p className="mt-2 text-sm text-gray-400">
-              AI Business Academy — Administrator Login
+              AI SPUBUS Academy — Administrator Login
             </p>
           </div>
 

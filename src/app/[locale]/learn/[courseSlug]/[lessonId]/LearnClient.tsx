@@ -20,7 +20,6 @@ import {
   Youtube,
 } from 'lucide-react'
 import Button from '@/components/ui/Button'
-import EbookSection from '@/components/features/EbookSection'
 import EbookDownloadButton from '@/components/features/EbookDownloadButton'
 import InVideoQuizOverlay from '@/components/features/InVideoQuizOverlay'
 import QuizTimelineMarkers from '@/components/features/QuizTimelineMarkers'
@@ -596,13 +595,6 @@ export default function LearnClient({
               <p className="leading-relaxed text-gray-400">{currentLesson.description}</p>
             </div>
           )}
-
-          {/* 📚 E-Book ประกอบบทเรียน */}
-          <EbookSection
-            lessonId={currentLessonId}
-            lessonTitle={currentLesson.title}
-            lessonOrder={currentLesson.lessonOrder}
-          />
 
           {/* Resources */}
           {currentLesson.resources.length > 0 && (

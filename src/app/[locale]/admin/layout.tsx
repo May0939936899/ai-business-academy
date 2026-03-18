@@ -131,7 +131,7 @@ export default function AdminLayout({
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-bold tracking-tight text-white">
-              AI Business Academy
+              AI SPUBUS Academy
             </span>
             <span className="text-[10px] font-medium tracking-wider text-gray-500">
               ADMIN PANEL
@@ -181,7 +181,7 @@ export default function AdminLayout({
         <div className="border-t border-white/[0.06] p-3">
           <div className="rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 p-3">
             <p className="text-xs font-medium text-blue-300">
-              AI Business Academy
+              AI SPUBUS Academy
             </p>
             <p className="mt-0.5 text-[10px] text-gray-500">v1.0.0 Beta</p>
           </div>

@@ -62,8 +62,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
   return {
     title: {
-      default: 'AI Business Academy',
-      template: '%s | AI Business Academy',
+      default: 'AI SPUBUS Academy',
+      template: '%s | AI SPUBUS Academy',
     },
     description:
       locale === 'th'

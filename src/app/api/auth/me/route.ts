@@ -25,10 +25,22 @@ export async function GET() {
         fullName: true,
         fullNameForCertificate: true,
         country: true,
+        organization: true,
         position: true,
+        interestArea: true,
+        learningGoal: true,
         image: true,
         role: true,
         isProfileCompleted: true,
+        createdAt: true,
+        lastLoginAt: true,
+        googleId: true,
+        _count: {
+          select: {
+            enrollments: true,
+            certificates: true,
+          },
+        },
       },
     });
 

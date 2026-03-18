@@ -316,25 +316,19 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
               TOP ZONE — Logo + Academy Name + Certificate Title
               ════════════════════════════════════════════════════════════════ */}
           <div className="flex flex-col items-center" style={{ flex: '0 0 auto' }}>
-            {/* Logo — SBS School of Business Administration */}
+            {/* Logo — SPU BUS */}
             <div
               className="relative flex items-center justify-center"
               style={{
-                width: 'clamp(140px, 20vw, 240px)',
-                height: 'clamp(50px, 8vw, 90px)',
-                marginBottom: 'clamp(4px, 0.8vw, 10px)',
-                background: isDark ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.85)',
-                borderRadius: 'clamp(6px, 0.8vw, 10px)',
-                padding: 'clamp(4px, 0.6vw, 8px) clamp(8px, 1.2vw, 16px)',
-                boxShadow: isDark
-                  ? '0 2px 12px rgba(0,0,0,0.3)'
-                  : '0 1px 4px rgba(0,0,0,0.08)',
+                width: 'clamp(180px, 25vw, 320px)',
+                height: 'clamp(40px, 6vw, 70px)',
+                marginBottom: 'clamp(6px, 1vw, 12px)',
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={logoUrl || '/images/sbs-logo.png'}
-                alt="SBS School of Business Administration - Sripatum University"
+                src={logoUrl || '/images/spu-bus-logo.png'}
+                alt="SPU BUS School of Business Administration"
                 style={{
                   maxWidth: '100%',
                   maxHeight: '100%',
@@ -351,7 +345,7 @@ const CertificatePreview = forwardRef<HTMLDivElement, CertificatePreviewProps>(
                 fontSize: 'clamp(12px, 1.8vw, 20px)',
               }}
             >
-              AI Business Academy
+              AI SPUBUS Academy
             </p>
 
             {/* Subtitle — University */}

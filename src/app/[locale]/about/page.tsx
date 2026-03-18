@@ -9,7 +9,7 @@ const stats = [
 
 const team = [
   { name: 'คณะบริหารธุรกิจ', role: 'มหาวิทยาลัยศรีปทุม', desc: 'ผู้พัฒนาหลักสูตรและเนื้อหาการเรียนรู้ AI สำหรับธุรกิจ' },
-  { name: 'AI Business Academy', role: 'แพลตฟอร์มการเรียนรู้', desc: 'ระบบ E-Learning ที่ออกแบบเพื่อพัฒนาทักษะ AI สำหรับนักธุรกิจยุคใหม่' },
+  { name: 'AI SPUBUS Academy', role: 'แพลตฟอร์มการเรียนรู้', desc: 'ระบบ E-Learning ที่ออกแบบเพื่อพัฒนาทักษะ AI สำหรับนักธุรกิจยุคใหม่' },
 ]
 
 const faqs = [
@@ -31,7 +31,7 @@ export default function AboutPage() {
             เกี่ยวกับเรา
           </div>
           <h1 className="mb-4 text-3xl font-bold text-white sm:text-4xl">
-            AI Business Academy
+            AI SPUBUS Academy
           </h1>
           <p className="mx-auto max-w-2xl text-base leading-relaxed text-gray-400">
             แพลตฟอร์มการเรียนรู้ AI สำหรับธุรกิจ โดยคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม

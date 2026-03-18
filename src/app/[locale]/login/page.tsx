@@ -1,12 +1,14 @@
 'use client'
 
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect, useRef } from 'react'
 import { signIn, useSession } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+type TabMode = 'login' | 'register'
 
 function LoginContent() {
   const searchParams = useSearchParams()
@@ -17,13 +19,45 @@ function LoginContent() {
   const callbackUrl = searchParams.get('callbackUrl')
   const errorParam = searchParams.get('error')
 
+  // If suspended error param, redirect to account-status page
+  useEffect(() => {
+    if (errorParam === 'suspended') {
+      router.replace(`/${locale}/account-status?reason=suspended`)
+    }
+  }, [errorParam, router, locale])
+
+  const [tab, setTab] = useState<TabMode>('login')
   const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [successMsg, setSuccessMsg] = useState('')
+
+  // Login fields
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+
+  // Register fields
+  const [regName, setRegName] = useState('')
+  const [regCertName, setRegCertName] = useState('')
+  const [regEmail, setRegEmail] = useState('')
+  const [regPassword, setRegPassword] = useState('')
+  const [regConfirm, setRegConfirm] = useState('')
+  const [showRegPassword, setShowRegPassword] = useState(false)
+  const [showRegConfirm, setShowRegConfirm] = useState(false)
+
+  // Prevent race condition: once we start redirecting, block other redirects
+  const isRedirecting = useRef(false)
 
   // If already logged in, redirect
   useEffect(() => {
-    if (status === 'authenticated' && session?.user) {
+    if (status === 'authenticated' && session?.user && !isRedirecting.current) {
+      isRedirecting.current = true
       if (callbackUrl) {
         router.push(callbackUrl)
+      } else if (!session.user.isProfileCompleted) {
+        router.push(`/${locale}/complete-profile`)
       } else if (session.user.role === 'ADMIN') {
         router.push(`/${locale}/admin`)
       } else {
@@ -32,11 +66,160 @@ function LoginContent() {
     }
   }, [status, session, router, callbackUrl, locale])
 
+  // Clear errors when switching tabs
+  useEffect(() => {
+    setError('')
+    setFieldErrors({})
+    setSuccessMsg('')
+  }, [tab])
+
   const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true)
+    setError('')
+    try {
+      await signIn('google', {
+        callbackUrl: callbackUrl || `/${locale}/dashboard`,
+      })
+    } catch {
+      setError('เกิดข้อผิดพลาดในการเข้าสู่ระบบด้วย Google')
+      setIsGoogleLoading(false)
+    }
+  }
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setFieldErrors({})
+
+    // Validate
+    const errs: Record<string, string> = {}
+    const emailVal = email.trim().toLowerCase()
+    if (!emailVal) {
+      errs.email = 'กรุณากรอกอีเมล'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+      errs.email = 'รูปแบบอีเมลไม่ถูกต้อง'
+    }
+    if (!password) {
+      errs.password = 'กรุณากรอกรหัสผ่าน'
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs)
+      return
+    }
+
     setIsLoading(true)
-    await signIn('google', {
-      callbackUrl: callbackUrl || `/${locale}/dashboard`,
-    })
+    try {
+      const result = await signIn('user-credentials', {
+        email: emailVal,
+        password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        if (result.error === 'CredentialsSignin') {
+          setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง')
+        } else {
+          setError('เกิดข้อผิดพลาด กรุณาลองใหม่')
+        }
+        setIsLoading(false)
+      } else if (result?.ok) {
+        isRedirecting.current = true
+        // Wait briefly for session to refresh, then redirect
+        // The useEffect will handle the redirect once session is authenticated
+        router.push(callbackUrl || `/${locale}/dashboard`)
+        router.refresh()
+      }
+    } catch {
+      setError('เกิดข้อผิดพลาด กรุณาลองใหม่')
+      setIsLoading(false)
+    }
+  }
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setFieldErrors({})
+
+    // Client-side validation (must match server-side)
+    const errs: Record<string, string> = {}
+    if (!regName.trim()) errs.fullName = 'กรุณากรอกชื่อ-นามสกุล'
+
+    const emailVal = regEmail.trim().toLowerCase()
+    if (!emailVal) {
+      errs.email = 'กรุณากรอกอีเมล'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+      errs.email = 'รูปแบบอีเมลไม่ถูกต้อง'
+    }
+
+    if (!regPassword) {
+      errs.password = 'กรุณากรอกรหัสผ่าน'
+    } else if (regPassword.length < 6) {
+      errs.password = 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'
+    }
+
+    if (!regConfirm) {
+      errs.confirmPassword = 'กรุณายืนยันรหัสผ่าน'
+    } else if (regPassword !== regConfirm) {
+      errs.confirmPassword = 'รหัสผ่านไม่ตรงกัน'
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs)
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      // Step 1: Register
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: regName.trim(),
+          fullNameForCertificate: regCertName.trim() || regName.trim(),
+          email: emailVal,
+          password: regPassword,
+          confirmPassword: regConfirm,
+          acceptTerms: true,
+        }),
+      })
+      const data = await res.json()
+
+      if (!data.success) {
+        if (data.errors) {
+          setFieldErrors(data.errors)
+        } else {
+          setError(data.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่')
+        }
+        setIsLoading(false)
+        return
+      }
+
+      // Step 2: Auto sign-in after successful registration
+      const signInResult = await signIn('user-credentials', {
+        email: emailVal,
+        password: regPassword,
+        redirect: false,
+      })
+
+      if (signInResult?.ok) {
+        isRedirecting.current = true
+        router.push(`/${locale}/complete-profile`)
+        router.refresh()
+      } else {
+        // Fallback: registration succeeded but auto-login failed
+        // Switch to login tab with pre-filled email
+        setTab('login')
+        setEmail(regEmail)
+        setPassword('')
+        setSuccessMsg('สมัครสำเร็จ! กรุณาเข้าสู่ระบบด้วยอีเมลและรหัสผ่านที่ตั้งไว้')
+        setIsLoading(false)
+      }
+    } catch {
+      setError('เกิดข้อผิดพลาด กรุณาลองใหม่')
+      setIsLoading(false)
+    }
   }
 
   if (status === 'loading') {
@@ -57,56 +240,341 @@ function LoginContent() {
   }
 
   return (
-    <div className="relative w-full max-w-sm">
+    <div className="relative w-full max-w-[420px]">
       <div
         className={cn(
-          'rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 sm:p-8 backdrop-blur-xl',
-          'shadow-2xl shadow-black/20'
+          'rounded-3xl border border-white/[0.08] bg-white/[0.03] p-8 sm:p-10 backdrop-blur-xl',
+          'shadow-2xl shadow-black/30'
         )}
       >
-        {/* Logo */}
-        <div className="mb-5 flex justify-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/sbs-logo.png"
-            alt="SBS School of Business Administration"
-            className="h-12 sm:h-14 object-contain"
-          />
-        </div>
-
-        {/* Header */}
+        {/* Brand Header */}
         <div className="mb-6 text-center">
-          <h1 className="text-lg font-bold text-white">AI Business Academy</h1>
-          <p className="mt-1.5 text-xs text-gray-400">
-            เข้าสู่ระบบหรือสมัครสมาชิกด้วย Google
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
+              AI
+            </span>{' '}
+            <span className="text-white">Business</span>{' '}
+            <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+              Academy
+            </span>
+          </h1>
         </div>
 
-        {/* Error */}
-        {errorParam && (
-          <div className="mb-4 flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2.5 text-xs text-red-400">
-            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-            {errorParam === 'OAuthAccountNotLinked'
-              ? t('errors.accountLinked')
-              : errorParam === 'suspended'
-                ? t('errors.suspended')
-                : t('errors.default')}
+        {/* Tabs */}
+        <div className="mb-6 flex rounded-xl border border-white/[0.08] bg-white/[0.02] p-1">
+          <button
+            type="button"
+            onClick={() => setTab('register')}
+            className={cn(
+              'flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all duration-200',
+              tab === 'register'
+                ? 'bg-white/[0.1] text-white shadow-sm'
+                : 'text-gray-500 hover:text-gray-300'
+            )}
+          >
+            สมัครสมาชิก
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('login')}
+            className={cn(
+              'flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all duration-200',
+              tab === 'login'
+                ? 'bg-white/[0.1] text-white shadow-sm'
+                : 'text-gray-500 hover:text-gray-300'
+            )}
+          >
+            เข้าสู่ระบบ
+          </button>
+        </div>
+
+        {/* Success Message */}
+        {successMsg && (
+          <div className="mb-4 flex items-center gap-2.5 rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-400">
+            <span>✓</span>
+            <span>{successMsg}</span>
           </div>
         )}
 
-        {/* Google Sign-In — the only way */}
+        {/* Error */}
+        {(error || errorParam) && (
+          <div className="mb-4 flex items-center gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>
+              {error ||
+                (errorParam === 'OAuthAccountNotLinked'
+                  ? t('errors.accountLinked')
+                  : errorParam === 'suspended'
+                    ? t('errors.suspended')
+                    : t('errors.default'))}
+            </span>
+          </div>
+        )}
+
+        {/* ── Login Form ── */}
+        {tab === 'login' && (
+          <form onSubmit={handleEmailLogin} className="space-y-4">
+            {/* Email */}
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-gray-300">
+                Gmail / Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="example@gmail.com"
+                autoComplete="email"
+                className={cn(
+                  'w-full rounded-xl border py-3 px-4 text-sm transition-all',
+                  'bg-white/[0.04] text-white placeholder-gray-500',
+                  fieldErrors.email
+                    ? 'border-red-500/50 focus:border-red-500/70'
+                    : 'border-white/[0.08] focus:border-blue-500/50',
+                  'focus:bg-white/[0.06] focus:ring-1 focus:ring-blue-500/20 focus:outline-none'
+                )}
+              />
+              {fieldErrors.email && (
+                <p className="mt-1 text-xs text-red-400">{fieldErrors.email}</p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-gray-300">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="อย่างน้อย 6 ตัวอักษร"
+                  autoComplete="current-password"
+                  className={cn(
+                    'w-full rounded-xl border py-3 pl-4 pr-11 text-sm transition-all',
+                    'bg-white/[0.04] text-white placeholder-gray-500',
+                    fieldErrors.password
+                      ? 'border-red-500/50 focus:border-red-500/70'
+                      : 'border-white/[0.08] focus:border-blue-500/50',
+                    'focus:bg-white/[0.06] focus:ring-1 focus:ring-blue-500/20 focus:outline-none'
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {fieldErrors.password && (
+                <p className="mt-1 text-xs text-red-400">{fieldErrors.password}</p>
+              )}
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={cn(
+                'flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold text-white transition-all duration-200',
+                'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600',
+                'shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30',
+                'disabled:cursor-not-allowed disabled:opacity-50',
+                'hover:-translate-y-[1px] active:translate-y-0 active:scale-[0.99]'
+              )}
+            >
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                'เข้าสู่ระบบ'
+              )}
+            </button>
+          </form>
+        )}
+
+        {/* ── Register Form ── */}
+        {tab === 'register' && (
+          <form onSubmit={handleRegister} className="space-y-4">
+            {/* Full Name */}
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-gray-300">
+                ชื่อ - นามสกุล
+              </label>
+              <input
+                type="text"
+                value={regName}
+                onChange={(e) => setRegName(e.target.value)}
+                placeholder="กรอกชื่อ-นามสกุล"
+                autoComplete="name"
+                className={cn(
+                  'w-full rounded-xl border py-3 px-4 text-sm transition-all',
+                  'bg-white/[0.04] text-white placeholder-gray-500',
+                  fieldErrors.fullName
+                    ? 'border-red-500/50 focus:border-red-500/70'
+                    : 'border-white/[0.08] focus:border-blue-500/50',
+                  'focus:bg-white/[0.06] focus:ring-1 focus:ring-blue-500/20 focus:outline-none'
+                )}
+              />
+              {fieldErrors.fullName && (
+                <p className="mt-1 text-xs text-red-400">{fieldErrors.fullName}</p>
+              )}
+            </div>
+
+            {/* Certificate Name */}
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-gray-300">
+                ชื่อที่แสดงบน Certificate
+              </label>
+              <input
+                type="text"
+                value={regCertName}
+                onChange={(e) => setRegCertName(e.target.value)}
+                placeholder="ชื่อ-นามสกุล สำหรับใบประกาศนียบัตร"
+                className={cn(
+                  'w-full rounded-xl border py-3 px-4 text-sm transition-all',
+                  'bg-white/[0.04] text-white placeholder-gray-500',
+                  'border-white/[0.08] focus:border-blue-500/50',
+                  'focus:bg-white/[0.06] focus:ring-1 focus:ring-blue-500/20 focus:outline-none'
+                )}
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-gray-300">
+                Gmail / Email
+              </label>
+              <input
+                type="email"
+                value={regEmail}
+                onChange={(e) => setRegEmail(e.target.value)}
+                placeholder="example@gmail.com"
+                autoComplete="email"
+                className={cn(
+                  'w-full rounded-xl border py-3 px-4 text-sm transition-all',
+                  'bg-white/[0.04] text-white placeholder-gray-500',
+                  fieldErrors.email
+                    ? 'border-red-500/50 focus:border-red-500/70'
+                    : 'border-white/[0.08] focus:border-blue-500/50',
+                  'focus:bg-white/[0.06] focus:ring-1 focus:ring-blue-500/20 focus:outline-none'
+                )}
+              />
+              {fieldErrors.email && (
+                <p className="mt-1 text-xs text-red-400">{fieldErrors.email}</p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-gray-300">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showRegPassword ? 'text' : 'password'}
+                  value={regPassword}
+                  onChange={(e) => setRegPassword(e.target.value)}
+                  placeholder="อย่างน้อย 6 ตัวอักษร"
+                  autoComplete="new-password"
+                  className={cn(
+                    'w-full rounded-xl border py-3 pl-4 pr-11 text-sm transition-all',
+                    'bg-white/[0.04] text-white placeholder-gray-500',
+                    fieldErrors.password
+                      ? 'border-red-500/50 focus:border-red-500/70'
+                      : 'border-white/[0.08] focus:border-blue-500/50',
+                    'focus:bg-white/[0.06] focus:ring-1 focus:ring-blue-500/20 focus:outline-none'
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowRegPassword(!showRegPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                >
+                  {showRegPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {fieldErrors.password && (
+                <p className="mt-1 text-xs text-red-400">{fieldErrors.password}</p>
+              )}
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-gray-300">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showRegConfirm ? 'text' : 'password'}
+                  value={regConfirm}
+                  onChange={(e) => setRegConfirm(e.target.value)}
+                  placeholder="ยืนยันรหัสผ่าน"
+                  autoComplete="new-password"
+                  className={cn(
+                    'w-full rounded-xl border py-3 pl-4 pr-11 text-sm transition-all',
+                    'bg-white/[0.04] text-white placeholder-gray-500',
+                    fieldErrors.confirmPassword
+                      ? 'border-red-500/50 focus:border-red-500/70'
+                      : 'border-white/[0.08] focus:border-blue-500/50',
+                    'focus:bg-white/[0.06] focus:ring-1 focus:ring-blue-500/20 focus:outline-none'
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowRegConfirm(!showRegConfirm)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                >
+                  {showRegConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {fieldErrors.confirmPassword && (
+                <p className="mt-1 text-xs text-red-400">{fieldErrors.confirmPassword}</p>
+              )}
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={cn(
+                'flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold text-white transition-all duration-200',
+                'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600',
+                'shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30',
+                'disabled:cursor-not-allowed disabled:opacity-50',
+                'hover:-translate-y-[1px] active:translate-y-0 active:scale-[0.99]'
+              )}
+            >
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                'สมัครสมาชิก'
+              )}
+            </button>
+          </form>
+        )}
+
+        {/* Divider */}
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-white/[0.06]" />
+          <span className="text-[11px] text-gray-500">หรือ</span>
+          <div className="h-px flex-1 bg-white/[0.06]" />
+        </div>
+
+        {/* Google Sign-In */}
         <button
           onClick={handleGoogleSignIn}
-          disabled={isLoading}
+          disabled={isGoogleLoading || isLoading}
           className={cn(
-            'flex w-full items-center justify-center gap-3 rounded-xl px-5 py-3.5 text-sm font-semibold transition-all duration-200',
-            'bg-white text-gray-800 hover:bg-gray-50',
+            'flex w-full items-center justify-center gap-3 rounded-xl border px-6 py-3 text-sm font-medium transition-all duration-200',
+            'border-white/[0.1] bg-white/[0.03] text-gray-300 hover:bg-white/[0.06] hover:text-white',
             'disabled:cursor-not-allowed disabled:opacity-50',
-            'shadow-md hover:shadow-lg'
+            'hover:-translate-y-[1px] active:translate-y-0 active:scale-[0.99]'
           )}
         >
-          {isLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-gray-600" />
+          {isGoogleLoading ? (
+            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
           ) : (
             <>
               <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -120,17 +588,11 @@ function LoginContent() {
           )}
         </button>
 
-        {/* Info text */}
-        <p className="mt-5 text-center text-[11px] leading-relaxed text-gray-500">
-          หากยังไม่มีบัญชี ระบบจะสมัครสมาชิกให้อัตโนมัติ<br />
-          เมื่อเข้าสู่ระบบด้วย Google เป็นครั้งแรก
-        </p>
-
-        {/* Divider */}
-        <div className="mt-5 flex items-center gap-3">
-          <div className="h-px flex-1 bg-white/[0.06]" />
+        {/* Footer */}
+        <div className="mt-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-white/[0.04]" />
           <span className="text-[10px] text-gray-600">คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม</span>
-          <div className="h-px flex-1 bg-white/[0.06]" />
+          <div className="h-px flex-1 bg-white/[0.04]" />
         </div>
       </div>
     </div>
@@ -141,8 +603,8 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/4 top-1/4 h-72 w-72 rounded-full bg-blue-500/5 blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 h-72 w-72 rounded-full bg-cyan-500/5 blur-3xl" />
+        <div className="absolute left-1/3 top-1/4 h-80 w-80 rounded-full bg-blue-500/[0.07] blur-[100px]" />
+        <div className="absolute bottom-1/3 right-1/4 h-80 w-80 rounded-full bg-cyan-500/[0.05] blur-[100px]" />
       </div>
 
       <Suspense

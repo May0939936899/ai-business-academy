@@ -35,7 +35,7 @@
     "closeMenu": "Close menu"
   },
   "footer": {
-    "academy": "AI Business Academy",
+    "academy": "AI SPUBUS Academy",
     "description": "AI learning platform for business by School of Business Administration, Sripatum University",
     "quickLinks": "Quick Links",
     "resources": "Resources",
@@ -57,7 +57,7 @@
     "terms": "Terms of Service",
     "phone": "0 2579 1111 ext. 2354",
     "address": "Sripatum University 2410/2 Phaholyothin Rd, Chatuchak, Bangkok 10900",
-    "copyright": "AI Business Academy — School of Business Administration, Sripatum University"
+    "copyright": "AI SPUBUS Academy — School of Business Administration, Sripatum University"
   },
   "homepage": {
     "badge": "School of Business Administration, Sripatum University",
@@ -86,7 +86,7 @@
     "pathStep3Title": "Master AI Strategy",
     "pathStep3Desc": "Plan AI strategy for organizations. Become an AI Transformation leader that the job market demands",
     "featuresTitle1": "Why learn with",
-    "featuresTitle2": "AI Business Academy",
+    "featuresTitle2": "AI SPUBUS Academy",
     "instructorsTitle1": "Learn from",
     "instructorsTitle2": "real experts",
     "instructorsDesc": "Faculty and experts from School of Business Administration, Sripatum University",
@@ -215,9 +215,9 @@
     "completionDate": "Completion Date",
     "courseName": "Course",
     "shareDescription": "Copy the verification URL or share via social media for others to verify",
-    "certifiedBy": "Certified by AI Business Academy",
-    "certifiedByDesc": "This certificate is issued by AI Business Academy, School of Business Administration, Sripatum University. It can be verified at any time through the online verification system using the certificate code or QR code on the certificate.",
-    "issuedByLine": "Issued and verified by AI Business Academy, Sripatum University"
+    "certifiedBy": "Certified by AI SPUBUS Academy",
+    "certifiedByDesc": "This certificate is issued by AI SPUBUS Academy, School of Business Administration, Sripatum University. It can be verified at any time through the online verification system using the certificate code or QR code on the certificate.",
+    "issuedByLine": "Issued and verified by AI SPUBUS Academy, Sripatum University"
   },
   "verify": {
     "title": "Verify Certificate",
@@ -234,14 +234,14 @@
     "backHome": "Back to Home",
     "subtitle": "School of Business Administration, Sripatum University",
     "validBanner": "Certificate Valid",
-    "validBannerDesc": "Verified by AI Business Academy, Sripatum University",
+    "validBannerDesc": "Verified by AI SPUBUS Academy, Sripatum University",
     "certificateTitle": "Certificate",
-    "certificateSubtitle": "AI Business Academy | School of Business Administration, Sripatum University",
+    "certificateSubtitle": "AI SPUBUS Academy | School of Business Administration, Sripatum University",
     "completedCourse": "has successfully completed the course",
     "completionDate": "Completion Date",
     "student": "Student",
     "certCodeLabel": "Certificate Code",
-    "verifiedBy": "Certificate Valid — Verified by AI Business Academy",
+    "verifiedBy": "Certificate Valid — Verified by AI SPUBUS Academy",
     "qrAlt": "QR Code for certificate verification"
   },
   "notFound": {
@@ -376,7 +376,7 @@
     "coursesLabel": "Courses",
     "enrollments": "Enrollments",
     "certificatesIssued": "Certificates Issued",
-    "systemOverview": "AI Business Academy system overview",
+    "systemOverview": "AI SPUBUS Academy system overview",
     "recentEnrollments": "Recent Enrollments",
     "recentCertificates": "Recent Certificates",
     "viewAll": "View All",

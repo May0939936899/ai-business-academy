@@ -8,6 +8,7 @@ declare module "next-auth" {
       role: string
       fullName: string
       isProfileCompleted: boolean
+      status?: string
       name?: string | null
       email?: string | null
       image?: string | null
@@ -21,6 +22,7 @@ declare module "next-auth/jwt" {
     role?: string
     fullName?: string
     isProfileCompleted?: boolean
+    status?: string
     error?: string
   }
 }

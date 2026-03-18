@@ -12,7 +12,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { fullNameForCertificate, country, organization, position, interestArea, learningGoal } = body
+    const { fullNameForCertificate, country, organization, position, interestArea, learningGoal, image } = body
 
     await db.user.update({
       where: { id: session.user.id },
@@ -23,6 +23,7 @@ export async function PATCH(req: NextRequest) {
         position: position?.trim() || null,
         interestArea: Array.isArray(interestArea) ? interestArea : [],
         learningGoal: learningGoal?.trim() || null,
+        ...(image !== undefined && { image: image || null }),
         isProfileCompleted: true,
       },
     })

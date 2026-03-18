@@ -16,9 +16,9 @@ export async function GET() {
     where: { id: 'global' },
     create: {
       id: 'global',
-      watermarkText: 'AI Business Academy | คณะบริหารธุรกิจ ม.ศรีปทุม',
+      watermarkText: 'AI SPUBUS Academy | คณะบริหารธุรกิจ ม.ศรีปทุม',
       watermarkOpacity: 0.08,
-      headerText: 'AI Business Academy',
+      headerText: 'AI SPUBUS Academy',
       footerText: 'คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม',
       isWatermarkEnabled: true,
       accentColor: '#1e40af',

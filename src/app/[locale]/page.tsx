@@ -105,6 +105,28 @@ const animatedStyles = `
   outline: none;
   box-shadow: 0 0 0 3px rgba(59,130,246,0.35), 0 8px 30px rgba(59,130,246,0.3);
 }
+@keyframes heroTextShimmer {
+  0% { background-position: -150% center; }
+  100% { background-position: 350% center; }
+}
+.hero-text-shimmer {
+  background: linear-gradient(
+    105deg,
+    #e2e8f0 0%,
+    #e2e8f0 35%,
+    #ffffff 42%,
+    rgba(255,255,255,0.95) 44%,
+    #ffffff 46%,
+    rgba(255,255,255,0.9) 48%,
+    #ffffff 50%,
+    #e2e8f0 57%,
+    #e2e8f0 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: heroTextShimmer 5s ease-in-out infinite;
+}
 `;
 
 /* ── Static Data ─────────────────────────────────────────── */
@@ -325,31 +347,25 @@ export default async function HomePage() {
           <div className="grid min-h-screen items-center gap-12 py-20 lg:grid-cols-2 lg:gap-16 lg:py-0">
             {/* Left: Content */}
             <div className="relative z-10 animate-slide-up">
-              {/* Badge */}
-              <div className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-[#2196F3]/20 bg-[#2196F3]/5 px-5 py-2 backdrop-blur-sm">
-                <div className="flex h-2 w-2 items-center justify-center">
-                  <span className="pulse-slow absolute h-2 w-2 rounded-full bg-[#4FC3F7]" />
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#4FC3F7]" />
-                </div>
-                <span className="text-sm font-semibold text-[#4FC3F7]">
-                  {t('badge')}
-                </span>
-              </div>
-
-              {/* Main Headline — 56px / weight 700, left-aligned */}
-              <h1 className="text-[42px] font-bold leading-[1.1] tracking-tight sm:text-[56px]">
-                <span className="bg-gradient-to-r from-white via-white to-gray-300 bg-clip-text text-transparent">
-                  AI Business
+              {/* Main Headline — uppercase, larger */}
+              <h1 className="text-[48px] font-extrabold uppercase leading-[1.08] tracking-wide sm:text-[64px]">
+                <span className="hero-text-shimmer inline-block bg-clip-text text-transparent">
+                  AI BUSINESS
                 </span>
                 <br />
                 <span className="bg-gradient-to-r from-[#2196F3] via-[#4FC3F7] to-[#E91E8C] bg-clip-text text-transparent">
-                  Academy
+                  ACADEMY
                 </span>
               </h1>
 
-              {/* Short tagline — concise, no subtitle wall of text */}
+              {/* Tagline */}
               <p className="mt-5 text-lg font-medium text-gray-400 sm:text-xl">
                 {t('tagline')}
+              </p>
+
+              {/* SPU affiliation */}
+              <p className="mt-2 text-sm text-gray-500">
+                {t('badge')}
               </p>
 
               {/* Mini feature pills */}

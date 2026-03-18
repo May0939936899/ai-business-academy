@@ -5,7 +5,7 @@ import db from '@/lib/db'
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { fullName, email, password, confirmPassword, acceptTerms } = body
+    const { fullName, fullNameForCertificate, email, password, confirmPassword, acceptTerms } = body
 
     // --- Validation ---
     const errors: Record<string, string> = {}
@@ -23,8 +23,8 @@ export async function POST(req: NextRequest) {
 
     if (!password) {
       errors.password = 'กรุณากรอกรหัสผ่าน'
-    } else if (password.length < 8) {
-      errors.password = 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร'
+    } else if (password.length < 6) {
+      errors.password = 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'
     }
 
     if (!confirmPassword) {
@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
     await db.user.create({
       data: {
         fullName: fullName.trim(),
+        fullNameForCertificate: fullNameForCertificate?.trim() || fullName.trim(),
         email: emailTrimmed!,
         passwordHash,
         role: 'STUDENT',

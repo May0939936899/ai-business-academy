@@ -1,4 +1,4 @@
-// Certificate Themes for AI Business Academy
+// Certificate Themes for AI SPUBUS Academy
 // SPU BUS - School of Business Administration, Sripatum University
 // 6 Professional Blue-Toned Themes
 
@@ -244,7 +244,97 @@ export const CERTIFICATE_THEMES: CertificateTheme[] = [
     mood: 'Technology',
   },
 
-  // 5. ─── Neon Sapphire — Dark blue with sapphire neon glow ───
+  // 5. ─── Pure White — Clean elegant white ───
+  {
+    id: 'pure-white',
+    name: 'ขาวสะอาด',
+    nameEn: 'Pure White',
+    primaryColor: '#374151',
+    secondaryColor: '#6B7280',
+    accentColor: '#D1D5DB',
+    borderColor: '#9CA3AF',
+    textColor: '#1F2937',
+    headerColor: '#111827',
+    bgGradient: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 50%, #F5F5F5 100%)',
+    borderStyle: 'double',
+    patternSvg: geometricSvg,
+    isDark: false,
+    mood: 'Elegant Minimal',
+  },
+
+  // 6. ─── Blue White — Fresh blue on white ───
+  {
+    id: 'blue-white',
+    name: 'ฟ้าขาว',
+    nameEn: 'Blue White',
+    primaryColor: '#1E88E5',
+    secondaryColor: '#42A5F5',
+    accentColor: '#90CAF9',
+    borderColor: '#1565C0',
+    textColor: '#1A2332',
+    headerColor: '#1565C0',
+    bgGradient: 'linear-gradient(180deg, #FFFFFF 0%, #F8FBFF 40%, #EFF6FF 100%)',
+    borderStyle: 'solid',
+    patternSvg: waveSvg,
+    isDark: false,
+    mood: 'Clean & Bright',
+  },
+
+  // 7. ─── Blue Gold — Regal blue with golden accents ───
+  {
+    id: 'blue-gold',
+    name: 'ฟ้าเหลือง',
+    nameEn: 'Blue Gold',
+    primaryColor: '#1565C0',
+    secondaryColor: '#D4A847',
+    accentColor: '#F2D06B',
+    borderColor: '#C9A84C',
+    textColor: '#1A2332',
+    headerColor: '#0D47A1',
+    bgGradient: 'linear-gradient(135deg, #FFFFFF 0%, #FFFDE8 30%, #FFF9C4 60%, #FFFDE7 100%)',
+    borderStyle: 'ornate',
+    patternSvg: neuralNetworkSvg,
+    isDark: false,
+    mood: 'Royal & Grand',
+  },
+
+  // 8. ─── Pink Blue Pastel — Soft pink & blue pastel ───
+  {
+    id: 'pink-blue-pastel',
+    name: 'ชมพูฟ้าพาสเทล',
+    nameEn: 'Pink Blue Pastel',
+    primaryColor: '#E91E8C',
+    secondaryColor: '#42A5F5',
+    accentColor: '#F8BBD0',
+    borderColor: '#CE93D8',
+    textColor: '#37474F',
+    headerColor: '#AD1457',
+    bgGradient: 'linear-gradient(135deg, #FFF0F5 0%, #FCE4EC 25%, #F3E5F5 50%, #E8EAF6 75%, #E3F2FD 100%)',
+    borderStyle: 'solid',
+    patternSvg: waveSvg,
+    isDark: false,
+    mood: 'Sweet & Dreamy',
+  },
+
+  // 9. ─── Blue Purple Pastel — Soft blue & lavender pastel ───
+  {
+    id: 'blue-purple-pastel',
+    name: 'ฟ้าม่วงพาสเทล',
+    nameEn: 'Blue Purple Pastel',
+    primaryColor: '#5C6BC0',
+    secondaryColor: '#7E57C2',
+    accentColor: '#B39DDB',
+    borderColor: '#7E57C2',
+    textColor: '#37474F',
+    headerColor: '#311B92',
+    bgGradient: 'linear-gradient(135deg, #EDE7F6 0%, #E8EAF6 30%, #E3F2FD 60%, #F3E5F5 100%)',
+    borderStyle: 'double',
+    patternSvg: dataGridSvg,
+    isDark: false,
+    mood: 'Calm & Creative',
+  },
+
+  // 10. ─── Neon Sapphire — Dark blue with sapphire neon glow ───
   {
     id: 'neon-sapphire',
     name: 'Neon Sapphire',

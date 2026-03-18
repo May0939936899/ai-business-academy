@@ -35,7 +35,7 @@
     "closeMenu": "ปิดเมนู"
   },
   "footer": {
-    "academy": "AI Business Academy",
+    "academy": "AI SPUBUS Academy",
     "description": "แพลตฟอร์มเรียนรู้ AI สำหรับธุรกิจ โดยคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",
     "quickLinks": "ลิงก์ด่วน",
     "resources": "แหล่งข้อมูล",
@@ -57,13 +57,13 @@
     "terms": "เงื่อนไขการใช้งาน",
     "phone": "0 2579 1111 ต่อ 2354",
     "address": "มหาวิทยาลัยศรีปทุม 2410/2 ถนนพหลโยธิน เขตจตุจักร กรุงเทพฯ 10900",
-    "copyright": "AI Business Academy — คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"
+    "copyright": "AI SPUBUS Academy — คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"
   },
   "homepage": {
     "badge": "คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",
     "heroTitle1": "AI Business",
     "heroTitle2": "Academy",
-    "tagline": "แพลตฟอร์มเรียนรู้ AI สำหรับคนทำธุรกิจ",
+    "tagline": "แพลตฟอร์มพัฒนาทักษะ AI สำหรับโลกธุรกิจยุคดิจิทัล",
     "pillFree": "เรียนฟรี 100%",
     "pillCert": "ใบประกาศนียบัตร",
     "pillVideo": "วิดีโอบทเรียน",
@@ -86,7 +86,7 @@
     "pathStep3Title": "เป็นผู้เชี่ยวชาญ AI Strategy",
     "pathStep3Desc": "วางแผนกลยุทธ์ AI สำหรับองค์กร เป็นผู้นำด้าน AI Transformation ที่ตลาดแรงงานต้องการ",
     "featuresTitle1": "ทำไมต้องเรียนกับ",
-    "featuresTitle2": "AI Business Academy",
+    "featuresTitle2": "AI SPUBUS Academy",
     "instructorsTitle1": "เรียนกับ",
     "instructorsTitle2": "ผู้เชี่ยวชาญตัวจริง",
     "instructorsDesc": "ทีมอาจารย์และผู้เชี่ยวชาญจากคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",
@@ -216,9 +216,9 @@
     "completionDate": "วันที่สำเร็จหลักสูตร",
     "courseName": "หลักสูตร",
     "shareDescription": "คัดลอก URL สำหรับยืนยัน Certificate หรือแชร์ผ่านโซเชียลมีเดียเพื่อให้ผู้อื่นตรวจสอบ",
-    "certifiedBy": "การรับรองจาก AI Business Academy",
-    "certifiedByDesc": "Certificate นี้ออกโดย AI Business Academy คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม สามารถตรวจสอบความถูกต้องได้ตลอดเวลาผ่านระบบยืนยันออนไลน์ โดยใช้รหัส Certificate หรือ QR Code บนใบประกาศ",
-    "issuedByLine": "Issued and verified by AI Business Academy, Sripatum University"
+    "certifiedBy": "การรับรองจาก AI SPUBUS Academy",
+    "certifiedByDesc": "Certificate นี้ออกโดย AI SPUBUS Academy คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม สามารถตรวจสอบความถูกต้องได้ตลอดเวลาผ่านระบบยืนยันออนไลน์ โดยใช้รหัส Certificate หรือ QR Code บนใบประกาศ",
+    "issuedByLine": "Issued and verified by AI SPUBUS Academy, Sripatum University"
   },
   "verify": {
     "title": "ตรวจสอบใบประกาศนียบัตร",
@@ -235,14 +235,14 @@
     "backHome": "กลับหน้าแรก",
     "subtitle": "คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",
     "validBanner": "Certificate ถูกต้อง (Valid)",
-    "validBannerDesc": "ยืนยันแล้วโดย AI Business Academy มหาวิทยาลัยศรีปทุม",
+    "validBannerDesc": "ยืนยันแล้วโดย AI SPUBUS Academy มหาวิทยาลัยศรีปทุม",
     "certificateTitle": "ประกาศนียบัตร",
-    "certificateSubtitle": "AI Business Academy | คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",
+    "certificateSubtitle": "AI SPUBUS Academy | คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",
     "completedCourse": "ที่ได้สำเร็จหลักสูตร",
     "completionDate": "วันที่สำเร็จ",
     "student": "ผู้เรียน",
     "certCodeLabel": "รหัส Certificate",
-    "verifiedBy": "Certificate ถูกต้อง — ยืนยันโดย AI Business Academy",
+    "verifiedBy": "Certificate ถูกต้อง — ยืนยันโดย AI SPUBUS Academy",
     "qrAlt": "QR Code สำหรับตรวจสอบ Certificate"
   },
   "notFound": {
@@ -377,7 +377,7 @@
     "coursesLabel": "คอร์สเรียน",
     "enrollments": "การลงทะเบียน",
     "certificatesIssued": "Certificate ออกแล้ว",
-    "systemOverview": "ภาพรวมระบบ AI Business Academy",
+    "systemOverview": "ภาพรวมระบบ AI SPUBUS Academy",
     "recentEnrollments": "การลงทะเบียนล่าสุด",
     "recentCertificates": "Certificate ออกล่าสุด",
     "viewAll": "ดูทั้งหมด",

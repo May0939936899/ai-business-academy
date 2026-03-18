@@ -1,268 +1,230 @@
-'use client'
+import { redirect } from 'next/navigation'
+import { getLocale } from 'next-intl/server'
+import db from '@/lib/db'
+import { getCurrentUser } from '@/lib/auth'
+import ProfileCard from './ProfileCard'
 
-import { useState, useEffect, useCallback } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useLocale } from 'next-intl'
-import {
-  User,
-  Save,
-  Mail,
-  MapPin,
-  Briefcase,
-  Award,
-  Loader2,
-  CheckCircle,
-  ArrowLeft,
-} from 'lucide-react'
-import { cn } from '@/lib/utils'
+export const dynamic = 'force-dynamic'
 
-interface UserProfile {
-  id: string
-  email: string
-  fullName: string
-  fullNameForCertificate: string | null
-  country: string | null
-  position: string | null
-  image: string | null
+/* ── XP / Level Constants ────────────────────────────────────────────────── */
+
+const XP_PER_LESSON = 100
+const XP_PER_QUIZ_PASS = 200
+const XP_PER_CERTIFICATE = 500
+
+const LEVELS = [
+  { level: 1, title: 'Beginner', minXp: 0 },
+  { level: 2, title: 'Learner', minXp: 500 },
+  { level: 3, title: 'Explorer', minXp: 1500 },
+  { level: 4, title: 'Practitioner', minXp: 3000 },
+  { level: 5, title: 'Specialist', minXp: 5000 },
+  { level: 6, title: 'Expert', minXp: 8000 },
+  { level: 7, title: 'Master', minXp: 12000 },
+  { level: 8, title: 'Visionary', minXp: 18000 },
+  { level: 9, title: 'AI Strategist', minXp: 25000 },
+  { level: 10, title: 'AI Leader', minXp: 35000 },
+]
+
+function getLevelInfo(xp: number) {
+  let current = LEVELS[0]
+  let next = LEVELS[1]
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (xp >= LEVELS[i].minXp) {
+      current = LEVELS[i]
+      next = LEVELS[i + 1] || null
+      break
+    }
+  }
+  const xpInLevel = xp - current.minXp
+  const xpForNext = next ? next.minXp - current.minXp : 1
+  const progress = next ? Math.min(100, Math.round((xpInLevel / xpForNext) * 100)) : 100
+  return { ...current, xp, xpInLevel, xpForNext: next ? next.minXp - current.minXp : 0, progress, nextLevel: next }
 }
 
-export default function ProfilePage() {
-  const router = useRouter()
-  const { status } = useSession()
-  const locale = useLocale()
+/* ── Streak Calculation ──────────────────────────────────────────────────── */
 
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
-  const [error, setError] = useState('')
-  const [profile, setProfile] = useState<UserProfile | null>(null)
+function calculateStreak(dates: Date[]): number {
+  if (dates.length === 0) return 0
 
-  // Editable fields
-  const [certName, setCertName] = useState('')
+  // Get unique dates (day-level) sorted descending
+  const uniqueDays = [...new Set(
+    dates.map((d) => {
+      const dt = new Date(d)
+      dt.setHours(0, 0, 0, 0)
+      return dt.getTime()
+    })
+  )].sort((a, b) => b - a)
 
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push(`/${locale}/login`)
-    }
-  }, [status, router, locale])
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const todayMs = today.getTime()
+  const yesterdayMs = todayMs - 86400000
 
-  const fetchProfile = useCallback(async () => {
-    try {
-      const res = await fetch('/api/auth/me')
-      const json = await res.json()
-      if (json.success && json.data) {
-        setProfile(json.data)
-        setCertName(json.data.fullNameForCertificate || json.data.fullName || '')
-      }
-    } catch {
-      setError('ไม่สามารถโหลดข้อมูลโปรไฟล์ได้')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (status === 'authenticated') {
-      fetchProfile()
-    }
-  }, [status, fetchProfile])
-
-  const handleSave = async () => {
-    if (!certName.trim() || certName.trim().length < 2) {
-      setError('กรุณากรอกชื่อ-นามสกุลอย่างน้อย 2 ตัวอักษร')
-      return
-    }
-    if (certName.trim().length > 100) {
-      setError('ชื่อ-นามสกุลต้องไม่เกิน 100 ตัวอักษร')
-      return
-    }
-
-    setError('')
-    setSaving(true)
-    setSaved(false)
-
-    try {
-      const res = await fetch('/api/auth/complete-profile', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullNameForCertificate: certName.trim(),
-          country: profile?.country,
-          position: profile?.position,
-        }),
-      })
-      const data = await res.json()
-      if (data.success) {
-        setSaved(true)
-        setTimeout(() => setSaved(false), 3000)
-      } else {
-        setError(data.message || 'เกิดข้อผิดพลาด')
-      }
-    } catch {
-      setError('เกิดข้อผิดพลาดในการบันทึก')
-    } finally {
-      setSaving(false)
-    }
+  // Check if most recent activity is today or yesterday
+  if (uniqueDays[0] !== todayMs && uniqueDays[0] !== yesterdayMs) {
+    return 0
   }
 
-  if (status === 'loading' || loading) {
-    return (
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-      </div>
-    )
+  let streak = 1
+  for (let i = 1; i < uniqueDays.length; i++) {
+    const diff = uniqueDays[i - 1] - uniqueDays[i]
+    if (diff === 86400000) {
+      streak++
+    } else {
+      break
+    }
+  }
+  return streak
+}
+
+/* ── Page ─────────────────────────────────────────────────────────────────── */
+
+export default async function ProfilePage() {
+  const user = await getCurrentUser()
+  const locale = await getLocale()
+
+  if (!user) redirect(`/${locale}/login`)
+
+  // Fetch all data in parallel
+  const [
+    fullUser,
+    lessonsCompleted,
+    quizzesPassed,
+    certificates,
+    enrollments,
+    recentActivity,
+  ] = await Promise.all([
+    db.user.findUnique({
+      where: { id: user.id },
+      select: {
+        id: true,
+        fullName: true,
+        fullNameForCertificate: true,
+        email: true,
+        image: true,
+        country: true,
+        organization: true,
+        position: true,
+        interestArea: true,
+        learningGoal: true,
+        role: true,
+        createdAt: true,
+      },
+    }),
+    db.lessonProgress.count({
+      where: { userId: user.id, completed: true },
+    }),
+    db.quizAttempt.count({
+      where: { userId: user.id, passed: true },
+    }),
+    db.certificate.findMany({
+      where: { userId: user.id },
+      include: {
+        course: { select: { title: true, category: true, slug: true } },
+      },
+      orderBy: { issuedAt: 'desc' },
+    }),
+    db.enrollment.findMany({
+      where: { userId: user.id },
+      include: {
+        course: {
+          select: {
+            title: true,
+            category: true,
+            slug: true,
+            _count: { select: { lessons: true } },
+          },
+        },
+      },
+    }),
+    // Get recent lesson views for streak
+    db.lessonProgress.findMany({
+      where: { userId: user.id },
+      select: { lastViewedAt: true, completedAt: true },
+      orderBy: { lastViewedAt: 'desc' },
+      take: 365,
+    }),
+  ])
+
+  if (!fullUser) redirect(`/${locale}/login`)
+
+  // ── Calculate XP ──
+  const totalXp =
+    lessonsCompleted * XP_PER_LESSON +
+    quizzesPassed * XP_PER_QUIZ_PASS +
+    certificates.length * XP_PER_CERTIFICATE
+
+  const levelInfo = getLevelInfo(totalXp)
+
+  // ── Calculate Streak ──
+  const activityDates = recentActivity
+    .map((r) => r.completedAt || r.lastViewedAt)
+    .filter(Boolean) as Date[]
+  const streak = calculateStreak(activityDates)
+
+  // ── Calculate overall progress ──
+  let totalLessons = 0
+  enrollments.forEach((e) => {
+    totalLessons += e.course._count.lessons
+  })
+  const overallProgress = totalLessons > 0
+    ? Math.round((lessonsCompleted / totalLessons) * 100)
+    : 0
+
+  // ── Extract skills from enrolled course categories ──
+  const skillSet = new Set<string>()
+  enrollments.forEach((e) => {
+    if (e.course.category) skillSet.add(e.course.category)
+  })
+  const skills = Array.from(skillSet)
+
+  // ── Primary learning path (most enrolled category) ──
+  const categoryCount: Record<string, number> = {}
+  enrollments.forEach((e) => {
+    const cat = e.course.category
+    categoryCount[cat] = (categoryCount[cat] || 0) + 1
+  })
+  const primaryPath = Object.entries(categoryCount).sort((a, b) => b[1] - a[1])[0]?.[0] || null
+
+  // ── Student ID ──
+  const cert = certificates[0]
+  const studentId = cert
+    ? cert.certificateCode.replace(/-\d{4}$/, '')
+    : `SPUBUS-AI-${new Date().getFullYear()}-${String(fullUser.id.slice(-5)).toUpperCase()}`
+
+  // ── Build card data ──
+  const cardData = {
+    name: fullUser.fullNameForCertificate || fullUser.fullName,
+    email: fullUser.email,
+    image: fullUser.image,
+    position: fullUser.position,
+    organization: fullUser.organization,
+    country: fullUser.country,
+    role: fullUser.role,
+    level: levelInfo.level,
+    levelTitle: levelInfo.title,
+    levelProgress: levelInfo.progress,
+    xp: totalXp,
+    xpForNext: levelInfo.xpForNext,
+    xpInLevel: levelInfo.xpInLevel,
+    nextLevelTitle: levelInfo.nextLevel?.title || null,
+    certificateCount: certificates.length,
+    courseCount: enrollments.length,
+    streak,
+    overallProgress: Math.min(overallProgress, 100),
+    skills,
+    primaryPath,
+    studentId,
+    lessonsCompleted,
+    quizzesPassed,
+    memberSince: fullUser.createdAt.toISOString(),
+    certificates: certificates.map((c) => ({
+      code: c.certificateCode,
+      course: c.course.title,
+      category: c.course.category,
+    })),
+    locale,
   }
 
-  if (!profile) return null
-
-  return (
-    <div className="min-h-screen bg-[#030712]">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[400px] bg-gradient-to-b from-blue-600/[0.06] via-transparent to-transparent" />
-
-      <div className="relative mx-auto max-w-2xl px-4 py-12 sm:px-6">
-        {/* Back */}
-        <button
-          onClick={() => router.push(`/${locale}/dashboard`)}
-          className="mb-8 inline-flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          กลับไปแดชบอร์ด
-        </button>
-
-        {/* Header */}
-        <div className="mb-8 flex items-center gap-4">
-          {profile.image ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={profile.image}
-              alt={profile.fullName}
-              className="h-16 w-16 rounded-full ring-2 ring-white/10"
-            />
-          ) : (
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 text-xl font-bold text-white ring-2 ring-white/10">
-              {(profile.fullName || 'U').charAt(0).toUpperCase()}
-            </div>
-          )}
-          <div>
-            <h1 className="text-2xl font-bold text-white">โปรไฟล์ของฉัน</h1>
-            <p className="text-sm text-gray-400">จัดการข้อมูลส่วนตัวและชื่อสำหรับใบประกาศ</p>
-          </div>
-        </div>
-
-        {/* Error */}
-        {error && (
-          <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
-            {error}
-          </div>
-        )}
-
-        {/* Success */}
-        {saved && (
-          <div className="mb-6 flex items-center gap-2 rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-400">
-            <CheckCircle className="h-4 w-4" />
-            บันทึกข้อมูลเรียบร้อยแล้ว
-          </div>
-        )}
-
-        {/* Certificate Name — Editable */}
-        <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-sm">
-          <div className="mb-5 flex items-center gap-2">
-            <Award className="h-5 w-5 text-purple-400" />
-            <h2 className="text-lg font-semibold text-white">ชื่อสำหรับใบประกาศนียบัตร</h2>
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-300">
-              ชื่อ – นามสกุล (สำหรับใบประกาศ)
-            </label>
-            <input
-              type="text"
-              value={certName}
-              onChange={(e) => setCertName(e.target.value)}
-              placeholder="กรอกชื่อ-นามสกุลที่ต้องการให้แสดงบนใบประกาศ"
-              maxLength={100}
-              className={cn(
-                'w-full rounded-xl border py-3.5 pl-4 pr-4 text-sm transition-all',
-                'border-white/[0.08] bg-white/[0.04] text-white placeholder-gray-500',
-                'focus:border-blue-500/50 focus:bg-white/[0.06] focus:ring-1 focus:ring-blue-500/20 focus:outline-none'
-              )}
-            />
-            <p className="mt-1.5 text-xs text-gray-500">
-              ชื่อนี้จะแสดงบนใบประกาศนียบัตรทุกใบของคุณ
-            </p>
-          </div>
-
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className={cn(
-              'mt-5 flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white transition-all',
-              saving
-                ? 'cursor-not-allowed bg-blue-500/30'
-                : 'bg-blue-600 hover:bg-blue-500 active:scale-[0.98]'
-            )}
-          >
-            {saving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4" />
-            )}
-            {saving ? 'กำลังบันทึก...' : 'บันทึก'}
-          </button>
-        </div>
-
-        {/* Read-Only Info */}
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-sm">
-          <div className="mb-5 flex items-center gap-2">
-            <User className="h-5 w-5 text-blue-400" />
-            <h2 className="text-lg font-semibold text-white">ข้อมูลบัญชี</h2>
-          </div>
-
-          <div className="space-y-4">
-            {/* Full Name */}
-            <div>
-              <div className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-gray-500">
-                <User className="h-3.5 w-3.5" />
-                ชื่อ-นามสกุล
-              </div>
-              <p className="text-sm text-gray-200">{profile.fullName}</p>
-            </div>
-
-            {/* Email */}
-            <div>
-              <div className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-gray-500">
-                <Mail className="h-3.5 w-3.5" />
-                อีเมล
-              </div>
-              <p className="text-sm text-gray-200">{profile.email}</p>
-            </div>
-
-            {/* Country */}
-            {profile.country && (
-              <div>
-                <div className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-gray-500">
-                  <MapPin className="h-3.5 w-3.5" />
-                  ประเทศ
-                </div>
-                <p className="text-sm text-gray-200">{profile.country}</p>
-              </div>
-            )}
-
-            {/* Position */}
-            {profile.position && (
-              <div>
-                <div className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-gray-500">
-                  <Briefcase className="h-3.5 w-3.5" />
-                  ตำแหน่งงาน
-                </div>
-                <p className="text-sm text-gray-200">{profile.position}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+  return <ProfileCard data={cardData} />
 }

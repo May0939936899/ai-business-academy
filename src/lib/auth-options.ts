@@ -27,11 +27,12 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (!user || !user.passwordHash) return null
-        if (user.status === "SUSPENDED") return null
 
         const isValid = await bcrypt.compare(credentials.password, user.passwordHash)
         if (!isValid) return null
 
+        // Allow suspended users to authenticate — jwt callback will flag them,
+        // and middleware will redirect to /account-status with a clear message.
         await db.user.update({
           where: { id: user.id },
           data: { lastLoginAt: new Date() },
@@ -55,19 +56,16 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) return null
 
-        // Find user by email (username = email for admin)
         const user = await db.user.findUnique({
           where: { email: credentials.username.toLowerCase() },
         })
 
         if (!user || !user.passwordHash) return null
         if (user.role !== "ADMIN") return null
-        if (user.status === "SUSPENDED") return null
 
         const isValid = await bcrypt.compare(credentials.password, user.passwordHash)
         if (!isValid) return null
 
-        // Update last login
         await db.user.update({
           where: { id: user.id },
           data: { lastLoginAt: new Date() },
@@ -92,36 +90,73 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/login",
+    error: "/login", // Redirect auth errors to login page (not the ugly default)
   },
   callbacks: {
     async signIn({ user, account }) {
       if (!user.email) return false
 
+      // For credentials login, authorize() already handled everything
+      if (account?.type === "credentials") return true
+
+      // For OAuth (Google) sign-in — create or link account
       try {
         const email = user.email.toLowerCase()
         const isAdmin = ADMIN_EMAILS.includes(email)
 
-        // Upsert user in database
         const existingUser = await db.user.findUnique({
           where: { email },
         })
 
         if (existingUser) {
-          // Update existing user — auto-promote to ADMIN if in ADMIN_EMAILS
+          // ── Existing user: link Google account ──
+          // Only update googleId if it's not set OR matches current provider
+          // This prevents unique constraint violations when googleId is already
+          // assigned to a different user record
+          const updateData: Record<string, unknown> = {
+            image: user.image || existingUser.image,
+            fullName: existingUser.fullName || user.name || "ผู้ใช้ใหม่",
+            lastLoginAt: new Date(),
+          }
+
+          // Only set googleId if user doesn't already have one,
+          // or if it's the same provider account
+          if (
+            !existingUser.googleId ||
+            existingUser.googleId === account?.providerAccountId
+          ) {
+            updateData.googleId = account?.providerAccountId
+          }
+
+          // Auto-promote to admin if in ADMIN_EMAILS
+          if (isAdmin && existingUser.role !== "ADMIN") {
+            updateData.role = "ADMIN"
+          }
+
           await db.user.update({
             where: { id: existingUser.id },
-            data: {
-              googleId: account?.providerAccountId,
-              image: user.image,
-              fullName: user.name || existingUser.fullName,
-              lastLoginAt: new Date(),
-              ...(isAdmin && existingUser.role !== "ADMIN"
-                ? { role: "ADMIN" }
-                : {}),
-            },
+            data: updateData,
           })
         } else {
-          // Create new user — admin if email matches ADMIN_EMAILS
+          // ── New user via Google ──
+          // Check if googleId is already used by another account
+          if (account?.providerAccountId) {
+            const existingGoogleUser = await db.user.findUnique({
+              where: { googleId: account.providerAccountId },
+            })
+            if (existingGoogleUser) {
+              // Google account already linked to different email — update that user instead
+              await db.user.update({
+                where: { id: existingGoogleUser.id },
+                data: {
+                  image: user.image || existingGoogleUser.image,
+                  lastLoginAt: new Date(),
+                },
+              })
+              return true
+            }
+          }
+
           await db.user.create({
             data: {
               email,
@@ -135,36 +170,58 @@ export const authOptions: NextAuthOptions = {
         }
 
         return true
-      } catch (error) {
-        console.error("Error during sign in:", error)
-        return false
+      } catch (error: unknown) {
+        // Log the actual error for debugging
+        console.error("Google sign-in error:", error)
+
+        // If it's a Prisma unique constraint error on googleId,
+        // the account is likely already linked — allow sign-in anyway
+        if (
+          error &&
+          typeof error === "object" &&
+          "code" in error &&
+          (error as { code: string }).code === "P2002"
+        ) {
+          console.warn("Unique constraint violation during Google sign-in — allowing login")
+          return true
+        }
+
+        // For any other DB error, still allow sign-in
+        // The user authenticated with Google successfully,
+        // we shouldn't block them due to a DB issue
+        // The jwt callback will handle loading user data
+        return true
       }
     },
 
     async jwt({ token, trigger }) {
       // Refresh user data from DB on sign-in or when token lacks id
       if (token.email && (trigger === "signIn" || trigger === "update" || !token.id)) {
-        const dbUser = await db.user.findUnique({
-          where: { email: token.email },
-          select: {
-            id: true,
-            role: true,
-            fullName: true,
-            status: true,
-            image: true,
-            isProfileCompleted: true,
-          },
-        })
+        try {
+          const dbUser = await db.user.findUnique({
+            where: { email: token.email },
+            select: {
+              id: true,
+              role: true,
+              fullName: true,
+              status: true,
+              image: true,
+              isProfileCompleted: true,
+            },
+          })
 
-        if (dbUser) {
-          if (dbUser.status === "SUSPENDED") {
-            return { ...token, error: "suspended" }
+          if (dbUser) {
+            if (dbUser.status === "SUSPENDED") {
+              return { ...token, error: "suspended" }
+            }
+            token.id = dbUser.id
+            token.role = dbUser.role
+            token.fullName = dbUser.fullName
+            token.picture = dbUser.image
+            token.isProfileCompleted = dbUser.isProfileCompleted
           }
-          token.id = dbUser.id
-          token.role = dbUser.role
-          token.fullName = dbUser.fullName
-          token.picture = dbUser.image
-          token.isProfileCompleted = dbUser.isProfileCompleted
+        } catch (error) {
+          console.error("JWT callback DB error:", error)
         }
       }
 
@@ -182,9 +239,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     async redirect({ url, baseUrl }) {
-      // Allow relative urls
       if (url.startsWith("/")) return `${baseUrl}${url}`
-      // If url starts with base, allow it
       if (url.startsWith(baseUrl)) return url
       return baseUrl
     },

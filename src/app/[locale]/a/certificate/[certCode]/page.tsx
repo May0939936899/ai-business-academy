@@ -14,17 +14,20 @@ import db from '@/lib/db'
 import { formatDate } from '@/lib/utils'
 import { getTranslations, getLocale } from 'next-intl/server'
 
+export const dynamic = 'force-dynamic'
+
 interface PageProps {
-  params: { certCode: string }
+  params: Promise<{ certCode: string }>
 }
 
 export default async function VerifyCertificatePage({ params }: PageProps) {
+  const { certCode } = await params
   const t = await getTranslations('verify')
   const tc = await getTranslations('certificate')
   const locale = await getLocale()
 
   const certificate = await db.certificate.findUnique({
-    where: { certificateCode: params.certCode },
+    where: { certificateCode: certCode },
     include: {
       user: { select: { fullName: true, fullNameForCertificate: true } },
       course: {

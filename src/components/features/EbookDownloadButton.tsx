@@ -82,7 +82,7 @@ function buildCoverPage(lesson: LessonInfo, ebook: EbookData, accent: string): s
             <span style="color:white;font-size:20px;font-weight:bold;">A</span>
           </div>
           <div>
-            <p style="color:#93c5fd;font-size:11px;margin:0;letter-spacing:2px;font-weight:600;">AI BUSINESS ACADEMY</p>
+            <p style="color:#93c5fd;font-size:11px;margin:0;letter-spacing:2px;font-weight:600;">AI SPUBUS ACADEMY</p>
             <p style="color:#64748b;font-size:10px;margin:0;letter-spacing:1px;">คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม</p>
           </div>
         </div>
@@ -157,7 +157,7 @@ function buildCoverPage(lesson: LessonInfo, ebook: EbookData, accent: string): s
       <div style="position:absolute;bottom:60px;left:60px;right:60px;">
         <div style="height:1px;background:linear-gradient(90deg,transparent,#334155,transparent);margin-bottom:20px;"></div>
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <p style="color:#334155;font-size:10px;margin:0;letter-spacing:1px;">AI BUSINESS ACADEMY — E-BOOK SERIES</p>
+          <p style="color:#334155;font-size:10px;margin:0;letter-spacing:1px;">AI SPUBUS ACADEMY — E-BOOK SERIES</p>
           <p style="color:#334155;font-size:10px;margin:0;">© คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม</p>
         </div>
       </div>
@@ -202,7 +202,7 @@ function buildTOCPage(sections: string[], accent: string): string {
       </div>
 
       <div style="position:absolute;bottom:40px;left:72px;right:60px;display:flex;justify-content:space-between;align-items:center;">
-        <p style="color:#334155;font-size:10px;margin:0;">AI Business Academy</p>
+        <p style="color:#334155;font-size:10px;margin:0;">AI SPUBUS Academy</p>
         <p style="color:#334155;font-size:10px;margin:0;">สารบัญ</p>
       </div>
       <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,${accent},#06b6d4,${accent});"></div>
@@ -342,7 +342,7 @@ function buildClosingPage(message: string, accent: string): string {
 
         <div style="height:1px;background:linear-gradient(90deg,transparent,#334155,transparent);margin-bottom:24px;"></div>
 
-        <p style="color:#1e40af;font-size:12px;margin:0 0 4px 0;font-weight:700;letter-spacing:2px;">AI BUSINESS ACADEMY</p>
+        <p style="color:#1e40af;font-size:12px;margin:0 0 4px 0;font-weight:700;letter-spacing:2px;">AI SPUBUS ACADEMY</p>
         <p style="color:#334155;font-size:11px;margin:0;">คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม</p>
       </div>
 

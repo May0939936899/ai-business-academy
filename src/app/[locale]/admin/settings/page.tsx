@@ -228,7 +228,7 @@ export default async function SettingsPage() {
                 {t('platformName')}
               </p>
               <p className="mt-1.5 text-sm font-medium text-gray-200">
-                AI Business Academy
+                AI SPUBUS Academy
               </p>
             </div>
             <div>

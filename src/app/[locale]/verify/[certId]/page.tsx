@@ -13,11 +13,12 @@ import {
 } from 'lucide-react'
 import db from '@/lib/db'
 import { formatDate } from '@/lib/utils'
-import QRCode from 'qrcode'
 import { getTranslations, getLocale } from 'next-intl/server'
 
+export const dynamic = 'force-dynamic'
+
 interface PageProps {
-  params: { certId: string; locale: string }
+  params: Promise<{ certId: string; locale: string }>
 }
 
 // ─── Open Graph Metadata ──────────────────────────────────────────────────────
@@ -36,14 +37,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!certificate) {
     return {
-      title: `${t('notFoundTitle')} | AI Business Academy`,
+      title: `${t('notFoundTitle')} | AI SPUBUS Academy`,
       description: t('notFoundDesc'),
     }
   }
 
   const displayName = certificate.user.fullNameForCertificate || certificate.user.fullName
-  const title = `${t('title')} - ${displayName} | AI Business Academy`
-  const description = `${displayName} — ${certificate.course.title} | AI Business Academy`
+  const title = `${t('title')} - ${displayName} | AI SPUBUS Academy`
+  const description = `${displayName} — ${certificate.course.title} | AI SPUBUS Academy`
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://ai-academy-lime.vercel.app'
   const verifyUrl = `${baseUrl}/verify/${certificate.certificateCode}`
 
@@ -54,7 +55,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       url: verifyUrl,
-      siteName: 'AI Business Academy',
+      siteName: 'AI SPUBUS Academy',
       type: 'website',
     },
     twitter: {
@@ -152,8 +153,10 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
     'คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม'
 
   // Generate QR Code as data URL (white on transparent)
+  // Dynamic import to avoid native canvas binding issues in serverless
   let qrDataUrl: string | null = null
   try {
+    const QRCode = (await import('qrcode')).default
     qrDataUrl = await QRCode.toDataURL(verifyUrl, {
       width: 160,
       margin: 2,
@@ -169,13 +172,13 @@ export default async function VerifyCertificatePage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-[#030712]">
       <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-        {/* AI Business Academy Header */}
+        {/* AI SPUBUS Academy Header */}
         <div className="mb-6 text-center">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 ring-1 ring-blue-500/10">
             <Award className="h-6 w-6 text-blue-400" />
           </div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-400">
-            AI Business Academy
+            AI SPUBUS Academy
           </p>
           <p className="mt-0.5 text-xs text-gray-500">
             {t('subtitle')}

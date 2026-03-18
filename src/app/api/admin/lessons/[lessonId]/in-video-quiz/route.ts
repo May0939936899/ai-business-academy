@@ -5,11 +5,11 @@ import db from '@/lib/db'
 // ─── GET — list all in-video quiz questions for a lesson ────────────────────
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { lessonId: string } }
+  { params }: { params: Promise<{ lessonId: string }> }
 ) {
   try {
     await requireAdmin()
-    const { lessonId } = params
+    const { lessonId } = await params
 
     const questions = await db.inVideoQuizQuestion.findMany({
       where: { lessonId },
@@ -27,11 +27,11 @@ export async function GET(
 // ─── POST — create a new in-video quiz question ────────────────────────────
 export async function POST(
   req: NextRequest,
-  { params }: { params: { lessonId: string } }
+  { params }: { params: Promise<{ lessonId: string }> }
 ) {
   try {
     await requireAdmin()
-    const { lessonId } = params
+    const { lessonId } = await params
     const body = await req.json()
 
     const {
@@ -80,10 +80,11 @@ export async function POST(
 // ─── PUT — update an existing question ─────────────────────────────────────
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { lessonId: string } }
+  { params }: { params: Promise<{ lessonId: string }> }
 ) {
   try {
     await requireAdmin()
+    const { lessonId } = await params
     const body = await req.json()
     const { id, ...data } = body
 
@@ -93,7 +94,7 @@ export async function PUT(
 
     // Verify the question belongs to this lesson
     const existing = await db.inVideoQuizQuestion.findFirst({
-      where: { id, lessonId: params.lessonId },
+      where: { id, lessonId },
     })
     if (!existing) {
       return NextResponse.json({ error: 'Question not found' }, { status: 404 })
@@ -125,10 +126,11 @@ export async function PUT(
 // ─── DELETE — remove a question ────────────────────────────────────────────
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { lessonId: string } }
+  { params }: { params: Promise<{ lessonId: string }> }
 ) {
   try {
     await requireAdmin()
+    const { lessonId } = await params
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
 
@@ -138,7 +140,7 @@ export async function DELETE(
 
     // Verify belongs to this lesson
     const existing = await db.inVideoQuizQuestion.findFirst({
-      where: { id, lessonId: params.lessonId },
+      where: { id, lessonId },
     })
     if (!existing) {
       return NextResponse.json({ error: 'Question not found' }, { status: 404 })

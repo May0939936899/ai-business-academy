@@ -3,10 +3,13 @@ import type { Metadata } from 'next'
 import db from '@/lib/db'
 import { getCurrentUser } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
+import { getLocale } from 'next-intl/server'
 import CertificatePageClient from './CertificatePageClient'
 
+export const dynamic = 'force-dynamic'
+
 interface PageProps {
-  params: { certId: string }
+  params: Promise<{ certId: string; locale: string }>
 }
 
 // ─── Open Graph Metadata ──────────────────────────────────────────────────────
@@ -14,44 +17,49 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { certId } = await params
 
-  const certificate = await db.certificate.findFirst({
-    where: {
-      OR: [
-        { certificateCode: certId },
-        { id: certId },
-      ],
-    },
-    include: {
-      user: { select: { fullName: true, fullNameForCertificate: true } },
-      course: { select: { title: true } },
-    },
-  })
+  try {
+    const certificate = await db.certificate.findFirst({
+      where: {
+        OR: [
+          { certificateCode: certId },
+          { id: certId },
+        ],
+      },
+      include: {
+        user: { select: { fullName: true, fullNameForCertificate: true } },
+        course: { select: { title: true } },
+      },
+    })
 
-  if (!certificate) {
-    return { title: 'Certificate Not Found | AI Business Academy' }
-  }
+    if (!certificate) {
+      return { title: 'Certificate Not Found | AI SPUBUS Academy' }
+    }
 
-  const displayName = certificate.user.fullNameForCertificate || certificate.user.fullName
-  const title = `Certificate - ${displayName} | AI Business Academy`
-  const description = `${displayName} ได้รับ Certificate จากหลักสูตร "${certificate.course.title}" โดย AI Business Academy คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม`
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://ai-academy-lime.vercel.app'
-  const verifyUrl = `${baseUrl}/verify/${certificate.certificateCode}`
+    const displayName = certificate.user.fullNameForCertificate || certificate.user.fullName
+    const title = `Certificate - ${displayName} | AI SPUBUS Academy`
+    const description = `${displayName} ได้รับ Certificate จากหลักสูตร "${certificate.course.title}" โดย AI SPUBUS Academy คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม`
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://ai-academy-lime.vercel.app'
+    const verifyUrl = `${baseUrl}/verify/${certificate.certificateCode}`
 
-  return {
-    title,
-    description,
-    openGraph: {
+    return {
       title,
       description,
-      url: verifyUrl,
-      siteName: 'AI Business Academy',
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-    },
+      openGraph: {
+        title,
+        description,
+        url: verifyUrl,
+        siteName: 'AI SPUBUS Academy',
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+      },
+    }
+  } catch (error) {
+    console.error('Certificate metadata error:', error)
+    return { title: 'Certificate | AI SPUBUS Academy' }
   }
 }
 
@@ -60,47 +68,64 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CertificatePage({ params }: PageProps) {
   const { certId } = await params
   const user = await getCurrentUser()
-  if (!user) redirect('/login')
+  const locale = await getLocale()
+  if (!user) redirect(`/${locale}/login`)
 
   // certId can be a certificateCode (e.g., SPUBUS-AIHR-2026-0001) or a DB id
-  const certificate = await db.certificate.findFirst({
-    where: {
-      OR: [
-        { certificateCode: certId },
-        { id: certId },
-      ],
-      userId: user.id,
-    },
-    include: {
-      user: { select: { id: true, fullName: true, fullNameForCertificate: true, email: true } },
-      course: {
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          certificateTemplate: true,
+  // Allow any authenticated user to view (so shared links work)
+  let certificate
+  try {
+    certificate = await db.certificate.findFirst({
+      where: {
+        OR: [
+          { certificateCode: certId },
+          { id: certId },
+        ],
+      },
+      include: {
+        user: { select: { id: true, fullName: true, fullNameForCertificate: true, email: true } },
+        course: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            certificateTemplate: true,
+          },
         },
       },
-    },
-  })
+    })
+  } catch (error) {
+    console.error('Certificate DB query error:', error)
+  }
 
   if (!certificate) notFound()
 
   // Fetch global certificate settings (fallback defaults)
-  const settings = await db.certificateSettings.findFirst() ?? {
-    logoUrl: null,
-    signatureUrl: null,
+  let settings
+  try {
+    settings = await db.certificateSettings.findFirst()
+  } catch (error) {
+    console.error('CertificateSettings query error:', error)
+  }
+
+  const effectiveSettings = settings ?? {
+    logoUrl: null as string | null,
+    signatureUrl: null as string | null,
     signerName: 'ผศ.ดร.รวิภา อัครจินดานนท์',
     signerTitle: 'คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม',
-    defaultThemeId: 'executive-navy',
+    defaultThemeId: 'royal-blue',
     enabledThemes: [
-      'executive-navy',
-      'royal-blue-data',
-      'elegant-gold',
-      'minimal-white',
-      'academic-crimson',
-      'ai-circuit',
-      'business-flow',
+      'royal-blue',
+      'sky-gradient',
+      'navy-executive',
+      'ocean-tech',
+      'pure-white',
+      'blue-white',
+      'blue-gold',
+      'pink-blue-pastel',
+      'blue-purple-pastel',
+      'neon-sapphire',
+      'midnight-azure',
     ],
   }
 
@@ -117,16 +142,29 @@ export default async function CertificatePage({ params }: PageProps) {
       ...certificate.user,
       fullName: certificate.user.fullNameForCertificate || certificate.user.fullName,
     },
-    course: certificate.course,
+    course: {
+      id: certificate.course.id,
+      title: certificate.course.title,
+      slug: certificate.course.slug,
+      certificateTemplate: certificate.course.certificateTemplate
+        ? {
+            logoUrl: certificate.course.certificateTemplate.logoUrl,
+            signatureUrl: certificate.course.certificateTemplate.signatureUrl,
+            signerName: certificate.course.certificateTemplate.signerName,
+            signerTitle: certificate.course.certificateTemplate.signerTitle,
+            backgroundTemplate: certificate.course.certificateTemplate.backgroundTemplate,
+          }
+        : null,
+    },
   }
 
   const settingsData = {
-    logoUrl: settings.logoUrl,
-    signatureUrl: settings.signatureUrl,
-    signerName: settings.signerName,
-    signerTitle: settings.signerTitle,
-    defaultThemeId: settings.defaultThemeId,
-    enabledThemes: settings.enabledThemes,
+    logoUrl: effectiveSettings.logoUrl,
+    signatureUrl: effectiveSettings.signatureUrl,
+    signerName: effectiveSettings.signerName,
+    signerTitle: effectiveSettings.signerTitle,
+    defaultThemeId: effectiveSettings.defaultThemeId,
+    enabledThemes: effectiveSettings.enabledThemes,
   }
 
   return (

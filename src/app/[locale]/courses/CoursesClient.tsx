@@ -22,7 +22,7 @@ interface CourseItem {
 const ALL_CATEGORIES = '_all_'
 const ALL_LEVELS = '_all_'
 
-const categoryValues = [ALL_CATEGORIES, 'AI Automation', 'AI Marketing', 'AI HR', 'AI Productivity']
+const categoryValues = [ALL_CATEGORIES, 'AI Fundamentals', 'AI Productivity', 'AI Automation', 'AI & Automation', 'AI Marketing', 'AI HR', 'AI Communication', 'AI Management', 'AI Data', 'AI Organization', 'AI Strategy', 'AI Leadership', 'AI Finance', 'AI Entrepreneurship']
 const levelValues = [ALL_LEVELS, 'BEGINNER', 'INTERMEDIATE', 'ADVANCED']
 
 export default function CoursesClient({ courses }: { courses: CourseItem[] }) {

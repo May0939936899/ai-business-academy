@@ -145,8 +145,8 @@ export default function EbookEditorClient({
   }
 
   const previewSettings = {
-    watermarkText: 'AI Business Academy | คณะบริหารธุรกิจ ม.ศรีปทุม',
-    watermarkOpacity: 0.15, headerText: 'AI Business Academy',
+    watermarkText: 'AI SPUBUS Academy | คณะบริหารธุรกิจ ม.ศรีปทุม',
+    watermarkOpacity: 0.15, headerText: 'AI SPUBUS Academy',
     footerText: 'คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม',
     logoUrl: null, isWatermarkEnabled: true, accentColor: '#1e40af',
   }

@@ -71,16 +71,16 @@ export default function Navbar() {
         <Link href={`/${locale}`} className="flex shrink-0 items-center gap-3">
           {/* SPU BUS Logo — inline SVG uses Inter font (always loaded) instead of
               Arial Black which may not exist on all devices, causing incomplete render */}
-          <SpuBusLogo width={130} height={48} className="h-12 w-auto shrink-0" />
+          <SpuBusLogo width={110} height={40} className="h-10 w-auto shrink-0" />
 
           {/* Vertical divider */}
           <div className="hidden h-8 w-px shrink-0 bg-white/20 sm:block" />
 
-          {/* AI Business Academy brand — ml-8 ≈ 2cm extra right offset */}
-          <div className="hidden shrink-0 sm:block sm:ml-8">
-            <div className="flex items-baseline gap-1">
+          {/* AI SPUBUS Academy brand */}
+          <div className="hidden shrink-0 sm:block sm:ml-2">
+            <div className="flex items-baseline gap-1.5">
               <span
-                className="text-lg font-extrabold tracking-tight sm:text-xl"
+                className="text-xl font-extrabold uppercase tracking-tight sm:text-2xl"
                 style={{
                   background: 'linear-gradient(135deg, #2196F3 0%, #4FC3F7 100%)',
                   WebkitBackgroundClip: 'text',
@@ -90,8 +90,8 @@ export default function Navbar() {
               >
                 AI
               </span>
-              <span className="text-lg font-bold tracking-tight text-white sm:text-xl">
-                Business Academy
+              <span className="text-xl font-bold uppercase tracking-tight text-white sm:text-2xl">
+                SPUBUS Academy
               </span>
             </div>
           </div>

@@ -488,13 +488,13 @@ export default function CompleteProfilePage() {
               <Sparkles className="h-8 w-8 text-white" />
             </div>
             <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-400">
-              ขั้นตอนที่ 2 จาก 2
+              Step 2 of 2
             </div>
             <h1 className="mt-2 text-2xl font-bold text-white">
-              ยินดีต้อนรับ{session?.user?.name ? `, ${session.user.name.split(' ')[0]}` : ''}!
+              Welcome{session?.user?.name ? `, ${session.user.name.split(' ')[0]}` : ''}!
             </h1>
             <p className="mt-1.5 text-sm text-gray-400">
-              เพิ่มข้อมูลเพื่อให้เราแนะนำคอร์สที่เหมาะกับคุณ
+              Complete your profile to get personalized course recommendations
             </p>
           </div>
 
@@ -625,7 +625,7 @@ export default function CompleteProfilePage() {
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 <>
-                  บันทึกและดำเนินการต่อ
+                  Save & Continue
                   <ChevronRight className="h-4 w-4" />
                 </>
               )}
@@ -634,7 +634,7 @@ export default function CompleteProfilePage() {
 
           {/* Bottom note */}
           <p className="mt-4 text-center text-xs text-gray-600">
-            คุณสามารถแก้ไขข้อมูลได้ภายหลังในหน้าโปรไฟล์
+            You can edit this information later in your profile settings.
           </p>
         </div>
       </div>

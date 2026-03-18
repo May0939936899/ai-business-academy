@@ -175,7 +175,7 @@ function SignupContent() {
           </div>
           <h1 className="text-2xl font-bold text-white">สมัครสมาชิก</h1>
           <p className="mt-1.5 text-sm text-gray-400">
-            AI Business Academy — เรียนฟรี รับ Certificate
+            AI SPUBUS Academy — เรียนฟรี รับ Certificate
           </p>
         </div>
 

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata() {
   const t = await getTranslations("instructors");
   return {
-    title: `${t("title")} | AI Business Academy`,
+    title: `${t("title")} | AI SPUBUS Academy`,
     description: t("subtitle"),
   };
 }
