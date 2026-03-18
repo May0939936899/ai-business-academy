@@ -192,7 +192,7 @@ const hardcodedInstructors = [
   {
     id: "8",
     fullName: "ดร.ภูมิพัฒน์ รัตนชัย",
-    title: "ผู้เชี่ยวชาญ AI Business Strategy",
+    title: "ผู้เชี่ยวชาญ AI SPUBUS Strategy",
     expertise: ["AI Strategy", "Business Model"],
   },
   {
@@ -350,7 +350,7 @@ export default async function HomePage() {
               {/* Main Headline — uppercase, larger */}
               <h1 className="text-[48px] font-extrabold uppercase leading-[1.08] tracking-wide sm:text-[64px]">
                 <span className="hero-text-shimmer inline-block bg-clip-text text-transparent">
-                  AI BUSINESS
+                  AI SPUBUS
                 </span>
                 <br />
                 <span className="bg-gradient-to-r from-[#2196F3] via-[#4FC3F7] to-[#E91E8C] bg-clip-text text-transparent">

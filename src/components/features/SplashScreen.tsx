@@ -70,7 +70,7 @@ export default function SplashScreen({ children }: { children: React.ReactNode }
   const [particles, setParticles] = useState<Array<{ x: number; y: number; delay: number; size: number }>>([])
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const line1 = buildPixelGrid('AI BUSINESS')
+  const line1 = buildPixelGrid('AI SPUBUS')
   const line2 = buildPixelGrid('ACADEMY')
   const totalPixelsLine1 = line1[0]?.length || 0
   const totalPixelsLine2 = line2[0]?.length || 0

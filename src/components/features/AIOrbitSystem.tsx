@@ -353,7 +353,7 @@ export default function AIOrbitSystem() {
               letterSpacing: '0.03em',
             }}
           >
-            AI Business Core
+            AI SPUBUS Core
           </div>
         </div>
       </div>

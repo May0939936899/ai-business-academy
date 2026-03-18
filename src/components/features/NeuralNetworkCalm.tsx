@@ -319,7 +319,7 @@ export default function NeuralNetworkCalm() {
               letterSpacing: '0.03em',
             }}
           >
-            AI Business Core
+            AI SPUBUS Core
           </div>
         </div>
       </div>

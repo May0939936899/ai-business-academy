@@ -59,7 +59,7 @@ export default function LearningPathClient({
             </span>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-400">
-            {totalCourses} คอร์ส · {totalLessons} บทเรียน · เรียนจบทั้งหมดรับ AI Business Master Certificate
+            {totalCourses} คอร์ส · {totalLessons} บทเรียน · เรียนจบทั้งหมดรับ AI SPUBUS Master Certificate
           </p>
 
           {/* Stats */}
@@ -221,7 +221,7 @@ export default function LearningPathClient({
                 color: '#FF9800',
               },
               {
-                title: 'AI Business Master',
+                title: 'AI SPUBUS Master',
                 desc: 'จบทุกคอร์ส ทุก Level',
                 icon: '👑',
                 color: '#E91E63',
