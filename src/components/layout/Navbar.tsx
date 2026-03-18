@@ -91,7 +91,7 @@ export default function Navbar() {
                 AI
               </span>
               <span className="text-xl font-bold uppercase tracking-tight text-white sm:text-2xl">
-                SPUBUS Academy
+                SPUBUS ACADEMY
               </span>
             </div>
           </div>

@@ -40,6 +40,24 @@ const LETTERS: Record<string, number[][]> = {
     [1,0,0,0,1],
     [0,1,1,1,0],
   ],
+  N: [
+    [1,0,0,0,1],
+    [1,1,0,0,1],
+    [1,0,1,0,1],
+    [1,0,0,1,1],
+    [1,0,0,0,1],
+    [1,0,0,0,1],
+    [1,0,0,0,1],
+  ],
+  E: [
+    [1,1,1,1,1],
+    [1,0,0,0,0],
+    [1,0,0,0,0],
+    [1,1,1,1,0],
+    [1,0,0,0,0],
+    [1,0,0,0,0],
+    [1,1,1,1,1],
+  ],
   S: [
     [0,1,1,1,0],
     [1,0,0,0,1],
@@ -67,10 +85,10 @@ function lerpColor(a: string, b: string, t: number): string {
   return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${bl.toString(16).padStart(2,'0')}`
 }
 
-/* Build all pixel positions for "AI BUS" — first pass to get geometry */
+/* Build all pixel positions for "AI BUSINESS" — first pass to get geometry */
 function buildPixels() {
-  const word1 = ['A', 'I']        // "AI"
-  const word2 = ['B', 'U', 'S']   // "BUS"
+  const word1 = ['A', 'I']                            // "AI"
+  const word2 = ['B', 'U', 'S', 'I', 'N', 'E', 'S', 'S']  // "BUSINESS"
   const GAP_LETTER = 1
   const GAP_WORD = 3
   const raw: { x: number; y: number; idx: number }[] = []
@@ -185,16 +203,16 @@ export default function PixelLandingPage() {
 
       {/* Center content — absolute center to avoid flex interference */}
       <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', width: 'min(600px, 92vw)', padding: '0 16px' }}>
-        {/* ── Pixel Art "AI BUS" ── */}
+        {/* ── Pixel Art "AI BUSINESS" ── */}
         <div
           className="mx-auto mb-4 sm:mb-6"
           style={{
             display: 'grid',
             gridTemplateColumns: `repeat(${totalCols}, 1fr)`,
             gridTemplateRows: `repeat(${totalRows}, 1fr)`,
-            gap: 'clamp(1px, 0.35vw, 3px)',
-            width: 'clamp(180px, 48vw, 400px)',
-            maxWidth: '85vw',
+            gap: 'clamp(1px, 0.25vw, 2px)',
+            width: 'clamp(260px, 72vw, 620px)',
+            maxWidth: '92vw',
             aspectRatio: `${totalCols} / ${totalRows}`,
           }}
         >
