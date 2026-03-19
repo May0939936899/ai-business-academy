@@ -195,7 +195,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     async jwt({ token, trigger }) {
-      // Refresh user data from DB on sign-in or when token lacks id
+      // Full refresh on sign-in, update, or when token lacks id
       if (token.email && (trigger === "signIn" || trigger === "update" || !token.id)) {
         try {
           const dbUser = await db.user.findUnique({
@@ -222,6 +222,28 @@ export const authOptions: NextAuthOptions = {
           }
         } catch (error) {
           console.error("JWT callback DB error:", error)
+        }
+      } else if (token.id) {
+        // Always sync role & status from DB (lightweight query)
+        // This ensures role changes take effect without re-login
+        try {
+          const dbUser = await db.user.findUnique({
+            where: { id: token.id as string },
+            select: { role: true, status: true, isProfileCompleted: true },
+          })
+          if (dbUser) {
+            if (dbUser.status === "SUSPENDED") {
+              return { ...token, error: "suspended" }
+            }
+            token.role = dbUser.role
+            token.isProfileCompleted = dbUser.isProfileCompleted
+            // Clear suspended error if status is now active
+            if (token.error === "suspended") {
+              delete token.error
+            }
+          }
+        } catch {
+          // Silently fail — use cached token values
         }
       }
 
