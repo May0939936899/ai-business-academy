@@ -192,7 +192,7 @@ export default async function CoursesPage() {
                       {/* Actions */}
                       <td className="whitespace-nowrap px-5 py-4 text-right">
                         <Link
-                          href={`/${locale}/admin/courses/${course.id}`}
+                          href={`/${locale}/admin/courses/${course.id}/edit`}
                           className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-white/[0.06] hover:text-white"
                         >
                           <Pencil className="h-3.5 w-3.5" />
