@@ -161,17 +161,17 @@ export default function EbookSection({ lessonId, lessonTitle, lessonOrder }: Pro
         return canvas.toDataURL('image/jpeg', 0.92)
       }
 
-      const tocSections = ['บทนำ (Introduction)', 'แนวคิดหลัก (Key Concepts)', 'การประยุกต์ใช้ในธุรกิจ (Business Use Cases)', 'เครื่องมือและเทคนิค (Tools & Techniques)', 'ตัวอย่างปฏิบัติ (Practical Example)', 'บทสรุป (Summary)', 'สิ่งที่ควรจดจำ (Key Takeaways)', 'คำถามทบทวน (Review Questions)']
+      const tocSections = ['บทนำ (Introduction)', 'แนวคิดหลัก (Key Concepts)', 'การประยุกต์ใช้ในธุรกิจ (AI in Business)', 'กรณีศึกษา (Case Study)', 'วิธีเริ่มต้น (How to Start)', 'เครื่องมือ AI (Tools)', 'ทักษะ & อาชีพ (Skills & Career)', 'Workshop ลงมือทำ']
 
       const sections = [
         { title: 'บทนำ', icon: '📖', content: ebook.introduction },
         { title: 'แนวคิดหลัก', icon: '💡', content: ebook.keyConcepts },
         { title: 'การประยุกต์ใช้ในธุรกิจ', icon: '🏢', content: ebook.businessUseCases },
-        { title: 'เครื่องมือและเทคนิค', icon: '🔧', content: ebook.toolsAndTechniques },
-        { title: 'ตัวอย่างปฏิบัติ', icon: '⚡', content: ebook.practicalExample },
-        { title: 'บทสรุป', icon: '📋', content: ebook.ebookSummary },
-        { title: 'สิ่งที่ควรจดจำ', icon: '🎯', content: ebook.ebookKeyTakeaways },
-        { title: 'คำถามทบทวน', icon: '❓', content: ebook.reviewQuestions },
+        { title: 'กรณีศึกษา', icon: '📊', content: ebook.practicalExample },
+        { title: 'วิธีเริ่มต้น', icon: '🚀', content: ebook.ebookSummary },
+        { title: 'เครื่องมือ AI', icon: '🔧', content: ebook.toolsAndTechniques },
+        { title: 'ทักษะ & อาชีพ', icon: '🎯', content: ebook.ebookKeyTakeaways },
+        { title: 'Workshop ลงมือทำ', icon: '🛠️', content: ebook.reviewQuestions },
       ].filter(s => s.content)
 
       const coverImg = await renderPage(buildCoverPage(lesson, ebook, accent))
