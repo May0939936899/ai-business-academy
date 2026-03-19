@@ -15,6 +15,7 @@ import {
 import db from '@/lib/db'
 import { getCurrentUser } from '@/lib/auth'
 import { cn, formatDate } from '@/lib/utils'
+import ProgressActions from '@/components/admin/ProgressActions'
 
 const statusConfig: Record<
   string,
@@ -276,6 +277,9 @@ export default async function AdminProgressPage({ searchParams }: PageProps) {
                 <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                   เข้าเรียนล่าสุด
                 </th>
+                <th className="px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  จัดการ
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.04]">
@@ -366,12 +370,20 @@ export default async function AdminProgressPage({ searchParams }: PageProps) {
                           <span className="text-xs text-gray-600">-</span>
                         )}
                       </td>
+
+                      {/* Actions */}
+                      <td className="px-5 py-4 text-right">
+                        <ProgressActions
+                          enrollmentId={enrollment.id}
+                          currentStatus={enrollment.status}
+                        />
+                      </td>
                     </tr>
                   )
                 })
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-5 py-12 text-center">
+                  <td colSpan={6} className="px-5 py-12 text-center">
                     <AlertCircle className="mx-auto mb-3 h-8 w-8 text-gray-600" />
                     <p className="text-sm text-gray-400">
                       {search || statusFilter
