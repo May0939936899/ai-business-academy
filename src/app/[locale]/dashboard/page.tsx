@@ -2,6 +2,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { getTranslations, getLocale } from 'next-intl/server'
+
+export const dynamic = "force-dynamic"
 import {
   BookOpen,
   PlayCircle,

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+
 import {
   Plus,
   BookOpen,
@@ -12,6 +13,8 @@ import { requireAdmin } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
 import { getTranslations, getLocale } from 'next-intl/server'
 import ExportButton from '@/components/admin/ExportButton'
+
+export const dynamic = "force-dynamic";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   PUBLISHED: {

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+
 import { redirect } from 'next/navigation'
 import {
   BarChart3,
@@ -16,6 +17,8 @@ import db from '@/lib/db'
 import { getCurrentUser } from '@/lib/auth'
 import { cn, formatDate } from '@/lib/utils'
 import ProgressActions from '@/components/admin/ProgressActions'
+
+export const dynamic = "force-dynamic";
 
 const statusConfig: Record<
   string,

@@ -1,4 +1,5 @@
 import {
+
   BarChart3,
   Users,
   BookOpen,
@@ -11,6 +12,8 @@ import { requireAdmin } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
 import { getTranslations } from 'next-intl/server'
 import ExportButton from '@/components/admin/ExportButton'
+
+export const dynamic = "force-dynamic";
 
 export default async function AnalyticsPage() {
   await requireAdmin()

@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+
 import Link from 'next/link'
 import {
   Award,
@@ -14,6 +15,8 @@ import ExportButton from '@/components/admin/ExportButton'
 import { CERTIFICATE_THEMES } from '@/lib/certificate-themes'
 import CertificateActions from '@/components/admin/CertificateActions'
 import CertificateSearch from '@/components/admin/CertificateSearch'
+
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   searchParams: Promise<{ q?: string }>

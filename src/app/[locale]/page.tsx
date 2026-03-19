@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getTranslations, getLocale } from 'next-intl/server';
+
+export const dynamic = "force-dynamic";
 import {
   ArrowRight,
   Play,
