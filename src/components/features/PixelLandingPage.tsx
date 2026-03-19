@@ -67,6 +67,15 @@ const LETTERS: Record<string, number[][]> = {
     [1,0,0,0,1],
     [0,1,1,1,0],
   ],
+  P: [
+    [1,1,1,1,0],
+    [1,0,0,0,1],
+    [1,0,0,0,1],
+    [1,1,1,1,0],
+    [1,0,0,0,0],
+    [1,0,0,0,0],
+    [1,0,0,0,0],
+  ],
 }
 
 /* ── CI Color palette from SPU BUS logo ── */
@@ -85,10 +94,10 @@ function lerpColor(a: string, b: string, t: number): string {
   return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${bl.toString(16).padStart(2,'0')}`
 }
 
-/* Build all pixel positions for "AI BUSINESS" — first pass to get geometry */
+/* Build all pixel positions for "AI SPUBUS" — first pass to get geometry */
 function buildPixels() {
   const word1 = ['A', 'I']                            // "AI"
-  const word2 = ['B', 'U', 'S', 'I', 'N', 'E', 'S', 'S']  // "BUSINESS"
+  const word2 = ['S', 'P', 'U', 'B', 'U', 'S']      // "SPUBUS"
   const GAP_LETTER = 1
   const GAP_WORD = 3
   const raw: { x: number; y: number; idx: number }[] = []
@@ -203,7 +212,7 @@ export default function PixelLandingPage() {
 
       {/* Center content — absolute center to avoid flex interference */}
       <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', width: 'min(600px, 92vw)', padding: '0 16px' }}>
-        {/* ── Pixel Art "AI BUSINESS" ── */}
+        {/* ── Pixel Art "AI SPUBUS" ── */}
         <div
           className="mx-auto mb-4 sm:mb-6"
           style={{
