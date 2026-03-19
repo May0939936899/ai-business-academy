@@ -706,14 +706,32 @@ export default function LearnClient({
             </div>
 
             {/* Quiz Link */}
-            {completedCount === totalLessons && quizId && (
+            {quizId && (
               <div className="p-4">
-                <Link href={`/${locale}/quiz/${quizId}`}>
-                  <Button variant="primary" size="md" className="w-full">
-                    {t('takeQuiz')}
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </Link>
+                {completedCount === totalLessons ? (
+                  <Link href={`/${locale}/quiz/${quizId}`}>
+                    <Button variant="primary" size="md" className="w-full">
+                      {t('takeQuiz')}
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                ) : (
+                  <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">📝</span>
+                      <div>
+                        <p className="text-xs font-semibold text-white">{t('takeQuiz')}</p>
+                        <p className="text-[10px] text-gray-500">เรียนให้ครบทุกบท ({completedCount}/{totalLessons}) เพื่อปลดล็อค</p>
+                      </div>
+                    </div>
+                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all"
+                        style={{ width: `${totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
