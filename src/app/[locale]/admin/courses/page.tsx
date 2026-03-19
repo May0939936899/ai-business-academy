@@ -12,6 +12,7 @@ import { requireAdmin } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
 import { getTranslations, getLocale } from 'next-intl/server'
 import ExportButton from '@/components/admin/ExportButton'
+import CourseActions from '@/components/admin/CourseActions'
 
 export const dynamic = "force-dynamic";
 
@@ -193,13 +194,11 @@ export default async function CoursesPage() {
 
                       {/* Actions */}
                       <td className="whitespace-nowrap px-5 py-4 text-right">
-                        <Link
-                          href={`/${locale}/admin/courses/${course.id}/edit`}
-                          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-white/[0.06] hover:text-white"
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                          {t('edit')}
-                        </Link>
+                        <CourseActions
+                          courseId={course.id}
+                          courseTitle={course.title}
+                          locale={locale}
+                        />
                       </td>
                     </tr>
                   )
