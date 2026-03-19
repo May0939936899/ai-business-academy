@@ -1,5 +1,4 @@
 import db from '@/lib/db'
-
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth-options'
 import LearningPathClient from './LearningPathClient'

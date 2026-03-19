@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-
 import Link from 'next/link'
 import { getTranslations, getLocale } from 'next-intl/server'
 import Image from 'next/image'
