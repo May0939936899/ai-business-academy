@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificate Verification - SPUBUS Academy</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f4f8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .container{max-width:480px;width:100%;margin:0 auto}
+  .logo-section{text-align:center;margin-bottom:24px}
+  .logo-icon{width:56px;height:56px;background:linear-gradient(135deg,#e8f4fd,#d0eafc);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;color:#2563eb}
+  .logo-title{font-size:14px;letter-spacing:3px;color:#2563eb;font-weight:700;text-transform:uppercase}
+  .logo-sub{font-size:12px;color:#64748b;margin-top:4px}
+  .status-bar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:12px;margin-bottom:20px}
+  .status-bar.valid{background:linear-gradient(135deg,#e8fdf0,#d1fae5);border:1px solid #86efac}
+  .status-bar.invalid{background:#fef2f2;border:1px solid #fecaca}
+  .status-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
+  .status-bar.valid .status-icon{background:#22c55e;color:#fff}
+  .status-bar.invalid .status-icon{background:#ef4444;color:#fff}
+  .status-text h3{font-size:15px;font-weight:600}
+  .status-bar.valid .status-text h3{color:#16a34a}
+  .status-bar.invalid .status-text h3{color:#dc2626}
+  .status-text p{font-size:11px;color:#64748b;margin-top:2px}
+  .cert-card{background:#fff;border-radius:16px;border:2px solid #e0eef9;padding:32px 24px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.06)}
+  .cert-label{font-size:11px;letter-spacing:2px;color:#2563eb;font-weight:600;text-transform:uppercase}
+  .cert-title{font-size:24px;font-weight:700;color:#1e293b;margin:8px 0}
+  .cert-org{font-size:13px;color:#64748b;margin-bottom:20px}
+  .divider{width:60px;height:2px;background:linear-gradient(90deg,#93c5fd,#3b82f6);margin:0 auto 20px;border-radius:2px}
+  .info-cards{display:flex;gap:10px;margin:24px 0}
+  .info-card{flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 8px;text-align:center}
+  .info-card .ic-icon{font-size:20px;color:#2563eb;margin-bottom:6px}
+  .info-card .ic-label{font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px}
+  .info-card .ic-value{font-size:13px;font-weight:600;color:#1e293b;margin-top:4px;line-height:1.3}
+  .issuer-section{margin-top:24px;padding-top:20px;border-top:1px solid #e2e8f0}
+  .issuer-name{font-size:15px;font-weight:600;color:#1e293b}
+  .issuer-title{font-size:12px;color:#64748b;margin-top:4px}
+  .cert-code-section{margin-top:24px}
+  .cert-code-label{font-size:11px;color:#94a3b8}
+  .cert-code{font-size:16px;font-weight:700;color:#2563eb;font-family:'Courier New',monospace;letter-spacing:1px;margin-top:4px}
+  .footer{text-align:center;margin-top:20px;font-size:11px;color:#94a3b8}
+  .footer .check{color:#22c55e}
+  .not-found{text-align:center;padding:60px 20px}
+  .not-found .nf-icon{font-size:48px;margin-bottom:16px}
+  .not-found h2{color:#dc2626;margin-bottom:8px}
+  .not-found p{color:#64748b;font-size:14px}
+  .name-highlight{font-size:20px;font-weight:700;color:#2563eb;margin:8px 0}
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+<script>
+const DB={"CER-PRU69-001":{n:"ศุภิสรา โพธิ์สุข",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-002":{n:"พิทยาคม วังทอง",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-003":{n:"ปพิชญา หนูเมือง",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-004":{n:"ทินภัทร รักษาวงค์",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-005":{n:"เมธิส ไอย่า",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-006":{n:"นฤนาท แย้มยิ่ง",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-007":{n:"คณพศ เจริญสุข",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-008":{n:"จินเฉิง หลี่",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-009":{n:"ศิรภัสสร งามละออ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-010":{n:"อารดา พุกเจริญ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-011":{n:"ฉลองรัฐ อัครเศรณี",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-012":{n:"ณัฐชนน วงษ์ยี่",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-013":{n:"พิมพ์วิมล เสาวภาคเทพี",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-014":{n:"อรณิชา ชัยอารีย์เลิศ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-015":{n:"รัชพล ฟ้ากระจ่าง",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-016":{n:"พัฒน์นรี ใจดี",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-017":{n:"อัจฉรา คงบันนึก",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-018":{n:"อันดา คนภู",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-019":{n:"พรมงคล โพธิ์โตนด",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-020":{n:"ศุภนารี ขันฟ้าเลื่อน",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-021":{n:"ศุภรดา เจียมจำเริญ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-022":{n:"ปิยังกูร แผนเสือ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-023":{n:"ญานิศา อามทัศนศรี",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-024":{n:"พรไพลิน พิทักษ์คีรี",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-025":{n:"กมลวัฒน์ คำสุกร",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-026":{n:"ชยภัทร ผันผาย",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-027":{n:"จิรัชญา ตะโน",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-028":{n:"ธัญญรัตน์ คำยา",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-029":{n:"เพ็ญพิชชา มาสสร",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-030":{n:"กฤตฑรรศ์ สุวิกรม",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-031":{n:"นภัสสร ประกิ่ง",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-032":{n:"ปานขวัญ แดงดี",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-033":{n:"ดวงเดือน พงษ์พันธ์",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-034":{n:"สุรดิษ แสงทอง",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-035":{n:"ศุภกานต์ บุญสิทธิ์",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-036":{n:"ชลกานต์ โมกไธสงค์",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-037":{n:"ฐปณต หงษ์ยนต์",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-038":{n:"ชิษณุชา ศิลปวิธานกูร",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-039":{n:"ธีรวุฒิ เกิดพร",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-040":{n:"ซูเดรส วิเย",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-041":{n:"อเมเรีย อาดำ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-042":{n:"ณฐกร ลิ้มปัญญาเลิศ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-043":{n:"สมิตา แสงส่ง",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-044":{n:"ทวิชญ์ ชูวงศ์โกมล",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-045":{n:"กีรติกา แก้วบัวรบัติ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-046":{n:"วุฒิชัย แก้วแสงทอง",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-047":{n:"ณัฐหทัย พวงมาลี",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-048":{n:"อธิบดี พูลมีทรัพย์",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-049":{n:"กัญญาภัทร เชฎฐนาค",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-050":{n:"ภัณฑิรา สุวรรณมณี",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-051":{n:"ณกุล บูรณ์เจริญ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-052":{n:"รวิกานต์ โพธิ์คุ้ม",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-053":{n:"กฤต ตั้งสิริมิตร",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-054":{n:"ยชญ์กรินทร์ ไพรวรรณ์",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-055":{n:"ชานนท์ ไชยพุฒ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-056":{n:"ปิยะฉัตร จูทารี",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-057":{n:"ธนกร เมธาศุภสรรค์",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-058":{n:"ณัฏฐ์พงษ์ พงษ์ไทย",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-059":{n:"จิรัฎฐ์ สรรประเสริฐ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-060":{n:"เลอศักดิ์ โกบุตร",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-061":{n:"อธิปัญญ์ จันทร์เครือ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-062":{n:"ธนพล ศิรินุพงศ์",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-063":{n:"ธัชวรา นาฮิม",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-064":{n:"ศศินา ดอกดี",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-065":{n:"ลลดา ทับสมบัติ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-066":{n:"กิตติภพ นพศิริ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-067":{n:"ศุภสิน อมาตยกุล",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-068":{n:"วรินทร เเตงสอาด",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-069":{n:"อรรถกฤต แก้วมาลาฤทธิ์",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-070":{n:"ชวัลวิทย์ จีนบุญ",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-071":{n:"กันตพัฒน์ พลเดช",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-072":{n:"ภานิชา ลีลาไกรศร",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"},"CER-PRU69-073":{n:"ภูบดินทร์ สานส่งศักดิ์",p:"Pre-University 69",ib:"คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม",in:"ผศ.ดร.รวิภา อัครจินดานนท์",it:"คณบดีคณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม"}};
+
+function getID(){
+  const p=new URLSearchParams(location.search);
+  let id=p.get('id')||p.get('ID')||'';
+  if(!id){const h=location.hash.replace('#','');if(h)id=h;}
+  if(!id){const parts=location.pathname.split('/').filter(Boolean);if(parts.length)id=parts[parts.length-1];}
+  return id.toUpperCase();
+}
+
+function render(){
+  const app=document.getElementById('app');
+  const id=getID();
+  const cert=DB[id];
+  
+  if(!cert){
+    app.innerHTML=`
+      <div class="logo-section">
+        <div class="logo-icon">🎓</div>
+        <div class="logo-title">SPUBUS Academy</div>
+        <div class="logo-sub">School of Business Administration, Sripatum University</div>
+      </div>
+      <div class="status-bar invalid">
+        <div class="status-icon">✕</div>
+        <div class="status-text">
+          <h3>Certificate Not Found</h3>
+          <p>No certificate matches this code</p>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="not-found">
+          <div class="nf-icon">🔍</div>
+          <h2>ไม่พบใบประกาศนียบัตร</h2>
+          <p>รหัส <strong>${id||'(ไม่ระบุ)'}</strong> ไม่ตรงกับข้อมูลในระบบ</p>
+        </div>
+      </div>`;
+    return;
+  }
+  
+  app.innerHTML=`
+    <div class="logo-section">
+      <div class="logo-icon">🎓</div>
+      <div class="logo-title">SPUBUS Academy</div>
+      <div class="logo-sub">School of Business Administration, Sripatum University</div>
+    </div>
+    <div class="status-bar valid">
+      <div class="status-icon">✓</div>
+      <div class="status-text">
+        <h3>Certificate Verified</h3>
+        <p>Verified by AI SPUBUS Academy, Sripatum University</p>
+      </div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-label">Certificate of Completion</div>
+      <div class="cert-title">Certificate</div>
+      <div class="cert-org">AI SPUBUS Academy | School of Business Administration, Sripatum University</div>
+      <div class="divider"></div>
+      <p style="font-size:13px;color:#64748b">This certifies that</p>
+      <div class="name-highlight">${cert.n}</div>
+      <p style="font-size:13px;color:#64748b">has successfully completed the program</p>
+      <p style="font-size:17px;font-weight:700;color:#1e293b;margin-top:6px">${cert.p}</p>
+      <div class="info-cards">
+        <div class="info-card">
+          <div class="ic-icon">📅</div>
+          <div class="ic-label">Date</div>
+          <div class="ic-value">2026</div>
+        </div>
+        <div class="info-card">
+          <div class="ic-icon">👤</div>
+          <div class="ic-label">Student</div>
+          <div class="ic-value">${cert.n.split(' ')[0]}</div>
+        </div>
+        <div class="info-card">
+          <div class="ic-icon">📖</div>
+          <div class="ic-label">Program</div>
+          <div class="ic-value">${cert.p}</div>
+        </div>
+      </div>
+      <div class="issuer-section">
+        <div class="issuer-name">${cert.in}</div>
+        <div class="issuer-title">${cert.it}</div>
+      </div>
+      <div class="cert-code-section">
+        <div class="cert-code-label">Certificate Code</div>
+        <div class="cert-code">${id}</div>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="check">✓</span> Certificate Valid — Verified by AI SPUBUS Academy
+    </div>`;
+}
+render();
+</script>
+</body>
+</html>
